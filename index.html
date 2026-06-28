@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Koli · Product Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Space+Grotesk:wght@300;400;500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="#top" class="mono">Koli</a>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#play">Play</a>
+      <a href="#read">Read</a>
+      <a href="#about">About</a>
+      <a href="#contact">Tea?</a>
+    </nav>
+  </header>
+
+  <!-- =================== HERO =================== -->
+  <section class="hero" id="top" data-screen-label="Hero">
+    <div class="hero-sticky">
+      <div class="hero-stage"><div id="hero-canvas"></div></div>
+      <div class="hero-scrim"></div>
+      <div class="hero-name">
+        <h1 class="koli">Koli</h1>
+        <p class="role">Product Designer</p>
+      </div>
+      <div class="hero-hint"><span class="dot"></span> <span class="hint-txt" id="hero-hint-txt">move your cursor around</span></div>
+    </div>
+  </section>
+
+  <!-- =================== WORK =================== -->
+  <section class="sec work-sec" id="work" data-screen-label="Work">
+    <div class="pstrip" data-speed="-0.12">
+      <div class="track">
+        <span>Work</span><span class="o">Work</span><span>Work</span><span class="o">Work</span><span>Work</span><span class="o">Work</span>
+      </div>
+    </div>
+    <div class="sec-num"><span class="ln"></span> 01 · Selected work · 2019–now</div>
+
+    <div class="work-list">
+      <article class="work-item">
+        <div class="wi-text">
+          <span class="idx">01</span>
+          <h3>Health Connect</h3>
+          <p>A large-scale healthcare platform supporting provincial programs across Canada, from vaccine management to cancer screening and patient scheduling.</p>
+          <div class="tagline-meta">Healthcare platform · Product design</div>
+        </div>
+        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-health" shape="rect" src="assets/HealthConnect_Cover.png" placeholder="Health Connect, drop cover"></image-slot></a>
+      </article>
+
+      <article class="work-item rev">
+        <div class="wi-text">
+          <span class="idx">02</span>
+          <h3>LifeLabs My-Care Compass</h3>
+          <p>Designed the platform to take ownership of and view your health records through the LifeLabs digital experience.</p>
+          <div class="tagline-meta">Health records · End-to-end</div>
+        </div>
+        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-lifelabs" shape="rect" src="assets/Lifelabs_Cover.png" placeholder="LifeLabs, drop cover"></image-slot></a>
+      </article>
+
+      <article class="work-item">
+        <div class="wi-text">
+          <span class="idx">03</span>
+          <h3>OCADU Library</h3>
+          <p>Redesigned OCAD University's online library to improve accessibility, navigation, and discoverability for students and researchers.</p>
+          <div class="tagline-meta">Library · Accessibility</div>
+        </div>
+        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-ocadu" shape="rect" src="assets/ocadu-cover.png" placeholder="OCADU Library, drop cover"></image-slot></a>
+      </article>
+
+      <article class="work-item rev">
+        <div class="wi-text">
+          <span class="idx">04</span>
+          <h3>Regology</h3>
+          <p>Worked on regulatory compliance software for global financial systems, designing tools that simplify complex policy and reporting workflows.</p>
+          <div class="tagline-meta">Reg-tech · Finance</div>
+        </div>
+        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-regology" shape="rect" src="assets/regology-cover.png" placeholder="Regology, drop cover"></image-slot></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- =================== PLAY =================== -->
+  <section class="sec play-sec" id="play" data-screen-label="Play">
+    <div class="pstrip" data-speed="0.14">
+      <div class="track">
+        <span class="o">Play</span><span>Play</span><span class="o">Play</span><span>Play</span><span class="o">Play</span><span>Play</span>
+      </div>
+    </div>
+    <div class="sec-num"><span class="ln"></span> 02 · Side quests · experiments</div>
+
+    <div class="play-scatter">
+      <article class="pfloat f1" data-speed="0.05" data-rot="0" data-tilt="0" style="--ar:4/5"><div class="pf-inner">
+        <div class="pf-media"><img src="assets/bastu-cover.png" alt="Bastu" style="width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1);transition:filter .6s cubic-bezier(.2,.7,.2,1);" class="bastu-img" /></div>
+        <div class="pf-cap">
+          <span class="k">Augmented reality</span><h3>Bastu</h3>
+          <p>An interactive documentary exploring domestic memory of my grandmother's home.</p>
+        </div>
+      </div></article>
+
+      <article class="pfloat f2" data-speed="0.13" data-rot="3" data-tilt="-15" style="--ar:4/5"><div class="pf-inner">
+        <div class="pf-media"><img src="assets/virus-vs-vaccines-cover.png" alt="Virus vs Vaccines" style="width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1);transition:filter .6s cubic-bezier(.2,.7,.2,1);" class="virus-img" /></div>
+        <div class="pf-cap">
+          <span class="k">Multiplayer game</span><h3>Virus vs Vaccines</h3>
+          <p>Built during early COVID vaccine trials, with urgency, competition, collective action.</p>
+        </div>
+      </div></article>
+
+      <article class="pfloat f3" data-speed="0.14" data-rot="2" data-tilt="13" style="--ar:4/5"><div class="pf-inner">
+        <div class="pf-media">
+          <span class="tag-cooking"><span class="steam"></span> currently cooking</span>
+          <img src="assets/petal-note-cover.jpg" alt="Petal Note" style="width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1);transition:filter .6s cubic-bezier(.2,.7,.2,1);" class="petal-img" />
+        </div>
+        <div class="pf-cap">
+          <span class="k">Work in progress</span><h3>Petal Note</h3>
+          <p>A digital flower garden, pick flowers, build a bouquet, send it with a handwritten note.</p>
+        </div>
+      </div></article>
+
+
+    </div>
+  </section>
+
+  <!-- =================== READ =================== -->
+  <section class="sec read-sec" id="read" data-screen-label="Read">
+    <div class="pstrip" data-speed="-0.1">
+      <div class="track">
+        <span>Read</span><span class="o">Read</span><span>Read</span><span class="o">Read</span><span>Read</span><span class="o">Read</span>
+      </div>
+    </div>
+    <div class="sec-num"><span class="ln"></span> 03 · Essays</div>
+
+    <div class="read-list">
+      <a class="read-row has-desc" href="https://openresearch.ocadu.ca/id/eprint/3683/1/RoyChakraborty_Krishnokoli_2022_MDES_DIGF_thesis.pdf" target="_blank" rel="noopener">
+        <div class="rr-top"><span class="rr-num">01</span><span class="rr-title">Phad: Master's Thesis @ OCAD</span><span class="rr-arrow">↗</span></div>
+        <p class="rr-desc">An exploration of storytelling through augmented reality, using South Asian craft traditions as a medium.</p>
+      </a>
+      <a class="read-row" href="https://open.substack.com/pub/kolidesign/p/the-user-journey-of-falling-in-love?r=2w73nn&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener">
+        <div class="rr-top"><span class="rr-num">02</span><span class="rr-title">User Journey of Falling in Love</span><span class="rr-arrow">↗</span></div>
+      </a>
+
+    </div>
+
+    <div class="read-subscribe">
+      <p class="read-sub-note">New essays on design, healthcare, and the immigrant tech life — straight to your inbox.</p>
+      <a class="read-sub-btn" href="https://kolidesign.substack.com/subscribe" target="_blank" rel="noopener">Subscribe on Substack <span class="rs-arrow" aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+
+  <!-- =================== ABOUT =================== -->
+  <section class="sec about-sec" id="about" data-screen-label="About">
+    <div class="pstrip" data-speed="0.12">
+      <div class="track">
+        <span>Hello</span><span class="o">Hello</span><span>Hello</span><span class="o">Hello</span><span>Hello</span><span class="o">Hello</span>
+      </div>
+    </div>
+    <div class="sec-num"><span class="ln"></span> 04 · About · the person behind it</div>
+
+    <div class="about-grid">
+      <div class="about-lead">
+        <h2 class="about-head">I am a designer who gets too <span class="script">curious</span>.</h2>
+        <div class="about-body">
+          <p>Product designer and digital technologist, 8+ years across design, strategy, and consulting.</p>
+          <p>I design and build agentic experiences end to end, close to the code, with AI in the workflow.</p>
+        </div>
+        <div class="about-fluent">
+          <span class="k">Fluent in</span>
+          <p>English &amp; Bengali, a little Hindi, Figma with my eyes closed, and just enough HTML.</p>
+        </div>
+      </div>
+
+      <aside class="about-side">
+      </aside>
+    </div>
+    <div class="about-portrait"><img src="assets/portrait.png" alt="Koli holding a cup of chai" /></div>
+
+  </section>
+
+  <!-- =================== PATH · horizontal scroll timeline =================== -->
+  <section class="hscroll" id="path" data-screen-label="Path">
+    <div class="hscroll-pin">
+      <div class="hs-art" aria-hidden="true"></div>
+
+      <div class="hs-topbar">
+        <span class="hs-cue">keep scrolling <span class="hs-cue-arr">&rarr;</span></span>
+      </div>
+
+      <div class="hs-horizon" aria-hidden="true"></div>
+
+      <div class="hscroll-track" id="hscroll-track">
+        <article class="hs-stop" data-side="up">
+          <span class="hs-dot"></span>
+          <div class="hs-year"><span class="y">'22</span><span class="t">now</span></div>
+          <div class="hs-card">
+            <h3 class="hs-role">Senior UX Designer</h3>
+            <div class="hs-org">Deloitte &middot; Toronto, CA</div>
+            <div class="hs-dates">September 2022 &mdash; Present</div>
+            <ul class="hs-detail">
+              <li>Secured <b>2 major client wins</b> in 2025 through compelling UX strategy and sales collateral:
+                <ul class="hs-sub">
+                  <li><b>NLHS</b> (Newfoundland &amp; Labrador Health Services) &mdash; helped win a $100,000 engagement through tailored solution storytelling</li>
+                  <li><b>New Zealand Health</b> &mdash; contributed to a substantial engagement, strengthening Deloitte&rsquo;s global health presence</li>
+                </ul>
+              </li>
+              <li>Designed the end-to-end user flows and UX improvements for Deloitte&rsquo;s own Inventory &amp; Supply Management product asset, now used by public health inventory systems across Canadian provinces</li>
+              <li>Created and standardized the design system for Health Connect, a Salesforce-based public health platform spanning provincial cancer-screening campaigns, result tracking, database management, and appointment booking</li>
+              <li>Introduced AI-assisted workflows to accelerate prototyping and design iteration, reducing concept-to-feedback cycles</li>
+              <li>Led delivery management and invoicing for large health-sector clients including NLHS and New Brunswick Health Services, ensuring seamless execution and financial accuracy</li>
+              <li>Partnered with cross-functional teams &mdash; consultants, engineers, and leadership &mdash; to align business needs with user-centered design and reduce complexity for end users</li>
+              <li>Built executive decks and enablement collateral for client pitches, influencing deal closures and positioning Deloitte&rsquo;s digital health products competitively</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="hs-stop" data-side="down">
+          <span class="hs-dot"></span>
+          <div class="hs-year"><span class="y">'21</span><span class="t">&rsquo;24</span></div>
+          <div class="hs-card">
+            <h3 class="hs-role">Sessional Instructor &amp; Research Assistant</h3>
+            <div class="hs-org">OCAD University &middot; Toronto, CA</div>
+            <div class="hs-dates">October 2021 &mdash; December 2024</div>
+            <ul class="hs-detail">
+              <li>Taught undergraduate courses in UX and interaction design</li>
+              <li>Mentored students in design thinking, fostering creativity and innovation in their projects</li>
+              <li>Developed a curriculum emphasizing inclusive design principles, player-engagement strategies, and the intersection of storytelling and gameplay</li>
+              <li>Guided students to create user-centered game experiences that prioritize accessibility, diversity, and player agency</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="hs-stop" data-side="up">
+          <span class="hs-dot"></span>
+          <div class="hs-year"><span class="y">'20</span><span class="t">&rsquo;22</span></div>
+          <div class="hs-card">
+            <h3 class="hs-role">M.Des, Digital Futures</h3>
+            <div class="hs-org">OCAD University, Toronto &middot; 4.5 GPA</div>
+            <ul class="hs-detail">
+              <li>Thesis &ldquo;Phad&rdquo;: storytelling through AR using South Asian craft traditions</li>
+              <li>Focus on narrative interfaces, interaction, and emerging tech</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="hs-stop" data-side="down">
+          <span class="hs-dot"></span>
+          <div class="hs-year"><span class="y">'18</span><span class="t">&rsquo;20</span></div>
+          <div class="hs-card">
+            <h3 class="hs-role">UX Designer</h3>
+            <div class="hs-org">Talentica Software &middot; Pune, IN</div>
+            <div class="hs-dates">December 2018 &mdash; December 2020</div>
+            <ul class="hs-detail">
+              <li>Designed enterprise-level platforms across industries including fintech and fashion, transforming complex workflows into intuitive, user-friendly interfaces</li>
+              <li>Redesigned and maintained design systems for web, iOS, and Android, ensuring consistency and scalability</li>
+              <li>Partnered with cross-functional teams to align design solutions with technical constraints while delivering superior user experiences</li>
+              <li>Led workshops and user interviews, leveraging data-driven insights to optimize product performance</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="hs-stop" data-side="up">
+          <span class="hs-dot"></span>
+          <div class="hs-year"><span class="y">'14</span><span class="t">&rsquo;19</span></div>
+          <div class="hs-card">
+            <h3 class="hs-role">B.Des, Graphic Design</h3>
+            <div class="hs-org">NID, Ahmedabad &middot; 3.7 GPA</div>
+            <ul class="hs-detail">
+              <li>Foundation in graphic design, type, and visual storytelling</li>
+              <li>Where the craft habit started</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+
+      <div class="hs-foot">
+        <span class="hs-idx" id="hs-idx">01</span>
+        <span class="hs-progress"><span class="hs-progress-fill" id="hs-progress"></span></span>
+        <span class="hs-total">05</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== CONTACT =================== -->
+  <section class="contact" id="contact" data-screen-label="Contact">
+    <div class="contact-left">
+      <a class="cal-link" href="https://calendar.app.google/ob5HdHShiVqGy3sf9" target="_blank" rel="noopener noreferrer" aria-label="Book time on my calendar">
+        <div class="cal-float">
+          <img class="cal-img" src="assets/Calendar.png" alt="Book a meeting" />
+        </div>
+      </a>
+      <div class="env-scene">
+        <div class="env-glow" aria-hidden="true"></div>
+        <div class="envelope">
+          <!-- layer 3 — base paper (envelope-sized) with the ^ flap, behind the letter -->
+          <div class="env-cover" aria-hidden="true"></div>
+          <div class="env-flap" aria-hidden="true"></div>
+          <!-- the letter, tucked behind the front layer, pops out on hover -->
+          <form class="letter" id="letter-form" data-email="hello@koli.design">
+            <textarea class="letter-msg" name="msg" rows="3" placeholder="say hello, share an idea, or tell me what you're making…"></textarea>
+            <div class="letter-foot">
+              <input class="letter-from" name="from" type="email" placeholder="your email" required />
+              <button class="letter-send" type="submit">Send <span aria-hidden="true">✿</span></button>
+            </div>
+            <span class="letter-doodle" aria-hidden="true">✿</span>
+          </form>
+          <!-- layer 1 — front pocket with a V opening at the top, in front of the letter -->
+          <div class="env-front" aria-hidden="true"></div>
+          <div class="stamp">
+            <img class="stamp-img" src="assets/wax-seal.png" alt="" aria-hidden="true" />
+            <span class="stamp-koli">Koli</span>
+            <span class="stamp-design">design</span>
+          </div>
+        </div>
+      </div>
+      <div class="email-row">
+        <a class="email-big" id="email-link" href="mailto:hello@koli.design">hello@koli.design</a>
+      </div>
+      <div class="cal-row">
+        <a class="email-big cal-pill" href="https://calendar.app.google/ob5HdHShiVqGy3sf9" target="_blank" rel="noopener noreferrer">book a time <span class="cal-arr" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+    <div class="contact-kettle">
+      <div class="eyebrow sec-num-style"><span class="ln"></span> the kettle's on</div>
+      <h2 class="contact-head">Let's chat<br />over <span class="script">tea.</span></h2>
+      <div class="tea-scene" tabindex="0" aria-label="Hover the kettle to pour chai">
+        <!-- the kettle: flipped to point left, tilts to pour on hover -->
+        <div class="tea-kettle-wrap"><img class="tea-kettle" src="assets/kettle.png" alt="A steel kettle" /></div>
+
+        <!-- the cup: flipped, receives the pour -->
+        <div class="tea-cup-wrap">
+          <img class="tea-cup" src="assets/tea.png" alt="A small glass cup of chai" />
+          <svg class="tea-steam" viewBox="0 0 160 120" aria-hidden="true">
+            <path d="M64 116 C 52 90, 80 78, 66 50 C 56 32, 74 20, 66 2" stroke="#cac7bf" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+            <path d="M98 118 C 88 92, 110 80, 98 56 C 90 40, 104 28, 98 10" stroke="#d8d5cd" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- translucent chai stream: narrow at the spout, widening as it falls into the cup -->
+        <svg class="tea-draw" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <path class="stream-main" d="M58.3 41 L60 41 Q61.1 47 60.4 52 Q61.6 57.5 61 62 Q63 66 62.6 69 L56.4 69 Q56.8 66 57.4 62 Q56.6 57.5 57.8 52 Q57 47 58.3 41 Z" fill="#c9682e" fill-opacity="0.42"/>
+          <!-- a few bubbles popping up along the stream -->
+          <circle class="bub b1" cx="59"   cy="46"   r="1.3" fill="#c9682e"/>
+          <circle class="bub b2" cx="60"   cy="53"   r="1.5" fill="#c9682e"/>
+          <circle class="bub b3" cx="59.4" cy="60"   r="1.1" fill="#c9682e"/>
+          <!-- splashes leaping out where the tea lands on the surface -->
+          <circle class="spl s1" cx="56.4" cy="68"   r="1.6" fill="#c9682e"/>
+          <circle class="spl s2" cx="63"   cy="67.4" r="1.3" fill="#c9682e"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+  <div class="colophon">Koli · Product Designer · made with eyes wide open</div>
+
+  <!-- Figma-style multiplayer cursors (whole page) -->
+  <div class="cursors" aria-hidden="true">
+    <div class="fcursor koli">
+      <svg width="30" height="30" viewBox="0 0 26 26">
+        <path d="M3 3 L21 9 L11 13 L9 21 Z" fill="#1c1a17"/>
+      </svg>
+      <span class="fc-disc"><span class="fc-k">K</span></span>
+    </div>
+    <div class="fcursor you">
+      <svg width="30" height="30" viewBox="0 0 26 26">
+        <path d="M3 3 L21 9 L11 13 L9 21 Z" fill="#E85F2A"/>
+      </svg>
+      <span class="fc-name">You</span>
+    </div>
+  </div>
+
+  <!-- Preloaded for p5 hero sketch — works on file:// -->
+  <img id="hero-grey" src="assets/Greyscale.jpg" alt="" style="display:none" aria-hidden="true" />
+  <img id="hero-colour" src="assets/Colour low.gif" alt="" style="display:none" aria-hidden="true" />
+
+  <script src="assets/p5.js"></script>
+  <script src="assets/hero-sketch.js"></script>
+  <script src="image-slot.js"></script>
+  <script src="main.js"></script>
+  <script>
+    (function(){
+      var link    = document.querySelector('.cal-link');
+      var youName = document.querySelector('.fcursor.you .fc-name');
+      if(link && youName){
+        link.addEventListener('mouseenter', function(){ youName.dataset.orig = youName.textContent; youName.textContent = 'Book a time ↗'; });
+        link.addEventListener('mouseleave', function(){ if(youName.dataset.orig) youName.textContent = youName.dataset.orig; });
+      }
+    })();
+  </script>
+</body>
+</html>

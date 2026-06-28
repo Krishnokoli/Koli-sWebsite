@@ -1,0 +1,111 @@
+// Koli — hero generative layer
+// Passes HTMLImageElement directly to p5 image() — works on file:// AND
+// as a self-contained standalone (data URI srcs). No loadImage / XHR needed.
+
+let greyImg   = null;   // p5.Image
+let colourImg = null;   // p5.Image
+let colourAmt    = 0;
+let targetColour = 0;
+
+const SK_W = 1366;
+const SK_H = 768;
+
+// p5 preload runs after the DOM is ready, so the <img> tags exist.
+// Read their resolved src — an http(s) URL when served, a data: URI in the
+// bundled standalone — both of which loadImage() handles. This produces real
+// p5.Image objects (passing a raw HTMLImageElement to image() throws).
+function preload() {
+  const gEl = document.getElementById("hero-grey");
+  const cEl = document.getElementById("hero-colour");
+  if (gEl && gEl.src) greyImg   = loadImage(gEl.src);
+  if (cEl && cEl.src) colourImg = loadImage(cEl.src);
+}
+
+function setup() {
+  const holder = document.getElementById("hero-canvas");
+  const cnv    = createCanvas(SK_W, SK_H);
+  cnv.parent(holder);
+  cnv.elt.classList.add("sketch-canvas");
+  frameRate(30);
+
+  cnv.elt.addEventListener("pointerdown",  () => { targetColour = 1; });
+  window.addEventListener("pointerup",     () => { targetColour = 0; });
+  window.addEventListener("pointercancel", () => { targetColour = 0; });
+}
+
+function draw() {
+  background(10);
+  colourAmt += (targetColour - colourAmt) * 0.12;
+
+  if (greyImg && greyImg.width) {
+    image(greyImg, 0, 0, SK_W, SK_H);
+  }
+  if (colourImg && colourImg.width && colourAmt > 0.01) {
+    push();
+    tint(255, 255 * colourAmt);
+    image(colourImg, 0, 0, SK_W, SK_H);
+    pop();
+  }
+
+  noStroke();
+  fill(0);
+
+  const e = (x1, x2, y1, y2, d) => {
+    ellipse(map(mouseX, 0, SK_W, x1, x2, true), map(mouseY, 0, SK_H, y1, y2, true), d);
+  };
+
+  // COLUMN 1
+  e(200, 223, 100, 110, 34);
+  e(60,  83,  292, 302, 34);
+  e(225, 240, 233, 253, 25);
+  e(70,  97,  465, 476, 34);
+  e(224, 240, 421, 429, 25);
+  e(39,  50,  616, 630, 17);
+  e(50,  80,  720, 730, 25);
+  e(200, 222, 692, 720, 34);
+
+  // COLUMN 2
+  e(340, 347, 72,  75,  25);
+  ellipse(map(mouseX,0,SK_W,364,384,true), map(mouseY,0,SK_H,425,445,true), 34);
+  ellipse(map(mouseX,0,SK_W,500,520,true), map(mouseY,0,SK_H,435,445,true), 25);
+  e(500, 520, 55,  62,  29);
+  e(660, 677, 50,  65,  17);
+  ellipse(map(mouseX,0,SK_W,510,540,true), map(mouseY,0,SK_H,149,153,true), 24);
+  ellipse(map(mouseX,0,SK_W,650,680,true), map(mouseY,0,SK_H,149,153,true), 24);
+  ellipse(map(mouseX,0,SK_W,495,510,true), map(mouseY,0,SK_H,287,291,true), 17);
+  ellipse(map(mouseX,0,SK_W,570,595,true), map(mouseY,0,SK_H,287,291,true), 17);
+  e(670, 690, 282, 292, 34);
+  e(640, 670, 409, 417, 24);
+  ellipse(map(mouseX,0,SK_W,610,626,true), map(mouseY,0,SK_H,515,520,true), 17);
+  ellipse(map(mouseX,0,SK_W,685,704,true), map(mouseY,0,SK_H,515,520,true), 17);
+  ellipse(map(mouseX,0,SK_W,339,358,true), map(mouseY,0,SK_H,605,613,true), 17);
+  ellipse(map(mouseX,0,SK_W,420,435,true), map(mouseY,0,SK_H,610,620,true), 17);
+  e(510, 515, 614, 625, 27);
+  e(640, 670, 604, 608, 27);
+  ellipse(map(mouseX,0,SK_W,503,513,true), map(mouseY,0,SK_H,724,733,true), 17);
+  ellipse(map(mouseX,0,SK_W,568,580,true), map(mouseY,0,SK_H,724,733,true), 17);
+  e(680, 690, 718, 730, 34);
+
+  // COLUMN 3
+  ellipse(map(mouseX,0,SK_W,760,772,true),  map(mouseY,0,SK_H,52,60,true),   10);
+  ellipse(map(mouseX,0,SK_W,830,870,true),  map(mouseY,0,SK_H,45,57,true),   17);
+  e(940,  955,  44,  50,  24);
+  e(960,  985,  200, 220, 34);
+  e(785,  835,  445, 465, 27);
+  e(972,  988,  582, 599, 17);
+  e(800,  830,  612, 625, 24);
+  ellipse(map(mouseX,0,SK_W,788,830,true),  map(mouseY,0,SK_H,714,725,true), 17);
+  ellipse(map(mouseX,0,SK_W,930,970,true),  map(mouseY,0,SK_H,714,725,true), 17);
+  ellipse(map(mouseX,0,SK_W,1090,1110,true),map(mouseY,0,SK_H,56,66,true),   17);
+  ellipse(map(mouseX,0,SK_W,1170,1190,true),map(mouseY,0,SK_H,56,66,true),   17);
+  e(1145, 1180, 168, 172, 24);
+  e(1193, 1223, 285, 295, 24);
+  e(1126, 1152, 479, 503, 34);
+  e(1305, 1319, 80,  85,  17);
+  e(1318, 1329, 302, 313, 24);
+  e(1286, 1322, 425, 448, 17);
+  ellipse(map(mouseX,0,SK_W,1238,1251,true),map(mouseY,0,SK_H,617,624,true), 17);
+  ellipse(map(mouseX,0,SK_W,1312,1327,true),map(mouseY,0,SK_H,617,624,true), 17);
+  e(1235, 1250, 706, 720, 17);
+  e(1318, 1328, 720, 726, 24);
+}
