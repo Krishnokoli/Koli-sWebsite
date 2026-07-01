@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<meta name="ext-resource-dependency" content="assets/sm/appy.png" data-resource-id="smAppy">
+<meta name="ext-resource-dependency" content="assets/sm/astro.png" data-resource-id="smAstro">
+<meta name="ext-resource-dependency" content="assets/sm/codey.png" data-resource-id="smCodey">
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="image-slot.js"></script>
+<style>
+  @keyframes pulseHint{0%{box-shadow:0 0 0 0 rgba(0,95,178,0.45);}70%{box-shadow:0 0 0 12px rgba(0,95,178,0);}100%{box-shadow:0 0 0 0 rgba(0,95,178,0);}}
+  .pt-select{transition:background .15s,color .15s,border-color .15s;}
+  .pt-clinic:hover .pt-select{background:#005FB2;color:#fff;border-color:#005FB2;}
+</style>
+</helmet>
+<div style="font-family:'Open Sans',system-ui,sans-serif;color:#16181d;background:#fff;border:1px solid #e7eaef;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px -45px rgba(0,95,178,0.4);">
+  <div style="display:grid;grid-template-columns:248px 1fr;min-height:600px;">
+    <aside style="background:#fafbfc;border-right:1px solid #eef0f3;padding:22px 18px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#9aa0ab;margin-bottom:14px;">Run the demo as</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <sc-for list="{{ personas }}" as="p" hint-placeholder-count="3">
+          <div style="{{ p.cardStyle }}">
+            <div onClick="{{ p.onSelect }}" style="display:flex;align-items:center;gap:11px;cursor:pointer;">
+              <div style="width:46px;height:46px;border-radius:50%;flex:none;overflow:hidden;background:{{ p.avatarBg }};display:flex;align-items:flex-end;justify-content:center;">
+                <img src="{{ p.avatar }}" alt="{{ p.name }}" style="width:124%;height:124%;object-fit:cover;object-position:center top;"/>
+              </div>
+              <div style="min-width:0;flex:1;">
+                <div style="font-size:13.5px;font-weight:700;color:#16181d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.name }}</div>
+                <div style="font-size:11.5px;color:#61656e;line-height:1.3;">{{ p.role }}</div>
+              </div>
+              <span style="{{ p.chevStyle }}">{{ p.chev }}</span>
+            </div>
+            <sc-if value="{{ p.active }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:11px;padding-top:11px;border-top:1px dashed #e3e7ec;">
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
+                  <sc-for list="{{ p.tags }}" as="t" hint-placeholder-count="2"><span style="{{ p.tagStyle }}">{{ t }}</span></sc-for>
+                </div>
+                <div style="font-size:11.5px;color:#4a4e57;line-height:1.55;margin-bottom:11px;">{{ p.intro }}</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{ p.points }}" as="pt" hint-placeholder-count="3">
+                    <div style="display:flex;gap:8px;align-items:center;font-size:11.5px;color:#3a3e47;line-height:1.35;">
+                      <span style="{{ p.badgeStyle }}">{{ pt.icon }}</span><span>{{ pt.text }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+    <div style="padding:26px 28px 30px;display:flex;flex-direction:column;">
+      <div style="margin-bottom:22px;">
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#005FB2;margin-bottom:14px;">{{ activeName }} · user journey</div>
+        <div style="display:flex;align-items:flex-start;">
+          <sc-for list="{{ journey }}" as="j" hint-placeholder-count="4">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;">
+              <div style="{{ j.lineStyle }}"></div>
+              <div style="{{ j.nodeStyle }}">{{ j.icon }}</div>
+              <div style="{{ j.labelStyle }}">{{ j.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="width:100%;max-width:660px;display:flex;flex-direction:column;align-items:center;">
+          <div style="width:100%;background:#16325c;border-radius:14px;padding:4px;box-shadow:0 30px 55px -28px rgba(16,26,44,0.5);">
+            <div data-frame="1" style="background:#f4f6f9;border-radius:10px;overflow:hidden;height:440px;display:flex;flex-direction:column;position:relative;">
+              <div style="height:30px;background:#16325c;display:flex;align-items:center;gap:8px;padding:0 12px;flex:none;">
+                <div style="display:flex;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+                <div style="margin-left:8px;font-size:11px;color:#cdd8ee;font-weight:600;">Connect Suite · Appointment</div>
+                <div style="margin-left:auto;font-size:10.5px;color:#8ea3c7;">{{ activeName }}</div>
+              </div>
+              <sc-if value="{{ showHeader }}" hint-placeholder-val="{{ false }}">
+              <div style="height:44px;background:#fff;border-bottom:1px solid #e6e9ef;display:flex;align-items:center;padding:0 14px;gap:10px;flex:none;">
+                <div style="width:22px;height:22px;border-radius:5px;background:#005FB2;display:flex;align-items:center;justify-content:center;font-size:11px;flex:none;">🏥</div>
+                <div style="min-width:0;">
+                  <div style="font-size:13px;font-weight:700;color:#16181d;line-height:1.1;white-space:nowrap;">{{ orgName }}</div>
+                  <div style="font-size:9.5px;color:#9aa0ab;line-height:1.1;">Appointment Connect</div>
+                </div>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:13px;">
+                  <div title="Notifications" style="position:relative;font-size:15px;color:#54698d;cursor:pointer;">🔔<span style="position:absolute;top:-3px;right:-4px;width:13px;height:13px;border-radius:50%;background:#ea001e;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;">4</span></div>
+                  <div title="Settings" style="font-size:15px;color:#54698d;cursor:pointer;">⚙️</div>
+                  <div style="width:30px;height:30px;border-radius:50%;overflow:hidden;background:{{ headerAvatarBg }};border:1.5px solid #d6e2f2;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;flex:none;"><img src="{{ headerAvatar }}" alt="{{ activeName }}" style="width:124%;height:124%;object-fit:cover;object-position:center top;"/></div>
+                </div>
+              </div>
+              </sc-if>
+              <div style="flex:1;overflow-y:auto;">{{ screen }}</div>
+              {{ screenModal }}
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+          <div onClick="{{ onBack }}" style="{{ backStyle }}">← Back</div>
+          <div style="font-size:12px;color:#8a8f99;">Step {{ stepNum }} of {{ stepTotal }}</div>
+          <div onClick="{{ onReset }}" style="font-size:12px;color:#005FB2;cursor:pointer;font-weight:600;">Restart</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:960,&quot;height&quot;:640}}">
+class Component extends DCLogic {
+  state = {
+    persona:'manager', step:{manager:0,patient:0,nurse:0}, booked:false, walkInAdded:false,
+    published:false, apptType:'pap', openDD:null, customRow:null,
+    calFilt:{colon:true,pap:true,xray:true,urine:true,checkup:true}, week:'Oct 11 – 17', weekIdx:0, customOpened:false, publishedToast:false, publishedBlocks:null, publishedType:null,
+    bk:{who:'self',hc:'',clinic:null,date:11,time:null}, patientBooked:false, hold:60, expired:false,
+    nurseForm:{name:'Robin Diaz',hc:'',type:'Pap Smear'}, nurseCI:{},
+    sched:[
+      {id:1,day:'Mon Oct 11',short:'Mon 11',start:'9:00',sa:'AM',end:'12:00',ea:'PM',dur:'9',cap:'80',booked:6,custom:false,blocks:[],status:'Active'},
+      {id:2,day:'Tue Oct 12',short:'Tue 12',start:'9:00',sa:'AM',end:'1:00',ea:'PM',dur:'10',cap:'60',booked:4,custom:false,blocks:[],status:'Active'},
+      {id:3,day:'Wed Oct 13',short:'Wed 13',start:'10:00',sa:'AM',end:'2:00',ea:'PM',dur:'9',cap:'80',booked:7,custom:false,blocks:[],status:'Active'},
+      {id:4,day:'Thu Oct 14',short:'Thu 14',start:'9:00',sa:'AM',end:'12:00',ea:'PM',dur:'12',cap:'60',booked:3,custom:false,blocks:[],status:'Active'},
+      {id:5,day:'Fri Oct 15',short:'Fri 15',start:'9:00',sa:'AM',end:'11:00',ea:'AM',dur:'9',cap:'40',booked:2,custom:false,blocks:[],status:'Active'},
+      {id:6,day:'Sat Oct 16',short:'Sat 16',start:'9:00',sa:'AM',end:'11:00',ea:'AM',dur:'9',cap:'40',booked:0,custom:false,blocks:[],status:'Inactive'},
+      {id:7,day:'Sun Oct 17',short:'Sun 17',start:'9:00',sa:'AM',end:'11:00',ea:'AM',dur:'9',cap:'40',booked:0,custom:false,blocks:[],status:'Inactive'},
+    ],
+  };
+
+  P(){ return {
+    manager:{name:'Dana Whitfield',role:'Clinic Manager',initials:'DW',goal:'manage the clinic',
+      blurb:'Dana is the manager of a doctor\u2019s clinic. She makes sure every appointment schedule is published so patients and CRM agents can book appointments into the right slots. From her console she reviews the dashboard, maintains the clinic profile, configures the scheduler, and checks the clinic calendar.',
+      steps:['Dashboard','Clinic profile','Scheduler','Clinic calendar'],
+      journey:[['📊','Dashboard'],['🏥','Clinic profile'],['🗓️','Scheduler'],['📅','Clinic calendar']]},
+    patient:{name:'Aalayiah Murphy',role:'Screening participant · 42',initials:'AM',goal:'Book her Pap smear',
+      blurb:'Aalayiah just turned 42 and was found eligible by Trevor’s NLHS cervical screening run. She received an invitation letter to book a Pap smear, and now books her appointment at West End Clinic - the same flow a CRM agent uses when booking by phone.',
+      steps:['Read invitation','Who for','Health card','Book visit','Confirmed'],
+      journey:[['✉️','Invitation'],['🧍','Who for'],['🪪','Health card'],['📍','Book visit'],['✓','Confirmed']]},
+    nurse:{name:'Priya Anand',role:'Clinic Nurse',initials:'PA',goal:'Manage the daysheet',
+      blurb:'Priya manages the day’s booked patients and walk-ins from the daysheet - checking people in and watching live wait times.',
+      steps:['Daysheet','Add walk-in','Waitlist'],
+      journey:[['🗓️','Daysheet'],['➕','Add walk-in'],['🚶','Waitlist']]}
+  }; }
+
+  setPersona(k){ this.setState({persona:k}); }
+  goTab(i){ const p=this.state.persona; this.setState(s=>({step:{...s.step,[p]:i},openDD:null})); }
+  // scheduler helpers
+  timeMin(t,ap){ const m=/^(\d{1,2}):(\d{2})$/.exec((t||'').trim()); if(!m) return null; let h=+m[1]%12; if(ap==='PM') h+=12; return h*60+(+m[2]); }
+  editSched(id,f,v){ this.setState(s=>({sched:s.sched.map(r=>r.id===id?{...r,[f]:v}:r)})); }
+  setCustom(id,val){ this.setState(s=>({sched:s.sched.map(r=>r.id===id?{...r,custom:val,blocks:(val&&!(r.blocks&&r.blocks.length))?[{start:'9:00',sa:'AM',end:'10:00',ea:'AM'},{start:'10:00',sa:'AM',end:'11:00',ea:'AM'}]:(r.blocks||[])}:r)})); }
+  openCustom(id){ this.setState({customRow:id,customOpened:true}); }
+  closeCustom(){ this.setState({customRow:null}); }
+  addBlock(id){ this.setState(s=>({sched:s.sched.map(r=>r.id===id?{...r,blocks:[...(r.blocks||[]),{start:'11:00',sa:'AM',end:'12:00',ea:'PM'}]}:r)})); }
+  editBlock(id,idx,f,v){ this.setState(s=>({sched:s.sched.map(r=>r.id===id?{...r,blocks:r.blocks.map((b,i)=>i===idx?{...b,[f]:v}:b)}:r)})); }
+  rmBlock(id,idx){ this.setState(s=>({sched:s.sched.map(r=>r.id===id?{...r,blocks:r.blocks.filter((b,i)=>i!==idx)}:r)})); }
+  toggleFilt(k){ this.setState(s=>({calFilt:{...s.calFilt,[k]:!s.calFilt[k]}})); }
+  weeksList(){ return ['Oct 11 – 17','Oct 18 – 24','Oct 25 – 31','Nov 1 – 7']; }
+  blankRowsForWeek(wi){ const first=[11,18,25,1][wi]; const mon=['Oct','Oct','Oct','Nov'][wi]; const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; return names.map((nm,i)=>({id:i+1,day:nm+', '+mon+' '+(first+i),short:nm+' '+(first+i),start:'',sa:'AM',end:'',ea:'AM',dur:'',cap:'',booked:0,custom:false,blocks:[],status:'Active'})); }
+  startHold(){ clearInterval(this._ht); this.setState({hold:60}); this._ht=setInterval(()=>{ this.setState(s=>{ const x=s.hold-1; if(x<=0){ clearInterval(this._ht); clearTimeout(this._et); this._et=setTimeout(()=>this.setState({expired:false}),5000); return {hold:0,expired:true,bk:{...s.bk,time:null}}; } return {hold:x}; }); },1000); }
+  stopHold(){ clearInterval(this._ht); }
+  componentWillUnmount(){ clearInterval(this._ht); clearTimeout(this._et); }
+  dateLabel(d){ if(!d) return ''; const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(2024,9,d).getDay()]; return dow+', Oct '+d; }
+  calInfo(){ const first=new Date(2024,9,1).getDay(); const cells=[]; for(let i=0;i<first;i++) cells.push(null); for(let dn=1;dn<=31;dn++) cells.push(dn); const avail=new Set([11,14,15,16,17,18,21,22,23,24,25,28,29,30,31]); return {cells,avail}; }
+  bkSet(k,v){ this.setState(s=>({bk:{...s.bk,[k]:v}})); }
+  clinics(){ return [
+    {name:'West End Clinic',dist:'1.2 km',addr:'220 Water St, St. John’s',services:['Pap smear','Bloodwork','Screening'],hours:'Mon–Fri 8:00–16:00 · Sat 9:00–12:00',soon:'Mon, Oct 11',x:37,y:52},
+    {name:'Harbourview Health Centre',dist:'2.6 km',addr:'15 Harbour Dr',services:['Pap smear','Bloodwork','Imaging'],hours:'Mon–Fri 7:30–15:30',soon:'Tue, Oct 12',x:66,y:33},
+    {name:'Northside Community Clinic',dist:'3.4 km',addr:'88 Empire Ave',services:['Pap smear','Women’s health'],hours:'Mon–Fri 8:30–16:30',soon:'Wed, Oct 13',x:26,y:26},
+    {name:'Eastport Medical Centre',dist:'5.1 km',addr:'5 Quidi Vidi Rd',services:['Pap smear','Family practice'],hours:'Tue–Sat 9:00–17:00',soon:'Fri, Oct 18',x:80,y:64},
+  ]; }
+  publish(){
+    const blocks=[]; this.state.sched.forEach((r,i)=>{ if(r.status==='Active'&&r.start){ const sM=this.timeMin(r.start,r.sa); const band=sM==null?0:(sM<660?0:(sM<780?1:2)); blocks.push({d:i,band,sub:(r.booked||0)+'/'+r.cap}); } });
+    const wi=Math.min(3,this.state.weekIdx+1);
+    this.setState({published:true,publishedToast:true,publishedBlocks:blocks,publishedType:this.state.apptType,weekIdx:wi,week:this.weeksList()[wi],sched:this.blankRowsForWeek(wi)});
+    clearTimeout(this._toast); this._toast=setTimeout(()=>this.setState({publishedToast:false}),2800);
+  }
+  tour(){
+    const s=this.state; const step=s.step.manager; const anyCustom=s.sched.some(r=>r.custom);
+    return {
+      profileTab: step===0,
+      schedulerTab: step===1,
+      calendarTab: step===2 && s.published,
+      yesBtn: step===2 && !anyCustom,
+      pencil: step===2 && anyCustom && !s.customOpened,
+      publish: step===2 && anyCustom && s.customOpened && !s.published,
+    };
+  }
+  weekStep(dir){ const w=this.weeksList(); const i=Math.max(0,Math.min(w.length-1,this.state.weekIdx+dir)); this.setState({weekIdx:i,week:w[i]}); }
+  ddOpen(e,id,options,menuW){ e.stopPropagation(); const open=this.state.openDD&&this.state.openDD.id===id; if(open){this.setState({openDD:null});return;} const r=e.currentTarget.getBoundingClientRect(); const frame=e.currentTarget.closest('[data-frame]'); const fr=frame?frame.getBoundingClientRect():{top:0,left:0}; this.setState({openDD:{id,options,top:r.bottom-fr.top+4,left:r.left-fr.left,width:Math.max(r.width,menuW||0)}}); }
+  next(){ const p=this.state.persona; const max=this.P()[p].steps.length-1; this.setState(s=>({step:{...s.step,[p]:Math.min(max,s.step[p]+1)}})); }
+  back(){ const p=this.state.persona; this.setState(s=>({step:{...s.step,[p]:Math.max(0,s.step[p]-1)}})); }
+  reset(){ const p=this.state.persona; this.setState(s=>({step:{...s.step,[p]:0},booked:false,walkInAdded:false,openDD:null,customRow:null,published:false,customOpened:false,bk:{who:'self',hc:'',clinic:null,date:11,time:null},patientBooked:false,hold:60,expired:false,nurseForm:{name:'Robin Diaz',hc:'',type:'Pap Smear'},nurseCI:{}})); }
+
+  renderVals(){
+    const P=this.P(); const pk=this.state.persona; const cur=P[pk]; const step=this.state.step[pk];
+    const meta={
+      manager:{accent:'#005FB2',bg:'#eef3fb',avatar:(window.__resources&&window.__resources.smAppy)||'assets/sm/appy.png',tags:['Clinic admin','Scheduling'],intro:"Runs a doctor\u2019s clinic and owns the appointment schedule - if it isn\u2019t published, nobody can book.",points:[['📊','Reviews the clinic dashboard'],['🗓️','Publishes bookable schedules'],['📅','Keeps the calendar accurate']]},
+      patient:{accent:'#4d7a00',bg:'#eef7df',avatar:(window.__resources&&window.__resources.smAstro)||'assets/sm/astro.png',tags:['Invited by NLHS','Pap smear','Age 42'],intro:"The same Aalayiah from Trevor’s eligible cohort - now invited by letter to book her cervical screening. Aalayiah books her Pap smear test online at a nearby facility using the citizen portal of Appointment Connect.",points:[['✉️','Got her invitation letter'],['🔎','Finds a nearby facility'],['🎉','Books online via the portal']]},
+      nurse:{accent:'#6b3fd0',bg:'#f3eefe',avatar:(window.__resources&&window.__resources.smCodey)||'assets/sm/codey.png',tags:['Daysheet','Walk-ins'],intro:"Runs the day from the daysheet - booked patients, walk-ins and live wait times in one view.",points:[['✅','Checks patients in'],['🚶','Adds walk-ins to the queue'],['⏱️','Watches average wait time']]},
+    };
+    const personas=Object.keys(P).map(k=>{
+      const on=k===pk; const m=meta[k];
+      return {key:k, name:P[k].name, role:P[k].role, slotId:'appt_'+k, initials:P[k].initials, active:on,
+        onSelect:()=>this.setPersona(k),
+        cardStyle:`display:flex;flex-direction:column;padding:11px 12px;border-radius:12px;border:1px solid ${on?m.accent:'#e7eaef'};background:${on?'#fff':'transparent'};box-shadow:${on?'0 10px 24px -16px rgba(0,95,178,0.55)':'none'};transition:border-color .2s,box-shadow .2s;`,
+        chev:on?'▲':'▼', chevStyle:`color:${on?m.accent:'#c3c8d0'};font-size:10px;flex:none;`,
+        tags:m.tags, tagStyle:`background:${m.bg};color:${m.accent};font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;`,
+        avatar:m.avatar, avatarBg:m.bg,
+        intro:m.intro, points:m.points.map(p=>({icon:p[0],text:p[1]})),
+        badgeStyle:`width:23px;height:23px;border-radius:7px;background:${m.bg};display:flex;align-items:center;justify-content:center;font-size:12px;flex:none;`};
+    });
+    const jr=cur.journey||cur.steps.map((s,i)=>[['①','②','③','④','⑤'][i],s]);
+    const journey=jr.map((n,i)=>{
+      const done=i<step, active=i===step;
+      const c=done?'#86bc25':active?'#005FB2':'#cdd3db';
+      return {icon:n[0],label:n[1],
+        lineStyle:`position:absolute;top:15px;left:-50%;width:100%;height:2px;background:${i===0?'transparent':(i<=step?'#86bc25':'#e3e7ec')};z-index:0;`,
+        nodeStyle:`position:relative;z-index:1;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:${active?'#005FB2':done?'#eef7df':'#fff'};border:2px solid ${c};color:${active?'#fff':'#16181d'};`,
+        labelStyle:`margin-top:8px;font-size:11px;line-height:1.3;max-width:88px;color:${active?'#16181d':'#8a8f99'};font-weight:${active?'700':'500'};`};
+    });
+    return {
+      personas, activeName:cur.name, activeBlurb:cur.blurb, journey,
+      showHeader: pk!=='patient',
+      orgName: 'West End Medical Clinic',
+      headerAvatar: meta[pk].avatar, headerAvatarBg: meta[pk].bg,
+      stepNum:step+1, stepTotal:cur.steps.length,
+      backStyle:`font-size:12px;font-weight:600;cursor:${step>0?'pointer':'default'};color:${step>0?'#005FB2':'#c3c8d0'};`,
+      onBack:()=>this.back(), onReset:()=>this.reset(),
+      screen: this.renderScreen(pk, step),
+      screenModal: this.renderScreenModal(),
+    };
+  }
+
+  // ---- UI helpers (React.createElement) ----
+  h(tag,props,...kids){ return React.createElement(tag,props,...kids); }
+  pad(extra){ return Object.assign({padding:'18px 20px',fontFamily:"'Open Sans',system-ui,sans-serif"},extra||{}); }
+  cta(label,onClick,hint){
+    return this.h('button',{onClick,style:{background:'#005FB2',color:'#fff',border:'none',borderRadius:'6px',padding:'10px 22px',fontSize:'13px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',animation:hint?'pulseHint 1.8s infinite':'none'}},label);
+  }
+  ghost(label,onClick){ return this.h('button',{onClick,style:{background:'#fff',color:'#005FB2',border:'1px solid #c6d6e8',borderRadius:'6px',padding:'9px 18px',fontSize:'13px',fontWeight:600,cursor:'pointer',fontFamily:'inherit'}},label); }
+  title(t,sub){ return this.h('div',{style:{marginBottom:'14px'}}, this.h('div',{style:{fontSize:'16px',fontWeight:800,letterSpacing:'-0.01em'}},t), sub?this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginTop:'2px'}},sub):null); }
+  bar(){ return this.h('div',{style:{position:'absolute',bottom:0,left:0,right:0,padding:'12px 20px',borderTop:'1px solid #eef0f3',background:'#fff',display:'flex',justifyContent:'flex-end',gap:'10px'}}, ...arguments[0]||[]); }
+
+  renderScreenModal(){
+    return this.ddOverlay() || (this.state.customRow ? this.customModal(this.state.customRow) : null);
+  }
+
+  renderScreen(pk, step){
+    if(pk==='manager') return this.scrManager(step);
+    if(pk==='patient') return this.scrPatient(step);
+    return this.scrNurse(step);
+  }
+
+  wrap(children, footer){
+    return this.h('div',{style:{position:'relative',minHeight:'100%',display:'flex',flexDirection:'column'}},
+      this.h('div',{style:Object.assign(this.pad({}),{flex:'1'})}, ...children),
+      footer?this.h('div',{style:{position:'sticky',bottom:0,left:0,right:0,padding:'12px 20px',borderTop:'1px solid #eef0f3',background:'rgba(255,255,255,0.97)',backdropFilter:'blur(6px)',WebkitBackdropFilter:'blur(6px)',display:'flex',justifyContent:'flex-end',gap:'10px',alignItems:'center',zIndex:6}}, ...footer):null
+    );
+  }
+
+  // ===== DANA - tabbed clinic console =====
+  scrManager(step){
+    const tabs=['Dashboard','Clinic Profile','Scheduler','Clinic Calendar'];
+    const tour=this.tour();
+    const tabPulse=[false, tour.profileTab, tour.schedulerTab, tour.calendarTab];
+    const tabBar=this.h('div',{style:{display:'flex',gap:'2px',borderBottom:'1px solid #e3e3e3',padding:'0 6px',background:'#fff',flex:'none'}},
+      ...tabs.map((t,i)=>this.h('div',{key:i,onClick:()=>this.goTab(i),style:{padding:'11px 14px',fontSize:'12px',cursor:'pointer',borderBottom:'2px solid '+(i===step?'#0f7bd4':'transparent'),color:i===step?'#16181d':'#61656e',fontWeight:i===step?700:500,whiteSpace:'nowrap',borderRadius:'7px 7px 0 0',animation:tabPulse[i]?'pulseHint 1.6s infinite':'none'}},t)));
+    let body;
+    if(step===0) body=this.mgrDashboard();
+    else if(step===1) body=this.mgrProfile();
+    else if(step===2) body=this.mgrScheduler();
+    else body=this.mgrCalendar();
+    return this.h(React.Fragment,null,
+      this.h('div',{style:{display:'flex',flexDirection:'column',height:'100%'}},
+        tabBar,
+        this.h('div',{style:{flex:1,overflowY:'auto',padding:'16px 18px'}}, body)),
+      this.ddOverlay());
+  }
+
+  cardHead(icon,iconBg,title,actions){
+    return this.h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',background:'#f3f3f3',padding:'10px 14px',borderBottom:'1px solid #e3e3e3'}},
+      this.h('div',{style:{display:'flex',alignItems:'center',gap:'10px'}},
+        this.h('div',{style:{width:'26px',height:'26px',borderRadius:'50%',background:iconBg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px'}},icon),
+        this.h('div',{style:{fontSize:'13.5px',fontWeight:700}},title)),
+      actions||null);
+  }
+
+  mgrDashboard(){
+    const avail=this.state.sched.filter(r=>r.status==='Active').map(r=>({day:r.short,slots:Math.max(0,Math.round((+r.cap)-r.booked)),type:'Pap Smear'}));
+    const booked=[['Mon 11','Avery Chen','Pap Smear','9:00 AM'],['Mon 11','Jordan Blake','Pap Smear','9:30 AM'],['Wed 13','Sam Rivera','Colonoscopy','10:20 AM'],['Thu 14','Riya Patel','Pap Smear','11:00 AM']];
+    const totAvail=avail.reduce((a,b)=>a+b.slots,0);
+    const totBooked=this.state.sched.reduce((a,b)=>a+(b.status==='Active'?b.booked:0),0);
+    return this.h('div',null,
+      this.h('div',{style:{fontSize:'15px',fontWeight:800,marginBottom:'12px'}},'West End Medical Clinic'),
+      this.h('div',{style:{display:'flex',gap:'10px',marginBottom:'14px'}},
+        this.statCard(String(totAvail),'Slots available'),this.statCard(String(totBooked),'Booked this week'),this.statCard('5','Active days')),
+      this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'14px'}},
+        // Card: appointments available (table list)
+        this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+          this.cardHead('👑','#f5a623','Appointments available'),
+          this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1.3fr 0.8fr',background:'#fafbfc',borderBottom:'1px solid #eef0f3',fontSize:'10.5px',fontWeight:700,color:'#3a3e47'}},
+            ...['Day','Type','Open'].map((c,i)=>this.h('div',{key:i,style:{padding:'7px 11px'}},c))),
+          ...avail.map((r,i)=>this.h('div',{key:i,style:{display:'grid',gridTemplateColumns:'1fr 1.3fr 0.8fr',borderBottom:'1px solid #f1f3f6',fontSize:'11.5px',alignItems:'center'}},
+            this.h('div',{style:{padding:'7px 11px',fontWeight:600}},r.day),
+            this.h('div',{style:{padding:'7px 11px',color:'#4a4e57'}},r.type),
+            this.h('div',{style:{padding:'7px 11px'}},this.badge(String(r.slots),'#eef7df','#3d6b00'))))),
+        // Card: appointments booked (table list)
+        this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+          this.cardHead('👑','#8e6fe0','Appointments booked'),
+          this.h('div',{style:{display:'grid',gridTemplateColumns:'0.7fr 1.4fr 0.9fr',background:'#fafbfc',borderBottom:'1px solid #eef0f3',fontSize:'10.5px',fontWeight:700,color:'#3a3e47'}},
+            ...['Day','Patient','Time'].map((c,i)=>this.h('div',{key:i,style:{padding:'7px 11px'}},c))),
+          ...booked.map((r,i)=>this.h('div',{key:i,style:{display:'grid',gridTemplateColumns:'0.7fr 1.4fr 0.9fr',borderBottom:'1px solid #f1f3f6',fontSize:'11.5px',alignItems:'center'}},
+            this.h('div',{style:{padding:'7px 11px',fontWeight:600}},r[0]),
+            this.h('div',{style:{padding:'7px 11px',color:'#0b66c2'}},r[1]),
+            this.h('div',{style:{padding:'7px 11px',color:'#4a4e57'}},r[3])))))
+    );
+  }
+
+  mgrProfile(){
+    const f=(l,v,full)=>this.h('div',{style:{gridColumn:full?'1 / -1':'auto'}},
+      this.h('div',{style:{fontSize:'11px',color:'#8a8f99',marginBottom:'4px'}},l),
+      this.h('div',{style:{fontSize:'13px',color:'#16181d',borderBottom:'1px solid #eef0f3',paddingBottom:'7px'}},v));
+    const types=['🧫 Pap Smear','🔬 Colonoscopy','🩻 X-Ray','🩺 Regular Check-up'];
+    return this.h('div',null,
+      this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+        this.cardHead('🏥','#0b66c2','Clinic Profile',this.h('div',{style:{display:'flex',gap:'6px'}},
+          this.h('span',{style:{border:'1px solid #d6d9de',color:'#0b66c2',padding:'5px 12px',fontSize:'11.5px',borderRadius:'4px',fontWeight:600}},'Edit'))),
+        this.h('div',{style:{padding:'16px 18px'}},
+          this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px 22px'}},
+            f('Clinic name','West End Medical Clinic'),
+            f('Facility type','Doctor\u2019s Clinic · Family Practice'),
+            f('Description','Community doctor\u2019s clinic offering screening and general appointments. The clinic manager publishes appointment schedules so patients and CRM agents can book into available slots.',true),
+            f('Status','Active'),
+            f('Region','Eastern Health · NL'),
+            f('Address','220 Water Street, St. John\u2019s, NL'),
+            f('Phone','+1 709 555 0148'),
+            this.h('div',{style:{gridColumn:'1 / -1'}},
+              this.h('div',{style:{fontSize:'11px',color:'#8a8f99',marginBottom:'7px'}},'Appointment types offered'),
+              this.h('div',{style:{display:'flex',flexWrap:'wrap',gap:'7px'}},
+                ...types.map((t,i)=>this.h('span',{key:i,style:{background:'#eef3fb',color:'#1f4fa8',fontSize:'12px',fontWeight:600,padding:'5px 12px',borderRadius:'20px'}},t)))))))
+    );
+  }
+
+  // --- React custom dropdown (matches design system Dropdown) ---
+  ddTrigger(id,label,options,small,menuW){
+    const open=this.state.openDD&&this.state.openDD.id===id;
+    const pad=small?'5px 8px':'7px 10px';
+    return this.h('div',{onClick:(e)=>this.ddOpen(e,id,options,menuW),style:{display:'inline-flex',alignItems:'center',justifyContent:'space-between',gap:'6px',border:'1px solid '+(open?'#0f7bd4':'#d6d9de'),borderRadius:'6px',padding:pad,fontSize:small?'11.5px':'12.5px',cursor:'pointer',background:'#fff',userSelect:'none',whiteSpace:'nowrap',minWidth:small?'52px':'auto'}},
+      this.h('span',null,label),this.h('span',{style:{color:'#8a8f99',fontSize:'9px'}},open?'▲':'▼'));
+  }
+  ddOverlay(){
+    const d=this.state.openDD; if(!d) return null;
+    return this.h('div',{onClick:()=>this.setState({openDD:null}),style:{position:'absolute',inset:0,zIndex:9998}},
+      this.h('div',{onClick:e=>e.stopPropagation(),style:{position:'absolute',top:d.top+'px',left:d.left+'px',minWidth:d.width+'px',background:'#fff',border:'1px solid #d6d9de',borderRadius:'6px',boxShadow:'0 12px 30px -8px rgba(16,26,44,0.3)',zIndex:9999,maxHeight:'220px',overflowY:'auto'}},
+        ...d.options.map((o,i)=>this.h('div',{key:i,onClick:()=>{o.onClick();this.setState({openDD:null});},onMouseEnter:e=>{e.currentTarget.style.background='#eef3fb';e.currentTarget.style.color='#005FB2';},onMouseLeave:e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='#3a3e47';},style:{padding:'8px 12px',cursor:'pointer',fontSize:'12.5px',whiteSpace:'nowrap',color:'#3a3e47'}},o.label))));
+  }
+
+  mgrScheduler(){
+    const types=[['pap','🧫 Pap Smear'],['colon','🔬 Colonoscopy'],['xray','🩻 X-Ray'],['urine','🧪 Urine test'],['checkup','🩺 Regular Check-up']];
+    const curType=types.find(t=>t[0]===this.state.apptType)||types[0];
+    // validation
+    const errs=[];
+    const rowErr={};
+    this.state.sched.forEach(r=>{
+      const sM=this.timeMin(r.start,r.sa), eM=this.timeMin(r.end,r.ea);
+      let e='';
+      if(sM!=null&&eM!=null&&eM<=sM) e='End time should be after start time';
+      else if(r.cap!==''&&(isNaN(+r.cap)||+r.cap<0)) e='Capacity per block cannot be negative';
+      else if(sM!=null&&eM!=null&&eM>sM&&!isNaN(+r.dur)&&+r.dur>(eM-sM)) e='Duration per block exceeds the time allotted for the block';
+      if(e){ rowErr[r.id]=e; errs.push({day:r.day,err:e}); }
+    });
+    const amOpts=(id,field)=>['AM','PM'].map(v=>({label:v,onClick:()=>this.editSched(id,field,v)}));
+    const stOpts=(id)=>['Active','Inactive'].map(v=>({label:v,onClick:()=>this.editSched(id,'status',v)}));
+    const inp=(val,onCh,err,w)=>this.h('input',{value:val,onChange:onCh,style:{width:(w||44)+'px',border:'1px solid '+(err?'#C23934':'#d6d9de'),borderRadius:'4px',padding:'4px 5px',fontSize:'11.5px',fontFamily:'inherit',background:err?'#fdeef0':'#fff'}});
+    const cols='0.85fr 1.35fr 1.35fr 0.55fr 0.55fr 1.05fr 0.5fr 0.9fr';
+    const tour=this.tour();
+    const firstId=this.state.sched[0]?this.state.sched[0].id:null;
+    const firstCustomId=(this.state.sched.find(r=>r.custom)||{}).id;
+    return this.h('div',{style:{position:'relative'}},
+      this.state.publishedToast? this.h('div',{style:{position:'sticky',top:'0',height:'0',zIndex:40,pointerEvents:'none'}},
+        this.h('div',{style:{position:'absolute',top:'14px',left:'50%',transform:'translateX(-50%)',whiteSpace:'nowrap'}},
+          this.h('div',{style:{display:'inline-flex',alignItems:'center',gap:'9px',background:'#04844B',color:'#fff',padding:'10px 18px',borderRadius:'24px',fontSize:'12.5px',fontWeight:700,boxShadow:'0 16px 34px -10px rgba(4,132,75,0.6)',whiteSpace:'nowrap'}},this.h('span',{style:{fontSize:'14px'}},'✓'),this.h('span',null,'Schedule published - slots are now live')))) : null,
+      this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'10px',background:'#f3f3f3',padding:'12px 16px',borderBottom:'1px solid #e3e3e3'}},
+          this.h('div',{style:{width:'28px',height:'28px',borderRadius:'7px',background:'#005FB2',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px'}},'🗓️'),
+          this.h('div',{style:{fontSize:'14px',fontWeight:700}},'Scheduler - appointment blocks')),
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'10px',padding:'10px 16px',borderBottom:'1px solid #eef0f3',background:'#fff',flexWrap:'wrap'}},
+          this.h('span',{style:{fontSize:'12px',fontWeight:700,color:'#8a8f99'}},'Schedule week'),
+          this.h('div',{style:{display:'flex',alignItems:'center',border:'1px solid #d6d9de',borderRadius:'6px',overflow:'hidden'}},
+            this.h('span',{onClick:()=>this.weekStep(-1),style:{padding:'6px 10px',cursor:'pointer',color:'#005FB2',borderRight:'1px solid #eef0f3'}},'‹'),
+            this.h('span',{style:{padding:'6px 14px',fontSize:'12.5px',fontWeight:600}},this.state.week+', 2024'),
+            this.h('span',{onClick:()=>this.weekStep(1),style:{padding:'6px 10px',cursor:'pointer',color:'#005FB2',borderLeft:'1px solid #eef0f3'}},'›')),
+          this.h('div',{style:{display:'flex',alignItems:'center',gap:'6px',marginLeft:'auto'}},this.h('span',{style:{fontSize:'12px',color:'#8a8f99'}},'Type'),this.ddTrigger('type',curType[1],types.map(t=>({label:t[1],onClick:()=>this.setState({apptType:t[0]})})),false,168))),
+        errs.length? this.h('div',{style:{background:'#C23934',color:'#fff',padding:'10px 16px',borderBottom:'1px solid #a92f2b'}},
+          this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',fontSize:'12.5px',fontWeight:700}},this.h('span',{style:{fontSize:'14px'}},'⚠'),this.h('span',null,'Scheduler validation error')),
+          ...errs.slice(0,2).map((e,i)=>this.h('div',{key:i,style:{fontSize:'12px',marginTop:'3px',opacity:0.95}},this.h('strong',null,e.day),' - '+e.err))) : null,
+        this.h('div',{style:{overflowX:'auto',paddingBottom:'14px'}},
+          this.h('div',{style:{minWidth:'780px'}},
+            this.h('div',{style:{display:'grid',gridTemplateColumns:cols,background:'#fafbfc',borderBottom:'1px solid #e3e3e3',fontSize:'10px',fontWeight:700,color:'#3a3e47'}},
+              ...['Date','Start','End','Dur.','Cap.','Custom block','Booked','Status'].map((c,i)=>this.h('div',{key:i,style:{padding:'7px 9px'}},c))),
+            ...this.state.sched.map(r=>{
+              const er=rowErr[r.id];
+              return this.h('div',{key:r.id,style:{display:'grid',gridTemplateColumns:cols,borderBottom:'1px solid #f1f3f6',fontSize:'11px',alignItems:'center'}},
+                this.h('div',{style:{padding:'6px 9px'}},this.h('span',{style:{background:'#eef3fb',color:'#005FB2',borderRadius:'20px',padding:'3px 9px',fontSize:'10.5px',fontWeight:600,whiteSpace:'nowrap'}},r.short)),
+                this.h('div',{style:{padding:'6px 9px',display:'flex',gap:'3px',alignItems:'center'}},inp(r.start,e=>this.editSched(r.id,'start',e.target.value),er),this.ddTrigger('sa'+r.id,r.sa,amOpts(r.id,'sa'),true)),
+                this.h('div',{style:{padding:'6px 9px',display:'flex',gap:'3px',alignItems:'center'}},inp(r.end,e=>this.editSched(r.id,'end',e.target.value),er),this.ddTrigger('ea'+r.id,r.ea,amOpts(r.id,'ea'),true)),
+                this.h('div',{style:{padding:'6px 9px'}},inp(r.dur,e=>this.editSched(r.id,'dur',e.target.value),er,38)),
+                this.h('div',{style:{padding:'6px 9px'}},inp(r.cap,e=>this.editSched(r.id,'cap',e.target.value),er,38)),
+                this.h('div',{style:{padding:'6px 9px',display:'flex',gap:'4px',alignItems:'center'}},
+                  this.h('span',{onClick:()=>this.setCustom(r.id,true),style:{padding:'3px 8px',borderRadius:'20px',cursor:'pointer',fontSize:'10.5px',fontWeight:600,background:r.custom?'#005FB2':'#eef0f2',color:r.custom?'#fff':'#8a8f99',animation:(tour.yesBtn&&r.id===firstId)?'pulseHint 1.5s infinite':'none'}},'Yes'),
+                  this.h('span',{onClick:()=>this.setCustom(r.id,false),style:{padding:'3px 8px',borderRadius:'20px',cursor:'pointer',fontSize:'10.5px',fontWeight:600,background:!r.custom?'#3a3e47':'#eef0f2',color:!r.custom?'#fff':'#8a8f99'}},'No'),
+                  r.custom?this.h('span',{onClick:()=>this.openCustom(r.id),title:'Edit blocks',style:{cursor:'pointer',color:'#005FB2',fontSize:'12px',borderRadius:'50%',animation:(tour.pencil&&r.id===firstCustomId)?'pulseHint 1.5s infinite':'none'}},'✏️'):null),
+                this.h('div',{style:{padding:'6px 9px',color:'#8a8f99'}},String(r.booked)),
+                this.h('div',{style:{padding:'6px 9px'}},this.ddTrigger('st'+r.id,r.status,stOpts(r.id),true,82)));
+            }))),
+      ),
+      this.h('div',{style:{display:'flex',alignItems:'center',gap:'12px',marginTop:'14px'}},
+        this.h('span',{style:{fontSize:'11.5px',color:'#8a8f99',marginRight:'auto'}},errs.length?'Fix the validation error to publish.':'Publishing makes these blocks bookable and adds them to the clinic calendar.'),
+        this.h('button',{onClick:()=>errs.length?null:this.publish(),style:{background:errs.length?'#9bb6d6':'#005FB2',color:'#fff',border:'none',borderRadius:'6px',padding:'9px 20px',fontSize:'13px',fontWeight:700,cursor:errs.length?'not-allowed':'pointer',fontFamily:'inherit',animation:(tour.publish&&!errs.length)?'pulseHint 1.9s infinite':'none'}},'Publish'))
+    );
+  }
+  customModal(){
+    const id=this.state.customRow; if(!id) return null;
+    const row=this.state.sched.find(r=>r.id===id); if(!row) return null;
+    const amOpts=(idx,field)=>['AM','PM'].map(v=>({label:v,onClick:()=>this.editBlock(id,idx,field,v)}));
+    return this.h('div',{onClick:()=>this.closeCustom(),style:{position:'absolute',inset:0,background:'rgba(18,28,46,0.5)',zIndex:9990,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}},
+      this.h('div',{onClick:e=>e.stopPropagation(),style:{background:'#fff',borderRadius:'8px',width:'460px',maxWidth:'100%',boxShadow:'0 30px 80px -20px rgba(0,0,0,0.5)',overflow:'hidden',display:'flex',flexDirection:'column',maxHeight:'100%'}},
+        this.h('div',{style:{textAlign:'center',fontSize:'14px',fontWeight:600,padding:'13px',borderBottom:'1px solid #eef0f3'}},'Custom blocks - '+row.day),
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'0.6fr 1.5fr 1.5fr 0.4fr',background:'#fafbfc',borderBottom:'1px solid #e3e3e3',fontSize:'10.5px',fontWeight:700,color:'#3a3e47'}},
+          ...['Block','Start','End',''].map((c,i)=>this.h('div',{key:i,style:{padding:'8px 12px'}},c))),
+        ...(row.blocks||[]).map((b,idx)=>this.h('div',{key:idx,style:{display:'grid',gridTemplateColumns:'0.6fr 1.5fr 1.5fr 0.4fr',borderBottom:'1px solid #f1f3f6',fontSize:'12px',alignItems:'center'}},
+          this.h('div',{style:{padding:'8px 12px'}},'Block '+(idx+1)),
+          this.h('div',{style:{padding:'8px 12px',display:'flex',gap:'4px',alignItems:'center'}},this.h('input',{value:b.start,onChange:e=>this.editBlock(id,idx,'start',e.target.value),style:{width:'46px',border:'1px solid #d6d9de',borderRadius:'4px',padding:'5px',fontSize:'12px',fontFamily:'inherit'}}),this.ddTrigger('cb_sa'+idx,b.sa,amOpts(idx,'sa'),true)),
+          this.h('div',{style:{padding:'8px 12px',display:'flex',gap:'4px',alignItems:'center'}},this.h('input',{value:b.end,onChange:e=>this.editBlock(id,idx,'end',e.target.value),style:{width:'46px',border:'1px solid #d6d9de',borderRadius:'4px',padding:'5px',fontSize:'12px',fontFamily:'inherit'}}),this.ddTrigger('cb_ea'+idx,b.ea,amOpts(idx,'ea'),true)),
+          this.h('div',{style:{padding:'8px 12px'}},this.h('span',{onClick:()=>this.rmBlock(id,idx),style:{cursor:'pointer',color:'#C23934',fontSize:'15px'}},'×')))),
+        this.h('div',{style:{padding:'10px 16px',borderTop:'1px solid #eef0f3'}},this.h('span',{onClick:()=>this.addBlock(id),style:{cursor:'pointer',color:'#005FB2',fontSize:'12.5px',fontWeight:600}},'+ Add block (start & end time)')),
+        this.h('div',{style:{display:'flex',justifyContent:'flex-end',gap:'10px',padding:'12px 16px',background:'#fafbfc',borderTop:'1px solid #eef0f3'}},
+          this.ghost('Cancel',()=>this.closeCustom()),this.cta('Save blocks',()=>this.closeCustom()))));
+  }
+
+  mgrCalendar(){
+    const defs=[['colon','🔬','Colonoscopy','#2f6fd0',this.chip('#e8f0ff','#b9d3ff','#1f4fa8')],['pap','🧫','Pap Smear','#5fa800',this.chip('#eef7df','#cbe39a','#4d7a00')],['xray','🩻','X-Ray','#d44ad4',this.chip('#fbe6fb','#e9b3e9','#9a3f9a')],['urine','🧪','Urine test','#e08a00',this.chip('#ffeccf','#f3c98a','#9a5a00')],['checkup','🩺','Check-up','#5fa800',this.chip('#eef7df','#cbe39a','#4d7a00')]];
+    const dmap={}; defs.forEach(d=>dmap[d[0]]=d);
+    const F=this.state.calFilt;
+    const days=this.state.sched.map(r=>r.short);
+    // seed pre-existing blocks (non-pap) + published pap blocks
+    const events=[]; // {dayIdx, band, type, sub}
+    const seed=[[0,0,'colon','0/2'],[2,1,'xray','1/2'],[3,0,'urine','2/2'],[1,2,'checkup','0/2']];
+    seed.forEach(s=>events.push({d:s[0],band:s[1],type:s[2],sub:s[3]}));
+    if(this.state.published&&this.state.publishedBlocks){
+      const t=this.state.publishedType||'pap';
+      this.state.publishedBlocks.forEach(b=>events.push({d:b.d,band:b.band,type:t,sub:b.sub}));
+    }
+    const bands=['9–11 AM','11 AM–1 PM','1–3 PM'];
+    const cellW='repeat('+days.length+',1fr)';
+    return this.h('div',null,
+      this.h('div',{style:{fontSize:'15px',fontWeight:800,marginBottom:'4px'}},'Clinic Calendar'),
+      this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginBottom:'12px'}},'Week of Oct 11'+(this.state.published?' · published Pap Smear blocks now shown':'')),
+      this.h('div',{style:{display:'flex',flexWrap:'wrap',gap:'7px',marginBottom:'12px'}},
+        ...defs.map((d,i)=>this.h('div',{key:i,onClick:()=>this.toggleFilt(d[0]),style:{display:'flex',alignItems:'center',gap:'6px',padding:'5px 11px',border:'1px solid '+(F[d[0]]?'#c6d6e8':'#e7eaef'),borderRadius:'20px',cursor:'pointer',fontSize:'11px',fontWeight:600,background:F[d[0]]?'#fff':'#f7f8fa',color:F[d[0]]?'#3a3e47':'#aeb3bb'}},
+          this.h('span',{style:{width:'8px',height:'8px',borderRadius:'50%',background:d[3],opacity:F[d[0]]?1:0.4}}),this.h('span',null,d[1]+' '+d[2]),this.h('span',null,F[d[0]]?'☑':'☐')))),
+      this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+        this.cardHead('📅','#0b66c2','Clinic Calendar - week of Oct 11'),
+        this.h('div',{style:{overflowX:'auto',paddingBottom:'14px'}},
+          this.h('div',{style:{minWidth:'620px'}},
+            this.h('div',{style:{display:'grid',gridTemplateColumns:'70px '+cellW,fontSize:'10px'}},
+              this.h('div',{style:{background:'#fafbfc',borderRight:'1px solid #eef0f3',borderBottom:'1px solid #eef0f3'}}),
+              ...days.map((d,i)=>this.h('div',{key:i,style:{padding:'7px',textAlign:'center',fontWeight:700,color:'#3a3e47',borderRight:'1px solid #eef0f3',borderBottom:'1px solid #eef0f3',background:'#fafbfc'}},d)),
+              ...bands.map((bnd,bi)=>this.h(React.Fragment,{key:bi},
+                this.h('div',{style:{padding:'8px 6px',color:'#8a8f99',borderRight:'1px solid #eef0f3',borderBottom:'1px solid #f1f3f6'}},bnd),
+                ...days.map((d,di)=>{
+                  const ev=events.find(e=>e.d===di&&e.band===bi&&F[e.type]);
+                  return this.h('div',{key:di,style:{padding:'5px',borderRight:'1px solid #eef0f3',borderBottom:'1px solid #f1f3f6',minHeight:'42px'}},
+                    ev?this.h('div',{style:dmap[ev.type][4]},dmap[ev.type][1]+' '+dmap[ev.type][2],this.h('br'),this.h('span',{style:{fontWeight:400,opacity:0.7}},ev.sub+' booked')):null);
+                })))))))
+    );
+  }
+  chip(bg,bd,col){ return {background:bg,border:'1px solid '+bd,borderRadius:'6px',padding:'4px 5px',fontSize:'9.5px',fontWeight:600,color:col,lineHeight:1.2}; }
+
+  scrPatient(step){
+    const next=()=>this.next();
+    if(step===0){
+      return this.wrap([
+        this.title('Your invitation','Cervical Screening Program · NLHS'),
+        this.h('div',{style:{background:'#eef0f3',borderRadius:'10px',padding:'14px',border:'1px solid #e3e3e3'}},
+          this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',marginBottom:'10px'}},
+            this.h('span',{style:{background:'#C23934',color:'#fff',fontSize:'9px',fontWeight:800,padding:'2px 6px',borderRadius:'3px'}},'PDF'),
+            this.h('span',{style:{fontSize:'11.5px',color:'#61656e',fontWeight:600}},'Pap_Smear_Invitation_Aalayiah_Murphy.pdf')),
+          this.h('div',{style:{background:'#fff',borderRadius:'5px',boxShadow:'0 6px 18px -10px rgba(16,26,44,0.4)',padding:'18px 20px',fontSize:'11px',lineHeight:1.55,color:'#2a2e36'}},
+            this.h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',borderBottom:'2px solid #005FB2',paddingBottom:'8px',marginBottom:'10px'}},
+              this.h('div',null,this.h('div',{style:{fontSize:'12px',fontWeight:800,color:'#16325c'}},'Newfoundland & Labrador'),this.h('div',{style:{fontSize:'10px',color:'#8a8f99'}},'Health Services · Cervical Screening Program')),
+              this.h('div',{style:{fontSize:'9px',color:'#8a8f99',textAlign:'right'}},'Oct 8, 2024')),
+            this.h('div',{style:{fontWeight:700,marginBottom:'6px'}},'Dear Aalayiah Murphy,'),
+            this.h('div',{style:{marginBottom:'7px'}},'Our records show you are now ',this.h('strong',null,'42'),' and due for cervical cancer screening. You are ',this.h('strong',{style:{color:'#04844B'}},'eligible'),' for a free ',this.h('strong',null,'Pap smear'),' under the provincial screening program.'),
+            this.h('div',{style:{marginBottom:'7px'}},'Please book an appointment at a participating clinic at your earliest convenience. Early screening saves lives.'),
+            this.h('div',{style:{marginTop:'12px',paddingTop:'8px',borderTop:'1px solid #eef0f3'}},this.h('div',{style:{fontWeight:700}},'Trevor Hollett'),this.h('div',{style:{fontSize:'9.5px',color:'#8a8f99'}},'Program Manager, Cervical Screening · NLHS'))))
+      ],[ this.cta('Book my Pap smear',next,true) ]);
+    }
+    if(step===1){
+      const w=this.state.bk.who;
+      const card=(id,icon,h4,p)=>this.h('div',{onClick:()=>this.bkSet('who',id),style:{flex:1,border:'1.5px solid '+(w===id?'#005FB2':'#e7eaef'),background:w===id?'#f3f8ff':'#fff',borderRadius:'12px',padding:'16px',cursor:'pointer',textAlign:'center'}},
+        this.h('div',{style:{fontSize:'26px',marginBottom:'8px'}},icon),
+        this.h('div',{style:{fontSize:'14px',fontWeight:700,color:'#16181d'}},h4),
+        this.h('div',{style:{fontSize:'11.5px',color:'#8a8f99',marginTop:'3px'}},p));
+      return this.wrap([
+        this.title('Who is this appointment for?','Book for yourself, or someone in your care.'),
+        this.h('div',{style:{display:'flex',gap:'12px'}}, card('self','🧍','For myself','Aalayiah Murphy'), card('other','👪','For someone else','A family member or someone in your care'))
+      ],[ this.cta('Continue →',next,true) ]);
+    }
+    if(step===2){
+      return this.wrap([
+        this.title('Add your health card number','For Aalayiah Murphy.'),
+        this.h('div',null,
+          this.h('div',{style:{fontSize:'11.5px',color:'#5b5b5b',marginBottom:'5px'}},'Newfoundland & Labrador MCP number ',this.h('span',{style:{color:'#8a8f99'}},'· 12 digits')),
+          this.h('input',{value:this.state.bk.hc,onChange:e=>this.bkSet('hc',e.target.value),placeholder:'1234 5678 9012',style:{width:'100%',border:'1px solid #d6d9de',borderRadius:'8px',padding:'11px 13px',fontSize:'14px',fontFamily:'inherit'}}),
+          this.h('div',{style:{fontSize:'11px',color:'#8a8f99',marginTop:'7px'}},'Your card confirms eligibility for the free screening program.'))
+      ],[ this.ghost('← Back',()=>this.back()), this.cta('Continue →',next,true) ]);
+    }
+    if(step===3 && !this.state.patientBooked){
+      if(this.state.expired){ return this.wrap([ this.h('div',{style:{textAlign:'center',paddingTop:'26px'}},
+        this.h('div',{style:{width:'62px',height:'62px',borderRadius:'50%',background:'#fdeef0',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'28px',margin:'0 auto 14px'}},'⌛'),
+        this.h('div',{style:{fontSize:'18px',fontWeight:800,color:'#C23934'}},'Your 1-minute hold expired'),
+        this.h('div',{style:{fontSize:'13px',color:'#4a4e57',marginTop:'8px',maxWidth:'360px',margin:'8px auto 0',lineHeight:1.6}},'The slot was released back to other patients. Please book a new appointment to choose another time.')) ], [ this.cta('Book a new appointment',()=>this.setState({expired:false}),true) ]); }
+      const cl=this.clinics(); const sel=this.state.bk.clinic; const t=this.state.bk.time; const d=this.state.bk.date;
+      const days=[['Mon 11',true],['Tue 12',true],['Wed 13',true],['Thu 14',false],['Fri 15',true],['Sat 16',false],['Sun 17',false]];
+      const slots=['9:00 AM','9:30 AM','10:00 AM','11:00 AM','1:00 PM','2:30 PM'];
+      const header=this.h('div',{style:{display:'flex',alignItems:'flex-start',gap:'12px',marginBottom:'14px'}},
+        this.h('button',{onClick:()=>this.back(),style:{background:'#fff',border:'1px solid #c6d6e8',color:'#005FB2',borderRadius:'7px',padding:'6px 12px',fontSize:'12px',fontWeight:600,cursor:'pointer',fontFamily:'inherit',flex:'none',marginTop:'2px'}},'← Back'),
+        this.h('div',null,this.h('div',{style:{fontSize:'16px',fontWeight:800,letterSpacing:'-0.01em'}},'Where would you like your screening?'),this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginTop:'2px'}},'All clinics offering Pap smears near you. Select one to choose a time.')));
+      const search=this.h('div',{style:{display:'flex',gap:'8px',marginBottom:'12px'}},
+        this.h('div',{style:{flex:1,display:'flex',alignItems:'center',gap:'8px',border:'1px solid #d6d9de',borderRadius:'8px',padding:'9px 12px'}},this.h('span',{style:{color:'#8a8f99'}},'⌕'),this.h('span',{style:{fontSize:'13px',color:'#16181d'}},'A1B 1C3 · St. John’s')),
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'6px',border:'1px solid #c6d6e8',borderRadius:'8px',padding:'9px 12px',fontSize:'12px',fontWeight:600,color:'#005FB2',whiteSpace:'nowrap'}},'⌖ Use my location'));
+      const bld=[[16,22],[30,15],[55,19],[71,13],[20,64],[34,71],[62,62],[78,67],[88,40]];
+      const map=this.h('div',{style:{position:'relative',height:'150px',borderRadius:'12px',overflow:'hidden',border:'1px solid #e7eaef',background:'#e9efe8',marginBottom:'14px'}},
+        this.h('div',{style:{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(120,140,170,0.10) 1px,transparent 1px),linear-gradient(90deg,rgba(120,140,170,0.10) 1px,transparent 1px)',backgroundSize:'15px 15px'}}),
+        this.h('div',{style:{position:'absolute',left:'-12%',bottom:'-34%',width:'58%',height:'80%',background:'linear-gradient(135deg,#a9cbe8,#8db7dd)',borderRadius:'48% 52% 50% 50%',transform:'rotate(-10deg)'}}),
+        this.h('div',{style:{position:'absolute',right:'7%',top:'9%',width:'28%',height:'37%',background:'#bfe0b2',borderRadius:'12px',boxShadow:'inset 0 0 0 1px #a9d199'}}),
+        this.h('div',{style:{position:'absolute',right:'11%',top:'14%',fontSize:'12px'}},'🌳'),
+        this.h('div',{style:{position:'absolute',top:'45%',left:0,right:0,height:'9px',background:'#fff',boxShadow:'0 0 0 1px #dfe4ec'}}),
+        this.h('div',{style:{position:'absolute',top:'47.5%',left:0,right:0,height:'2px',backgroundImage:'repeating-linear-gradient(90deg,#f3b34a 0 9px,transparent 9px 20px)'}}),
+        this.h('div',{style:{position:'absolute',top:0,bottom:0,left:'40%',width:'9px',background:'#fff',boxShadow:'0 0 0 1px #dfe4ec'}}),
+        this.h('div',{style:{position:'absolute',top:'-25%',left:'5%',width:'7px',height:'150%',background:'#fff',transform:'rotate(34deg)',boxShadow:'0 0 0 1px #dfe4ec'}}),
+        ...bld.map((b,bi)=>this.h('div',{key:'bld'+bi,style:{position:'absolute',left:b[0]+'%',top:b[1]+'%',width:'8%',height:'13%',background:'#d6dde8',borderRadius:'2px',boxShadow:'inset 0 0 0 1px #c4ccda'}})),
+        ...cl.map((c,i)=>this.h('div',{key:i,onClick:()=>this.bkSet('clinic',i),title:c.name,style:{position:'absolute',left:c.x+'%',top:c.y+'%',transform:'translate(-50%,-100%)',cursor:'pointer',zIndex:i===sel?3:1}},
+          this.h('div',{style:{width:i===sel?'30px':'24px',height:i===sel?'30px':'24px',borderRadius:'50% 50% 50% 0',transform:'rotate(-45deg)',background:i===sel?'#F5A623':'#16325c',border:'2px solid #fff',boxShadow:'0 3px 8px rgba(16,26,44,0.35)',display:'flex',alignItems:'center',justifyContent:'center',animation:(sel===null&&i===0)?'pulseHint 1.9s infinite':'none'}},
+            this.h('div',{style:{transform:'rotate(45deg)',color:'#fff',fontSize:'11px',fontWeight:700}},String(i+1))))));
+      const cards=cl.map((c,i)=>{
+        const open=i===sel;
+        return this.h('div',{key:i,className:'pt-clinic',style:{border:'1.5px solid '+(open?'#005FB2':'#e7eaef'),borderRadius:'12px',overflow:'hidden',background:'#fff',marginBottom:'10px',animation:(sel===null&&i===0)?'pulseHint 1.9s infinite':'none'}},
+          this.h('div',{onClick:()=>this.bkSet('clinic',i),style:{display:'flex',alignItems:'flex-start',gap:'12px',padding:'13px 15px',cursor:'pointer',background:open?'#f3f8ff':'#fff'}},
+            this.h('div',{style:{width:'24px',height:'24px',borderRadius:'50%',background:open?'#005FB2':'#eef3fb',color:open?'#fff':'#005FB2',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:700,flex:'none',marginTop:'1px'}},String(i+1)),
+            this.h('div',{style:{flex:1,minWidth:0}},
+              this.h('div',{style:{fontSize:'14px',fontWeight:700,color:'#16181d'}},c.name),
+              this.h('div',{style:{fontSize:'11.5px',color:'#8a8f99',marginTop:'2px'}},c.addr+' · '+c.dist),
+              this.h('div',{style:{display:'flex',gap:'5px',flexWrap:'wrap',marginTop:'8px'}},...c.services.map((sv,k)=>this.h('div',{key:k,style:{background:'#eef3fb',color:'#3a5da8',fontSize:'10.5px',fontWeight:600,padding:'3px 9px',borderRadius:'6px'}},sv))),
+              this.h('div',{style:{fontSize:'11px',color:'#04844B',fontWeight:600,marginTop:'8px',display:'flex',alignItems:'center',gap:'6px'}},this.h('span',{style:{width:'6px',height:'6px',borderRadius:'50%',background:'#04844B',flex:'none'}}),c.hours)),
+            this.h('button',{className:'pt-select',onClick:(e)=>{e.stopPropagation();this.bkSet('clinic',i);},style:{background:open?'#005FB2':'#fff',color:open?'#fff':'#005FB2',border:'1.5px solid #005FB2',borderRadius:'8px',padding:'8px 16px',fontSize:'12.5px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',flex:'none',alignSelf:'center'}},open?'Selected':'Select')),
+          open?this.h('div',{style:{borderTop:'1px solid #e7eaef',padding:'14px',background:'#fbfcfe'}},
+            this.h('div',{style:{display:'flex',gap:'18px',flexWrap:'wrap'}},
+              this.h('div',{style:{flex:'1 1 230px',minWidth:'220px'}},
+                this.h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'9px'}},
+                  this.h('div',{style:{fontSize:'13px',fontWeight:800,color:'#16325c'}},'October 2024'),
+                  this.h('div',{style:{display:'flex',gap:'6px'}},this.h('div',{style:{width:'26px',height:'26px',borderRadius:'7px',border:'1px solid #e7eaef',display:'flex',alignItems:'center',justifyContent:'center',color:'#16325c',cursor:'pointer',fontSize:'13px'}},'‹'),this.h('div',{style:{width:'26px',height:'26px',borderRadius:'7px',border:'1px solid #e7eaef',display:'flex',alignItems:'center',justifyContent:'center',color:'#16325c',cursor:'pointer',fontSize:'13px'}},'›'))),
+                this.h('div',{style:{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:'2px',marginBottom:'3px'}},...['SU','MO','TU','WE','TH','FR','SA'].map((w,j)=>this.h('div',{key:j,style:{textAlign:'center',fontSize:'9px',color:'#8a8f99',fontWeight:700,padding:'3px 0'}},w))),
+                this.h('div',{style:{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:'2px'}},...this.calInfo().cells.map((dn,j)=>{ if(dn===null) return this.h('div',{key:j}); const av=this.calInfo().avail.has(dn); const isSel=d===dn; return this.h('div',{key:j,onClick:av?()=>this.bkSet('date',dn):null,style:{aspectRatio:'1',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',borderRadius:'8px',fontSize:'12px',fontWeight:600,cursor:av?'pointer':'default',background:isSel?'#16325c':'transparent',color:isSel?'#fff':(av?'#16325c':'#c3c8d0')}},this.h('span',null,String(dn)),av?this.h('span',{style:{width:'4px',height:'4px',borderRadius:'50%',background:isSel?'#fff':'#F5A623',marginTop:'1px'}}):null); }))),
+              this.h('div',{style:{flex:'1 1 200px',minWidth:'190px'}},
+                this.h('div',{style:{fontSize:'12.5px',fontWeight:700,color:'#16181d',marginBottom:'9px'}},'Times for '+this.dateLabel(d)),
+                this.h('div',{style:{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'8px'}},...slots.map((s,j)=>{ const dis=(j===1); return this.h('div',{key:j,onClick:dis?null:()=>{this.bkSet('time',s);this.startHold();},style:{padding:'11px 6px',textAlign:'center',borderRadius:'9px',border:'1.5px '+(dis?'dashed #d6d9de':'solid '+(t===s?'#16325c':(j===2?'#bcd6f3':'#e7eaef'))),background:t===s?'#16325c':'#fff',color:t===s?'#fff':(dis?'#c3c8d0':'#16181d'),fontSize:'12.5px',fontWeight:600,cursor:dis?'default':'pointer',animation:(j===2&&!t)?'pulseHint 1.8s infinite':'none'}},s); })))),
+            null
+          ):null);
+      });
+      const warn=this.state.hold<=10;
+      const toast = t ? this.h('div',{style:{position:'sticky',top:'14px',zIndex:30,marginBottom:'14px',display:'flex',alignItems:'center',gap:'10px',background:warn?'#C23934':'#16325c',color:'#fff',borderRadius:'14px',padding:'7px 14px',boxShadow:warn?'0 16px 38px -12px rgba(194,57,52,0.6)':'0 16px 36px -12px rgba(16,26,44,0.5)'}},
+        this.h('div',{style:{width:'24px',height:'24px',borderRadius:'50%',border:'2px solid rgba(255,255,255,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',fontWeight:700,flex:'none'}},String(this.state.hold)),
+        this.h('div',{style:{flex:1,fontSize:'12px',fontWeight:700}},(warn?'Hurry - ':'Slot held - ')+'0:'+String(this.state.hold).padStart(2,'0')+' left, finish to confirm')) : null;
+      const footer = t ? [
+        this.h('div',{key:'t',style:{marginRight:'auto',display:'flex',flexDirection:'column',lineHeight:1.3}},
+          this.h('span',{style:{fontSize:'10px',color:'#8a8f99',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.04em'}},'Selected time'),
+          this.h('span',{style:{fontSize:'13px',color:'#16181d',fontWeight:700}},this.dateLabel(d)+', 2024 · '+t)),
+        this.h('button',{key:'d',onClick:()=>{this.stopHold();this.bkSet('time',null);},style:{background:'#fff',color:'#C23934',border:'1.5px solid #e6b3b0',borderRadius:'6px',padding:'9px 18px',fontSize:'13px',fontWeight:600,cursor:'pointer',fontFamily:'inherit'}},'Discard'),
+        this.cta('Confirm booking',()=>{this.stopHold();this.setState(s=>({patientBooked:true,step:{...s.step,patient:4}}));},true)
+      ] : null;
+      return this.wrap([ toast, header, search, map, this.h('div',null,...cards) ], footer);
+    }
+    if(false){
+      const cl=this.clinics(); const sel=this.state.bk.clinic;
+      const map=this.h('div',{style:{position:'relative',height:'150px',borderRadius:'12px',overflow:'hidden',border:'1px solid #e7eaef',background:'linear-gradient(135deg,#eaf0f7,#dde7f2)',marginBottom:'14px'}},
+        this.h('div',{style:{position:'absolute',top:'30%',left:0,right:0,height:'2px',background:'rgba(120,140,170,0.25)'}}),
+        this.h('div',{style:{position:'absolute',top:'68%',left:0,right:0,height:'2px',background:'rgba(120,140,170,0.25)'}}),
+        this.h('div',{style:{position:'absolute',left:'30%',top:0,bottom:0,width:'2px',background:'rgba(120,140,170,0.25)'}}),
+        this.h('div',{style:{position:'absolute',left:'62%',top:0,bottom:0,width:'2px',background:'rgba(120,140,170,0.25)'}}),
+        ...cl.map((c,i)=>this.h('div',{key:i,onClick:()=>this.bkSet('clinic',i),title:c.name,style:{position:'absolute',left:c.x+'%',top:c.y+'%',transform:'translate(-50%,-100%)',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',zIndex:i===sel?3:1}},
+          this.h('div',{style:{width:i===sel?'26px':'20px',height:i===sel?'26px':'20px',borderRadius:'50% 50% 50% 0',transform:'rotate(-45deg)',background:i===sel?'#005FB2':'#8ea3c7',border:'2px solid #fff',boxShadow:'0 3px 8px rgba(16,26,44,0.3)',animation:(i===0&&sel!==0)?'pulseHint 1.8s infinite':'none'}}),
+          i===sel?this.h('div',{style:{marginTop:'3px',background:'#005FB2',color:'#fff',fontSize:'9px',fontWeight:700,padding:'2px 6px',borderRadius:'4px',whiteSpace:'nowrap'}},c.name):null)));
+      const search=this.h('div',{style:{display:'flex',gap:'8px',marginBottom:'12px'}},
+        this.h('div',{style:{flex:1,display:'flex',alignItems:'center',gap:'8px',border:'1px solid #d6d9de',borderRadius:'8px',padding:'9px 12px'}},this.h('span',{style:{color:'#8a8f99'}},'⌕'),this.h('span',{style:{fontSize:'13px',color:'#16181d'}},'A1B 1C3 · St. John’s')),
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'6px',border:'1px solid #c6d6e8',borderRadius:'8px',padding:'9px 12px',fontSize:'12px',fontWeight:600,color:'#005FB2',whiteSpace:'nowrap'}},'⌖ Use my location'));
+      return this.wrap([
+        this.title('Where would you like your screening?','All clinics offering Pap smears near you. Pick a pin or a card.'),
+        search, map,
+        this.h('div',{style:{display:'flex',flexDirection:'column',gap:'9px'}},
+          ...cl.map((c,i)=>this.h('div',{key:i,onClick:()=>{this.bkSet('clinic',i);next();},style:{display:'flex',justifyContent:'space-between',alignItems:'center',border:'1.5px solid '+(i===sel?'#005FB2':'#e7eaef'),borderRadius:'10px',padding:'12px 14px',cursor:'pointer',background:i===sel?'#f3f8ff':'#fff',animation:(i===0)?'pulseHint 1.9s infinite':'none'}},
+            this.h('div',null,
+              this.h('div',{style:{fontSize:'13.5px',fontWeight:700}},c.name),
+              this.h('div',{style:{fontSize:'11.5px',color:'#8a8f99',marginTop:'2px'}},c.addr+' · '+c.dist),
+              this.h('div',{style:{fontSize:'11px',color:'#04844B',fontWeight:600,marginTop:'4px'}},'● Soonest: '+c.soon)),
+            this.h('span',{style:{fontSize:'12px',fontWeight:700,color:'#005FB2'}},'Select →'))))
+      ],[ this.ghost('← Back',()=>this.back()) ]);
+    }
+    if(false){
+      const cl=this.clinics()[this.state.bk.clinic];
+      const days=[['Mon 11',true],['Tue 12',true],['Wed 13',true],['Thu 14',false],['Fri 15',true],['Sat 16',false],['Sun 17',false]];
+      const slots=['9:00 AM','9:30 AM','10:00 AM','11:00 AM','1:00 PM','2:30 PM'];
+      const d=this.state.bk.date, t=this.state.bk.time;
+      return this.wrap([
+        this.title('Pick a date & time',cl.name+' · Pap smear (15 min)'),
+        this.h('div',{style:{fontSize:'11px',fontWeight:700,color:'#8a8f99',marginBottom:'7px'}},'OCTOBER 2024'),
+        this.h('div',{style:{display:'flex',gap:'6px',flexWrap:'wrap',marginBottom:'16px'}},
+          ...days.map((dy,i)=>this.h('div',{key:i,onClick:dy[1]?()=>this.bkSet('date',dy[0]):null,style:{padding:'8px 12px',borderRadius:'9px',border:'1px solid '+(d===dy[0]?'#005FB2':'#e7eaef'),background:d===dy[0]?'#005FB2':(dy[1]?'#fff':'#f4f6f9'),color:d===dy[0]?'#fff':(dy[1]?'#16181d':'#c3c8d0'),fontSize:'12.5px',fontWeight:600,cursor:dy[1]?'pointer':'default'}},dy[0]))),
+        this.h('div',{style:{fontSize:'13px',fontWeight:700,color:'#16181d',marginBottom:'10px'}},'Available times · '+d),
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px'}},
+          ...slots.map((s,i)=>this.h('div',{key:i,onClick:i===2?()=>{this.bkSet('time',s);next();}:null,style:{padding:'12px 8px',textAlign:'center',borderRadius:'9px',border:'1.5px solid '+(t===s?'#005FB2':(i===2?'#bcd6f3':'#e7eaef')),background:t===s?'#005FB2':'#fff',color:t===s?'#fff':(i===4?'#c3c8d0':'#16181d'),fontSize:'12.5px',fontWeight:600,cursor:i===2?'pointer':'default',animation:i===2?'pulseHint 1.8s infinite':'none',textDecoration:i===4?'line-through':'none'}},s)))
+      ],[ this.ghost('← Back',()=>this.back()) ]);
+    }
+    if(false){
+      const cl=this.clinics()[this.state.bk.clinic];
+      const rows=[['Who','Aalayiah Murphy'],['Reason','Pap smear · cervical screening'],['Clinic',cl.name],['Address',cl.addr],['Date',this.state.bk.date+', 2024'],['Time',this.state.bk.time||'10:00 AM']];
+      return this.wrap([
+        this.title('Confirm your appointment','Review the details, then book.'),
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'14px',background:'#16325c',color:'#fff',borderRadius:'12px',padding:'12px 16px',marginBottom:'14px'}},
+          this.h('div',{style:{position:'relative',width:'40px',height:'40px',flex:'none'}},
+            this.h('div',{style:{position:'absolute',inset:0,borderRadius:'50%',border:'3px solid rgba(255,255,255,0.2)'}}),
+            this.h('div',{style:{position:'absolute',inset:0,borderRadius:'50%',border:'3px solid #F5A623',borderRightColor:'transparent',borderBottomColor:'transparent',transform:'rotate(45deg)'}}),
+            this.h('div',{style:{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:700}},'0:58')),
+          this.h('div',{style:{flex:1}},this.h('div',{style:{fontSize:'13px',fontWeight:700}},'Slot held just for you'),this.h('div',{style:{fontSize:'11.5px',opacity:0.85,marginTop:'2px'}},'Held for 1 minute - finish before it’s released.'))),
+        this.h('div',{style:{border:'1px solid #e7eaef',borderRadius:'12px',padding:'6px 16px'}},
+          ...rows.map((r,i)=>this.h('div',{key:i,style:{display:'flex',justifyContent:'space-between',gap:'14px',padding:'11px 0',borderTop:i>0?'1px solid #f1f3f6':'none',fontSize:'13px'}},
+            this.h('span',{style:{color:'#8a8f99'}},r[0]),this.h('span',{style:{fontWeight:700,color:'#16181d',textAlign:'right'}},r[1]))))
+      ],[ this.ghost('← Change time',()=>this.back()), this.cta('Confirm booking',()=>this.setState({patientBooked:true}),true) ]);
+    }
+    const cl=this.clinics()[this.state.bk.clinic];
+    return this.wrap([
+      this.h('div',{style:{textAlign:'center',paddingTop:'14px'}},
+        this.h('div',{style:{width:'58px',height:'58px',borderRadius:'50%',background:'#e3f3ec',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'27px',margin:'0 auto 14px'}},'🎉'),
+        this.h('div',{style:{fontSize:'18px',fontWeight:800}},'Appointment booked'),
+        this.h('div',{style:{fontSize:'12.5px',color:'#8a8f99',marginTop:'6px'}},'A confirmation and reminder have been sent.')),
+      this.h('div',{style:{border:'1px solid #d6e0f2',borderRadius:'12px',padding:'16px',marginTop:'16px',background:'#fff'}},
+        this.h('div',{style:{display:'inline-flex',alignItems:'center',gap:'6px',background:'#eef3fb',color:'#005FB2',fontSize:'10px',fontWeight:700,letterSpacing:'0.04em',textTransform:'uppercase',padding:'3px 9px',borderRadius:'6px',marginBottom:'9px'}},'For Aalayiah Murphy'),
+        this.h('div',{style:{fontSize:'15px',fontWeight:700,color:'#16181d'}},'Pap smear · cervical screening'),
+        this.h('div',{style:{fontSize:'12.5px',color:'#8a8f99',marginTop:'3px',lineHeight:1.45}},cl.name+' · '+cl.addr),
+        this.h('div',{style:{fontSize:'12.5px',color:'#16181d',fontWeight:600,marginTop:'4px'}},this.dateLabel(this.state.bk.date||11)+', 2024 · '+(this.state.bk.time||'10:00 AM')),
+        this.h('div',{style:{display:'flex',gap:'8px',marginTop:'14px',flexWrap:'wrap'}},
+          ...['🗓️ Add to calendar','✉️ Email appointment details'].map((a,i)=>this.h('div',{key:i,style:{border:'1px solid #c6d6e8',color:'#005FB2',borderRadius:'7px',padding:'7px 13px',fontSize:'12px',fontWeight:600,cursor:'pointer'}},a))),
+        this.h('div',{style:{height:'1px',background:'#eef0f3',margin:'14px 0'}}),
+        this.h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap'}},
+          ...[['↻ Reschedule',0],['✕ Cancel',1]].map((a,i)=>this.h('div',{key:i,style:{border:'1px solid '+(a[1]?'#e6b3b0':'#c6d6e8'),color:a[1]?'#C23934':'#005FB2',borderRadius:'7px',padding:'7px 13px',fontSize:'12px',fontWeight:600,cursor:'pointer'}},a[0]))))
+    ],null);
+  }
+
+  nfSet(k,v){ this.setState(s=>({nurseForm:{...s.nurseForm,[k]:v}})); }
+  clinicHeader(){
+    const navTab=(label,active)=>this.h('div',{style:{padding:'11px 2px',marginRight:'22px',fontSize:'13px',fontWeight:active?700:500,color:active?'#181818':'#5a5e67',borderBottom:active?'2px solid #0f7bd4':'2px solid transparent',cursor:'pointer',whiteSpace:'nowrap'}},label);
+    return this.h('div',{style:{position:'sticky',top:'0',zIndex:20,borderBottom:'1px solid #e3e3e3',overflow:'hidden',margin:'-18px -20px 16px',boxShadow:'0 10px 22px -16px rgba(16,26,44,0.45)'}},
+      // Card Header Style 1 - grey bar, circular icon, title + account
+      this.h('div',{style:{display:'flex',alignItems:'center',gap:'12px',background:'#f3f3f3',padding:'12px 16px',borderBottom:'1px solid #e3e3e3'}},
+        this.h('div',{style:{width:'34px',height:'34px',borderRadius:'50%',background:'#f5a623',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flex:'none'}},'🏥'),
+        this.h('div',{style:{flex:1,minWidth:0}},
+          this.h('div',{style:{fontSize:'12px',color:'#5b5b5b'}},'Clinic'),
+          this.h('div',{style:{fontSize:'16px',fontWeight:700,color:'#16181d',lineHeight:1.15}},'West End Clinic')),
+        this.h('div',{style:{fontSize:'11.5px',color:'#5b5b5b',textAlign:'right',marginRight:'4px',lineHeight:1.3}},this.h('div',null,'220 Water St, St. John’s'),this.h('div',null,'Mon–Fri 8:00–16:00 · Sat 9:00–12:00')),
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'9px',flex:'none',paddingLeft:'12px',borderLeft:'1px solid #dcdcdc'}},
+          this.h('div',{style:{textAlign:'right',lineHeight:1.2}},this.h('div',{style:{fontSize:'12px',fontWeight:700,color:'#16181d'}},'Priya Anand'),this.h('div',{style:{fontSize:'10.5px',color:'#5b5b5b'}},'Clinic Nurse')),
+          this.h('div',{style:{width:'32px',height:'32px',borderRadius:'50%',overflow:'hidden',background:'#fff',display:'flex',alignItems:'flex-end',justifyContent:'center',flex:'none',border:'1px solid #d6d9de'}},this.h('img',{src:(window.__resources&&window.__resources.smCodey)||'assets/sm/codey.png',alt:'Priya',style:{width:'124%',height:'124%',objectFit:'cover',objectPosition:'center top'}})))),
+      // Card Tabs 1 - underline tabs
+      this.h('div',{style:{display:'flex',alignItems:'center',background:'#fff',padding:'0 16px'}},
+        navTab('Home',false),navTab('Daysheet',true),navTab('Appointments',false),navTab('Patients',false)));
+  }
+  scrNurse(step){
+    const next=()=>this.next();
+    const ci=this.state.nurseCI||{};
+    const nm=this.state.nurseForm.name||'Robin Diaz';
+    const bdg=(txt,b,c)=>this.h('span',{style:{background:b,color:c,fontSize:'10.5px',fontWeight:600,padding:'3px 9px',borderRadius:'20px',whiteSpace:'nowrap'}},txt);
+    // unified appointments table - inline check-in for not-yet-arrived patients
+    const appts=[
+      {t:'8:50',name:'Avery Chen',type:'Pap Smear',room:'A1',pre:true},
+      {t:'9:00',name:'Jordan Blake',type:'Pap Smear',room:'A2',pre:true},
+      {t:'9:20',name:'Sam Rivera',type:'Colonoscopy',room:'B1',pre:false},
+      {t:'9:40',name:'Dana Lou',type:'Pap Smear',room:'B2',pre:false},
+    ];
+    const cols='0.5fr 1.4fr 1fr 0.5fr 0.95fr';
+    const apptTable=this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+      this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',background:'#f3f3f3',padding:'10px 13px',borderBottom:'1px solid #e3e3e3'}},this.h('div',{style:{width:'24px',height:'24px',borderRadius:'7px',background:'#005FB2',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',flex:'none'}},'🗓️'),this.h('div',{style:{fontSize:'13px',fontWeight:700}},'Today’s appointments')),
+      this.h('div',{style:{display:'grid',gridTemplateColumns:cols,background:'#fafbfc',borderBottom:'1px solid #eef0f3',fontSize:'9.5px',fontWeight:700,color:'#3a3e47'}},...['Time','Patient','Type','Room','Status'].map((c,i)=>this.h('div',{key:i,style:{padding:'7px 9px'}},c))),
+      ...appts.map((a,ai)=>{ const done=a.pre||ci[a.name];
+        return this.h('div',{key:ai,style:{display:'grid',gridTemplateColumns:cols,borderBottom:ai<appts.length-1?'1px solid #f1f3f6':'none',fontSize:'11px',alignItems:'center'}},
+          this.h('div',{style:{padding:'7px 9px',color:'#8a8f99',whiteSpace:'nowrap'}},a.t),
+          this.h('div',{style:{padding:'7px 9px',fontWeight:600,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},a.name),
+          this.h('div',{style:{padding:'7px 9px',color:'#4a4e57',whiteSpace:'nowrap'}},a.type),
+          this.h('div',{style:{padding:'7px 9px',fontWeight:600,color:'#16325c'}},a.room),
+          this.h('div',{style:{padding:'6px 9px'}}, done?bdg('✓ In','#eef7df','#3d6b00'):this.h('button',{onClick:()=>this.setState(s=>({nurseCI:{...s.nurseCI,[a.name]:true}})),style:{background:'#005FB2',color:'#fff',border:'none',borderRadius:'5px',padding:'4px 9px',fontSize:'10px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',whiteSpace:'nowrap'}},'Check in'))); }));
+    const checkedCount=2+appts.filter(a=>!a.pre&&ci[a.name]).length;
+    const stats=this.h('div',{style:{display:'flex',gap:'10px',marginBottom:'14px',flexWrap:'wrap'}},this.statCard('4','Booked','🗓️'),this.statCard(String(checkedCount),'Checked in','✅'),this.statCard('11 min','Current wait','⏱️'),this.statCard(step>=2?'1':'0','Waitlisted','🚶'));
+    const wlHead=this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',background:'#fff1e6',padding:'10px 13px',borderBottom:'1px solid #f3c98a'}},this.h('div',{style:{width:'24px',height:'24px',borderRadius:'7px',background:'#f5a623',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',flex:'none'}},'🚶'),this.h('div',{style:{fontSize:'13px',fontWeight:700,color:'#9a5a00'}},'Waitlist · same-day'));
+    const wlCols='0.55fr 1.3fr 0.5fr 0.8fr';
+    const wlTable=(hasWalkin)=>this.h('div',{style:{border:'1px solid #f3c98a',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+      wlHead,
+      this.h('div',{style:{display:'grid',gridTemplateColumns:wlCols,background:'#fff7ec',borderBottom:'1px solid #f3e0c0',fontSize:'9.5px',fontWeight:700,color:'#9a5a00'}},...['Added','Patient','Room','Wait'].map((c,i)=>this.h('div',{key:i,style:{padding:'7px 9px'}},c))),
+      hasWalkin
+        ? this.h('div',{style:{display:'grid',gridTemplateColumns:wlCols,fontSize:'11px',alignItems:'center'}},
+            this.h('div',{style:{padding:'7px 9px',color:'#8a8f99',whiteSpace:'nowrap'}},'9:35'),
+            this.h('div',{style:{padding:'7px 9px',fontWeight:600,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},'🚶 '+nm),
+            this.h('div',{style:{padding:'7px 9px',fontWeight:600,color:'#16325c'}},'-'),
+            this.h('div',{style:{padding:'6px 9px'}},bdg('~14m','#fff1e6','#9a5a00')))
+        : this.h('div',{style:{padding:'22px 12px',textAlign:'center',color:'#b08a52',fontSize:'11.5px'}},'No walk-ins waiting'));
+    if(step===0){
+      return this.wrap([ this.clinicHeader(),
+        this.h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:'14px',flexWrap:'wrap',gap:'10px'}},
+          this.h('div',null,this.h('div',{style:{fontSize:'16px',fontWeight:800,letterSpacing:'-0.01em'}},'Daysheet'),this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginTop:'2px'}},'Monday, Oct 11, 2024')),
+          this.h('button',{onClick:next,style:{background:'#005FB2',color:'#fff',border:'none',borderRadius:'7px',padding:'9px 16px',fontSize:'12.5px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',animation:'pulseHint 1.8s infinite'}},'+ Add walk-in patient')),
+        stats,
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:'14px',alignItems:'start'}}, apptTable, wlTable(false)),
+        this.h('div',{style:{fontSize:'11.5px',color:'#8a8f99',marginTop:'10px'}},'Patients who haven’t arrived show a Check-in button - tap it as they reach the desk.')
+      ],null);
+    }
+    if(step===1){
+      const f=this.state.nurseForm;
+      const fld=(label,val,onCh,ph)=>this.h('div',null,this.h('div',{style:{fontSize:'11.5px',color:'#5b5b5b',marginBottom:'5px'}},label),this.h('input',{value:val,onChange:onCh,placeholder:ph,style:{width:'100%',border:'1px solid #d6d9de',borderRadius:'7px',padding:'10px 12px',fontSize:'13px',fontFamily:'inherit'}}));
+      return this.wrap([ this.clinicHeader(),
+        this.title('Add walk-in patient','Register a walk-in for a same-day appointment'),
+        this.h('div',{style:{display:'flex',flexDirection:'column',gap:'14px',maxWidth:'430px'}},
+          fld('Full name',f.name,e=>this.nfSet('name',e.target.value),'e.g. Robin Diaz'),
+          fld('Health number (MCP)',f.hc,e=>this.nfSet('hc',e.target.value),'1234 5678 9012'),
+          this.h('div',null,this.h('div',{style:{fontSize:'11.5px',color:'#5b5b5b',marginBottom:'5px'}},'Appointment type'),this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',border:'1px solid #d6d9de',borderRadius:'7px',padding:'10px 12px',fontSize:'13px',background:'#fff'}},'🧫 Pap Smear'))),
+        this.h('div',{style:{marginTop:'12px',background:'#fff1e6',border:'1px solid #f3c98a',borderRadius:'9px',padding:'10px 13px',fontSize:'12px',color:'#9a5a00',lineHeight:1.5,maxWidth:'430px'}},'Walk-ins join the same-day waitlist and are seen between booked appointments as capacity allows.')
+      ],[ this.ghost('← Back',()=>this.back()), this.cta('Add to waitlist',next,true) ]);
+    }
+    const wlTableFilled=this.h('div',{style:{border:'1px solid #f3c98a',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+      wlHead,
+      this.h('div',{style:{display:'grid',gridTemplateColumns:wlCols,background:'#fff7ec',borderBottom:'1px solid #f3e0c0',fontSize:'9.5px',fontWeight:700,color:'#9a5a00'}},...['Added','Patient','Room','Wait'].map((c,i)=>this.h('div',{key:i,style:{padding:'7px 9px'}},c))),
+      this.h('div',{style:{display:'grid',gridTemplateColumns:wlCols,fontSize:'11px',alignItems:'center'}},
+        this.h('div',{style:{padding:'7px 9px',color:'#8a8f99',whiteSpace:'nowrap'}},'9:35'),
+        this.h('div',{style:{padding:'7px 9px',fontWeight:600,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},'🚶 '+nm),
+        this.h('div',{style:{padding:'7px 9px',fontWeight:600,color:'#16325c'}},'B2'),
+        this.h('div',{style:{padding:'6px 9px'}},bdg('~14m','#fff1e6','#9a5a00'))));
+    return this.wrap([ this.clinicHeader(),
+      this.title('Daysheet',nm+' added to the same-day waitlist'),
+      stats,
+      this.h('div',{style:{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:'14px',alignItems:'start'}}, apptTable, wlTableFilled)
+    ],[ this.ghost('Restart',()=>this.reset()) ]);
+  }
+  badge(txt,bg,col){ return this.h('span',{style:{background:bg,color:col,fontSize:'11px',fontWeight:600,padding:'3px 9px',borderRadius:'20px'}},txt); }
+  statCard(n,l,icon){ return this.h('div',{style:{flex:1,minWidth:'120px',border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+    this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',background:'#f7f8fa',padding:'7px 11px',borderBottom:'1px solid #eef0f3'}},
+      this.h('span',{style:{fontSize:'12px',opacity:0.7,flex:'none'}},icon||'•'),
+      this.h('div',{style:{fontSize:'10.5px',fontWeight:700,color:'#5a5e67',textTransform:'uppercase',letterSpacing:'0.04em'}},l)),
+    this.h('div',{style:{padding:'10px 12px'}},this.h('div',{style:{fontSize:'22px',fontWeight:800,color:'#16325c',lineHeight:1}},n))); }
+  nurseTable(rows,hi){
+    return this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',background:'#fff'}},
+      this.h('div',{style:{display:'grid',gridTemplateColumns:'0.6fr 1.5fr 1.1fr 1fr',background:'#f7f8fa',borderBottom:'1px solid #e3e3e3',fontSize:'11px',fontWeight:700,color:'#3a3e47'}},
+        ...['Time','Patient','Type','Status'].map((c,i)=>this.h('div',{key:i,style:{padding:'8px 12px'}},c))),
+      ...rows.map((r,ri)=>this.h('div',{key:ri,style:{display:'grid',gridTemplateColumns:'0.6fr 1.5fr 1.1fr 1fr',borderBottom:'1px solid #f1f3f6',fontSize:'12px',alignItems:'center',background:ri===hi?'#fafdf4':'#fff'}},
+        this.h('div',{style:{padding:'9px 12px',color:'#8a8f99'}},r[0]),
+        this.h('div',{style:{padding:'9px 12px',fontWeight:600}},r[1]),
+        this.h('div',{style:{padding:'9px 12px',color:'#4a4e57'}},r[2]),
+        this.h('div',{style:{padding:'9px 12px'}},this.h('span',{style:{background:r[4],color:r[5],fontSize:'11px',fontWeight:600,padding:'3px 9px',borderRadius:'20px'}},r[3])))));
+  }
+}
+</script>
+</body>
+</html>

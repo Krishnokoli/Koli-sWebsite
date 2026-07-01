@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MyCareCompass · App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" href="assets/MyCareCompass_Logo.png" />
+<style>
+
+/* ============ TOKENS ============ */
+:root{
+  --mcc-navy:#1B3A6B;
+  --mcc-blue:#3A5DA8;
+  --mcc-light:#EBF0FA;
+  --mcc-gold:#F5A623;
+  --paper:#F7F8FA;
+  --ink:#1A1A2E;
+  --muted:#6B7080;
+  --line:#E2E6EE;
+  --white:#FFFFFF;
+  --green:#1F8A5B;
+  --green-soft:#E3F3EC;
+  --gold-soft:#FCEFD6;
+  --red:#C2566B;
+  --red-soft:#F8E6EA;
+
+  --serif:"Source Serif 4", Georgia, serif;
+  --sans:"Open Sans", system-ui, -apple-system, sans-serif;
+  --mono:"Space Mono", ui-monospace, monospace;
+
+  --maxw:900px;
+  --rail-w:200px;
+
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:96px; --s7:140px;
+  --radius:14px; --radius-lg:22px; --radius-sm:8px;
+  --shadow-sm:0 1px 2px rgba(27,58,107,.06), 0 2px 8px rgba(27,58,107,.05);
+  --shadow:0 4px 14px rgba(27,58,107,.08), 0 18px 40px rgba(27,58,107,.07);
+  --shadow-lg:0 10px 30px rgba(27,58,107,.10), 0 30px 70px rgba(27,58,107,.12);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--serif);
+  color:var(--ink);
+  background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+/* faint health-dashboard dot grid */
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:radial-gradient(rgba(58,93,168,.10) 1px, transparent 1px);
+  background-size:26px 26px;
+  -webkit-mask-image:linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.55));
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.55));
+  opacity:.6;
+}
+::selection{background:var(--mcc-blue);color:#fff;}
+img{max-width:100%;display:block;}
+a{color:var(--mcc-blue);text-decoration:none;}
+.brand-logo{object-fit:contain;flex:none;display:block;}
+.brand-wordmark{height:40px;width:auto;object-fit:contain;display:block;flex:none;transition:height .4s var(--ease);}
+#topnav.scrolled .brand-wordmark{height:34px;}
+.brand-tag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);border-left:1px solid var(--line);padding-left:12px;margin-left:2px;}
+@media(max-width:600px){.brand-tag{display:none;} .brand-wordmark{height:32px;}}
+
+/* ============ PROGRESS BAR ============ */
+#progress{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg,var(--mcc-blue),var(--mcc-navy));
+  z-index:200;
+  transition:width .08s linear;
+}
+
+/* ============ TOP NAV ============ */
+#topnav{
+  position:fixed; top:0; left:0; right:0; z-index:150;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px clamp(20px,5vw,56px);
+  transition:background .4s var(--ease), box-shadow .4s var(--ease), padding .4s var(--ease), border-color .4s var(--ease);
+  border-bottom:1px solid transparent;
+}
+#topnav.scrolled{
+  background:rgba(247,248,250,.72);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid var(--line);
+  padding-top:13px; padding-bottom:13px;
+  box-shadow:0 6px 24px rgba(27,58,107,.05);
+}
+.brand{display:flex;align-items:center;gap:11px;cursor:pointer;}
+.brand .mark{
+  width:30px;height:30px;border-radius:9px;
+  background:linear-gradient(150deg,var(--mcc-blue),var(--mcc-navy));
+  display:grid;place-items:center;flex:none;
+  box-shadow:0 4px 10px rgba(27,58,107,.25);
+  position:relative;
+}
+.brand .mark::before{
+  content:"";width:11px;height:11px;border-radius:50%;
+  border:2.5px solid #fff; position:absolute;
+}
+.brand .mark::after{
+  content:"";position:absolute;width:0;height:0;
+  border-left:3px solid transparent;border-right:3px solid transparent;
+  border-bottom:8px solid var(--mcc-gold);
+  transform:translateY(-1px) rotate(35deg);
+}
+.brand .bname{font-weight:700;font-size:16px;letter-spacing:-.01em;color:var(--mcc-navy);}
+.brand .bname b{color:var(--mcc-blue);}
+.brand .btag{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-links a{
+  font-size:13px;font-weight:600;color:var(--muted);
+  padding:7px 13px;border-radius:999px;transition:.2s var(--ease);
+  letter-spacing:.005em;
+}
+.nav-links a:hover{color:var(--mcc-navy);background:var(--mcc-light);}
+.nav-pill{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  background:var(--mcc-navy);color:#fff !important;
+  padding:9px 15px !important;border-radius:999px;
+  letter-spacing:.03em;
+}
+.nav-pill:hover{background:var(--mcc-blue) !important;}
+@media(max-width:760px){ .nav-links a:not(.nav-pill){display:none;} }
+
+/* ============ LEFT RAIL ============ */
+#rail{
+  position:fixed; left:22px; top:50%; transform:translateY(-50%);
+  z-index:120; display:flex; flex-direction:column; gap:1px;
+  padding:9px; border-radius:20px;
+  background:rgba(247,248,250,.72);
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid var(--line);
+  box-shadow:0 12px 36px rgba(27,58,107,.10);
+}
+#rail .rtitle{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+  padding:4px 11px 8px;
+}
+#rail .r{
+  position:relative;display:flex;align-items:center;gap:11px;cursor:pointer;
+  padding:7px 13px 7px 9px;border-radius:12px;
+  color:var(--muted);text-decoration:none;transition:.22s var(--ease);
+}
+#rail .r .idx{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  width:21px;height:21px;border-radius:7px;flex:none;
+  display:grid;place-items:center;
+  background:#fff;border:1px solid var(--line);color:var(--muted);
+  transition:.22s var(--ease);
+}
+#rail .r .lbl{
+  font-size:12.5px;font-weight:600;letter-spacing:.005em;white-space:nowrap;
+  transition:.22s var(--ease);
+}
+#rail .r:hover{background:#fff;color:var(--mcc-navy);}
+#rail .r:hover .idx{border-color:#CBD8EF;color:var(--mcc-blue);}
+#rail .r.active{background:linear-gradient(125deg,var(--mcc-navy),var(--mcc-blue));box-shadow:0 8px 18px rgba(27,58,107,.22);}
+#rail .r.active .idx{background:rgba(255,255,255,.2);border-color:transparent;color:#fff;}
+#rail .r.active .lbl{color:#fff;font-weight:700;}
+@media(max-width:1240px){ #rail{display:none;} }
+
+/* ============ LAYOUT ============ */
+.wrap{position:relative;z-index:1;}
+section{position:relative;}
+.inner{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,32px);}
+.sec-pad{padding-top:var(--s7);padding-bottom:var(--s6);}
+@media(max-width:680px){ .sec-pad{padding-top:var(--s6);padding-bottom:var(--s5);} }
+
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--mcc-blue);
+  margin-bottom:var(--s3);
+}
+.eyebrow .nm{
+  color:var(--mcc-navy);background:var(--mcc-light);
+  padding:3px 9px;border-radius:6px;letter-spacing:.08em;
+}
+.sec-title{
+  font-family:var(--sans);font-style:normal;font-weight:800;
+  font-size:clamp(34px,5.2vw,52px);line-height:1.04;letter-spacing:-.01em;
+  color:var(--mcc-navy);margin:0 0 var(--s3);
+}
+.sec-title em{font-style:italic;color:var(--mcc-blue);}
+.lead{font-size:clamp(17px,2.1vw,20px);color:var(--ink);max-width:62ch;line-height:1.62;}
+.lead.muted{color:var(--muted);}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--muted);text-transform:uppercase;}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+.reveal.in{opacity:1;transform:none;}
+body.reveal-all .reveal{opacity:1 !important;transform:none !important;transition:none !important;}
+.reveal.d1{transition-delay:.08s;} .reveal.d2{transition-delay:.16s;} .reveal.d3{transition-delay:.24s;} .reveal.d4{transition-delay:.32s;}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}}
+
+/* ============ HERO ============ */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:120px;padding-bottom:80px;}
+.hero-badges{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:var(--s4);}
+.badge{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;
+  padding:7px 13px;border-radius:999px;border:1px solid var(--line);
+  background:var(--white);color:var(--mcc-navy);box-shadow:var(--shadow-sm);white-space:nowrap;
+}
+.badge.accent{background:var(--mcc-navy);color:#fff;border-color:var(--mcc-navy);}
+.badge .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mcc-gold);margin-right:7px;vertical-align:middle;}
+.hero-h1{
+  font-family:var(--sans);font-weight:800;
+  font-size:clamp(40px,7.2vw,82px);line-height:1.02;letter-spacing:-.015em;
+  color:var(--mcc-navy);margin:0 0 var(--s4);max-width:16ch;
+}
+.hero-h1 em{font-style:italic;color:var(--mcc-blue);display:block;}
+.hero-meta{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;max-width:680px;box-shadow:var(--shadow);margin-top:var(--s5);
+}
+.hero-meta .m{background:var(--white);padding:20px 22px;}
+.hero-meta .m .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.hero-meta .m .v{font-size:15px;font-weight:600;color:var(--ink);line-height:1.35;}
+@media(max-width:680px){.hero-meta{grid-template-columns:1fr;}}
+.scroll-cue{
+  margin-top:var(--s5);display:inline-flex;align-items:center;gap:11px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.scroll-cue .ln{width:38px;height:1px;background:var(--muted);position:relative;overflow:hidden;}
+.scroll-cue .ln::after{content:"";position:absolute;inset:0;width:40%;background:var(--mcc-blue);animation:slide 2.2s var(--ease) infinite;}
+@keyframes slide{0%{left:-40%}100%{left:100%}}
+
+/* ============ generic cards / tables ============ */
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);}
+.section-sep{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);max-width:var(--maxw);margin:0 auto;}
+
+/* ============ BRIEF GRID ============ */
+.brief-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:var(--s5);}
+.brief-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:24px 24px 22px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease);}
+.brief-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--mcc-blue);}
+.brief-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+.brief-card .bk{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mcc-blue);margin-bottom:11px;}
+.brief-card .bv{font-size:15.5px;color:var(--ink);line-height:1.5;text-wrap:pretty;}
+@media(max-width:680px){.brief-grid{grid-template-columns:1fr;gap:12px;}}
+
+/* ============ CONTEXT TABLE ============ */
+.focus-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:var(--s4);background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);}
+.focus-table th{
+  text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:#fff;background:var(--mcc-navy);padding:15px 22px;font-weight:700;
+}
+.focus-table td{padding:16px 22px;border-top:1px solid var(--line);font-size:15px;vertical-align:top;}
+.focus-table tr td:first-child{font-weight:600;color:var(--mcc-navy);width:42%;}
+.focus-table tr td:last-child{color:var(--muted);}
+.focus-table tbody tr:hover td{background:var(--mcc-light);}
+@media(max-width:560px){.focus-table th,.focus-table td{padding:12px 14px;font-size:13px;}}
+
+/* ===== before/after toggle (CSS only) ===== */
+.ba{margin-top:var(--s5);}
+.ba-switch{display:inline-flex;align-items:center;gap:0;background:var(--mcc-light);border-radius:999px;padding:5px;border:1px solid var(--line);position:relative;}
+.ba-switch label{
+  position:relative;z-index:2;cursor:pointer;font-size:13px;font-weight:700;
+  padding:9px 22px;border-radius:999px;color:var(--muted);transition:color .3s var(--ease);
+  font-family:var(--mono);letter-spacing:.03em;
+}
+#ba-toggle{position:absolute;opacity:0;pointer-events:none;}
+.ba-switch .knob{position:absolute;top:5px;left:5px;height:calc(100% - 10px);width:calc(50% - 5px);background:var(--white);border-radius:999px;box-shadow:var(--shadow-sm);transition:transform .35s var(--ease);z-index:1;}
+#ba-toggle:checked ~ .ba-switch .knob{transform:translateX(100%);}
+.ba-switch label.lbefore{color:var(--mcc-navy);}
+.ba-switch label.lafter{color:var(--muted);}
+#ba-toggle:checked ~ .ba-switch label.lbefore{color:var(--muted);}
+#ba-toggle:checked ~ .ba-switch label.lafter{color:var(--mcc-navy);}
+.ba-stage{position:relative;margin-top:var(--s3);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);min-height:430px;background:var(--white);}
+.ba-pane{position:absolute;inset:0;padding:26px;opacity:0;transform:scale(.99);transition:opacity .45s var(--ease),transform .45s var(--ease);pointer-events:none;}
+#ba-toggle:not(:checked) ~ .ba-stage .ba-before{opacity:1;transform:none;pointer-events:auto;}
+#ba-toggle:checked ~ .ba-stage .ba-after{opacity:1;transform:none;pointer-events:auto;}
+.ba-tag{position:absolute;top:16px;right:16px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;font-weight:700;}
+.ba-before .ba-tag{background:var(--red-soft);color:var(--red);}
+.ba-after .ba-tag{background:var(--green-soft);color:var(--green);}
+/* mini fake dashboard blocks */
+.mini-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+.mini-logo{width:18px;height:18px;border-radius:5px;background:linear-gradient(150deg,var(--mcc-blue),var(--mcc-navy));flex:none;}
+.mini-nav{display:flex;gap:6px;flex-wrap:wrap;}
+.mini-nav span{font-size:10px;font-family:var(--mono);color:var(--muted);background:var(--mcc-light);padding:3px 8px;border-radius:5px;}
+.mini-block{border-radius:9px;padding:13px 15px;margin-bottom:10px;font-size:13px;}
+.mini-block .t{font-weight:700;font-size:12px;margin-bottom:4px;display:flex;align-items:center;gap:7px;}
+.mini-block .s{font-size:11.5px;color:var(--muted);line-height:1.45;}
+.b-clutter{background:var(--gold-soft);border:1px dashed var(--mcc-gold);}
+.b-clutter2{background:#F1F1F4;border:1px solid var(--line);}
+.b-noise{background:var(--red-soft);border:1px dashed var(--red);}
+.b-clean{background:var(--mcc-light);border:1px solid #D6E0F2;}
+.b-primary{background:linear-gradient(120deg,var(--mcc-navy),var(--mcc-blue));color:#fff;}
+.b-primary .s{color:rgba(255,255,255,.85);}
+.b-stat{background:var(--white);border:1px solid var(--line);}
+.mini-row3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.mini-pill{display:inline-block;font-size:9.5px;font-family:var(--mono);padding:2px 7px;border-radius:999px;}
+.pill-warn{background:var(--mcc-gold);color:#5a3c00;}
+.pill-ok{background:var(--green);color:#fff;}
+.ba-note{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.55;}
+.ba-note b{color:var(--mcc-navy);}
+/* ============ PROBLEM ============ */
+.h-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:var(--s4);}
+@media(max-width:680px){.h-grid{grid-template-columns:1fr;}}
+.h-card{
+  background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 22px 20px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+  transition:transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.h-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--mcc-gold);}
+.h-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#D6E0F2;}
+.h-card .hid{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--mcc-gold);margin-bottom:9px;display:flex;align-items:center;gap:8px;}
+.h-card .hid .sq{width:7px;height:7px;background:var(--mcc-gold);border-radius:2px;}
+.h-card h4{margin:0 0 6px;font-size:16px;font-weight:700;color:var(--mcc-navy);letter-spacing:-.01em;}
+.h-card p{margin:0;font-size:14px;color:var(--muted);line-height:1.55;}
+
+/* annotated wireframe */
+.wf-wrap{margin-top:var(--s5);background:linear-gradient(180deg,#fff,#FBFCFE);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(20px,4vw,40px);box-shadow:var(--shadow);}
+.wf-cap{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;display:flex;align-items:center;gap:9px;}
+.wf-cap .sq{width:8px;height:8px;border:2px solid var(--mcc-gold);}
+.wf{display:grid;grid-template-columns:1fr;gap:11px;}
+.wf .wf-bar{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 14px;position:relative;}
+.wf-skel{height:9px;border-radius:5px;background:linear-gradient(90deg,#E7EBF3,#F2F5FA);}
+.wf-nav{display:flex;gap:7px;flex-wrap:wrap;}
+.wf-nav i{font-style:normal;font-size:10px;font-family:var(--mono);background:var(--mcc-light);color:var(--mcc-navy);padding:4px 9px;border-radius:5px;}
+.wf-callout{
+  display:inline-flex;align-items:center;gap:7px;position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.04em;
+  background:var(--mcc-navy);color:#fff;padding:4px 10px;border-radius:999px;white-space:nowrap;
+  box-shadow:0 6px 14px rgba(27,58,107,.22);
+}
+.wf-callout::before{content:"";position:absolute;left:-13px;top:50%;width:13px;height:1.5px;background:var(--mcc-navy);transform:translateY(-50%);}
+.wf-callout.gold{background:var(--mcc-gold);color:#5a3c00;box-shadow:0 6px 14px rgba(245,166,35,.3);}
+.wf-callout.gold::before{background:var(--mcc-gold);}
+.wf-marketing{background:var(--red-soft);border-color:#F0CDD5;}
+.wf-results{background:var(--gold-soft);border-color:#F3DEB0;}
+.wf-block{flex:1;}
+@media(max-width:560px){.wf-callout{position:static;transform:none;margin-left:auto;}.wf-callout::before{display:none;}.wf .wf-bar{flex-wrap:wrap;}}
+
+/* ============ PROCESS — HORIZONTAL TIMELINE ============ */
+#process{background:linear-gradient(180deg,var(--mcc-light),#fff 70%);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;}
+.proc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+
+.timeline{margin-top:var(--s5);margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);}
+.tl-vp{
+  overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;
+  cursor:grab;padding-bottom:10px;
+  scrollbar-width:thin;scrollbar-color:var(--mcc-blue) transparent;
+}
+.tl-vp.dragging{cursor:grabbing;scroll-behavior:auto;user-select:none;}
+.tl-vp::-webkit-scrollbar{height:7px;}
+.tl-vp::-webkit-scrollbar-track{background:transparent;}
+.tl-vp::-webkit-scrollbar-thumb{background:#C7D4EC;border-radius:6px;}
+.tl-vp::-webkit-scrollbar-thumb:hover{background:var(--mcc-blue);}
+.tl-rail{
+  position:relative;display:flex;align-items:flex-start;
+  min-width:max-content;padding:34px max(20px,calc(50vw - 418px)) 18px;
+}
+/* the connecting line + progress, centred on the dot row */
+.tl-rail::before{content:"";position:absolute;left:max(20px,calc(50vw - 418px));right:max(20px,calc(50vw - 418px));top:78px;height:2px;background:var(--line);z-index:0;}
+.tl-progress{position:absolute;left:max(20px,calc(50vw - 418px));top:78px;height:2px;background:linear-gradient(90deg,var(--mcc-blue),var(--mcc-navy));z-index:1;width:0;transition:width .55s var(--ease);border-radius:2px;}
+.tl-item{position:relative;z-index:2;flex:0 0 290px;display:flex;flex-direction:column;padding-right:30px;}
+@media(max-width:560px){.tl-item{flex-basis:236px;padding-right:22px;}}
+.tl-act{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);height:16px;display:flex;align-items:center;gap:8px;transition:color .3s var(--ease);}
+.tl-item[data-act="1"] .tl-act{color:var(--mcc-gold);}
+.tl-item[data-act="2"] .tl-act{color:var(--mcc-blue);}
+.tl-item[data-act="3"] .tl-act{color:var(--green);}
+.tl-dotrow{height:28px;display:flex;align-items:center;margin-top:14px;}
+.tl-dot{
+  width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:#fff;
+  display:grid;place-items:center;cursor:pointer;flex:none;padding:0;
+  font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);
+  transition:.3s var(--ease);position:relative;
+}
+.tl-dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid transparent;transition:.3s var(--ease);}
+.tl-item:hover .tl-dot{border-color:var(--mcc-blue);color:var(--mcc-blue);}
+.tl-item.on .tl-dot{background:linear-gradient(150deg,var(--mcc-navy),var(--mcc-blue));border-color:transparent;color:#fff;transform:scale(1.12);box-shadow:0 8px 18px rgba(27,58,107,.28);}
+.tl-item.on .tl-dot::after{border-color:#C7D4EC;}
+.tl-card{
+  margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 20px 22px;box-shadow:var(--shadow-sm);
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s var(--ease);
+  flex:1;
+}
+.tl-item:hover .tl-card{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#D6E0F2;}
+.tl-item.on .tl-card{border-color:var(--mcc-navy);box-shadow:var(--shadow);transform:translateY(-3px);}
+.tl-step{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--mcc-blue);margin-bottom:8px;}
+.tl-title{font-family:var(--sans);font-weight:700;font-size:18px;line-height:1.2;color:var(--mcc-navy);margin:0 0 8px;letter-spacing:-.01em;}
+.tl-desc{font-size:14.5px;color:var(--muted);line-height:1.55;margin:0;}
+.tl-ctrl{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-top:var(--s3);padding-inline:max(20px,calc(50vw - 418px));}
+.tl-hint{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:9px;}
+.tl-hint .swipe{display:inline-block;width:30px;height:1px;background:var(--muted);position:relative;overflow:hidden;}
+.tl-hint .swipe::after{content:"";position:absolute;inset:0;width:45%;background:var(--mcc-blue);animation:slide 2.2s var(--ease) infinite;}
+.tl-btns{display:flex;gap:10px;}
+.cbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--mcc-navy);display:grid;place-items:center;cursor:pointer;transition:.2s var(--ease);font-size:16px;}
+.cbtn:hover{background:var(--mcc-navy);color:#fff;border-color:var(--mcc-navy);transform:translateY(-2px);}
+.cbtn:disabled{opacity:.4;cursor:default;transform:none;background:#fff;color:var(--mcc-navy);border-color:var(--line);}
+
+/* ============ PERSONA — horizontal scroller ============ */
+.persona-scroller{
+  margin-top:var(--s5);margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+  overflow-x:auto;overflow-y:hidden;padding-bottom:16px;cursor:grab;
+  scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--mcc-blue) transparent;
+}
+.persona-scroller.dragging{cursor:grabbing;scroll-behavior:auto;}
+.persona-scroller::-webkit-scrollbar{height:7px;}
+.persona-scroller::-webkit-scrollbar-track{background:transparent;}
+.persona-scroller::-webkit-scrollbar-thumb{background:#C7D4EC;border-radius:6px;}
+.persona-scroller::-webkit-scrollbar-thumb:hover{background:var(--mcc-blue);}
+.persona-row{display:flex;gap:20px;min-width:max-content;padding:2px max(20px,calc(50vw - 418px)) 0;}
+.pcard{flex:0 0 360px;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;}
+@media(max-width:480px){.pcard{flex-basis:300px;}}
+.pcard-top{background:linear-gradient(170deg,var(--mcc-navy),var(--mcc-blue));color:#fff;padding:24px 24px 22px;position:relative;overflow:hidden;}
+.pcard-top::after{content:"";position:absolute;right:-46px;bottom:-46px;width:150px;height:150px;border-radius:50%;border:22px solid rgba(255,255,255,.06);}
+.pcard-photo{width:100%;height:158px;display:block;margin-bottom:16px;border:1px solid rgba(255,255,255,.25);box-shadow:0 12px 30px rgba(0,0,0,.22);position:relative;z-index:1;}
+.pcard-name{font-family:var(--sans);font-weight:700;font-size:21px;line-height:1.1;margin:0 0 3px;position:relative;z-index:1;}
+.pcard-role{font-family:var(--mono);font-size:11px;letter-spacing:.04em;opacity:.85;position:relative;z-index:1;}
+.pcard-meters{margin-top:18px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1;}
+.meter .meter-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.meter .meter-top span:first-child{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;opacity:.72;}
+.meter .meter-top span:last-child{font-weight:700;font-size:12px;}
+.meter-track{height:7px;border-radius:5px;background:rgba(255,255,255,.16);overflow:hidden;}
+.meter-track i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--mcc-gold),#FFD27A);transition:width 1.1s var(--ease);}
+.pcard-body{padding:22px 24px 24px;display:flex;flex-direction:column;gap:18px;flex:1;}
+.pcard-quote{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.42;color:var(--mcc-navy);margin:0;padding-left:16px;border-left:3px solid var(--mcc-gold);text-wrap:pretty;}
+.pblk h5{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mcc-blue);margin:0 0 8px;}
+.pblk.pain h5{color:#9a6500;}
+.plist{margin:0;padding:0;list-style:none;}
+.plist li{font-family:var(--serif);font-size:14.5px;color:var(--ink);padding:6px 0 6px 20px;position:relative;line-height:1.45;}
+.plist li::before{content:"";position:absolute;left:0;top:13px;width:7px;height:7px;border-radius:50%;background:var(--mcc-light);border:1.5px solid var(--mcc-blue);}
+.plist.pain li::before{border-color:var(--mcc-gold);background:var(--gold-soft);}
+
+/* ============ DESIGN SYSTEM ============ */
+.ds-block{margin-top:var(--s5);}
+.ds-label{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mcc-blue);margin-bottom:var(--s3);display:flex;align-items:center;gap:11px;}
+.ds-label .ln{flex:1;height:1px;background:var(--line);}
+.swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:680px){.swatches{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:430px){.swatches{grid-template-columns:1fr;}}
+.swatch{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow-sm);transition:transform .25s var(--ease);}
+.swatch:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+.swatch .chip{height:88px;display:flex;align-items:flex-end;padding:12px;}
+.swatch .meta{padding:13px 15px;}
+.swatch .meta .nm{font-weight:700;font-size:14px;color:var(--mcc-navy);}
+.swatch .meta .hex{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px;}
+.swatch .meta .role{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4;}
+.swatch .copyhex{font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.85);color:var(--ink);padding:3px 8px;border-radius:6px;backdrop-filter:blur(4px);}
+
+/* type scale */
+.type-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow-sm);}
+.type-row{display:grid;grid-template-columns:170px 1fr;gap:24px;padding:20px 24px;border-top:1px solid var(--line);align-items:baseline;}
+.type-row:first-child{border-top:none;}
+.type-row .spec{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.6;}
+.type-row .spec b{color:var(--mcc-navy);display:block;font-size:12px;letter-spacing:.03em;}
+.type-sample{color:var(--ink);overflow:hidden;}
+@media(max-width:560px){.type-row{grid-template-columns:1fr;gap:8px;}}
+
+/* component grid */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:680px){.comp-grid{grid-template-columns:1fr;}}
+.comp-cell{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow-sm);}
+.comp-cell .ctag{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.comp-cell .ctag .sq{width:6px;height:6px;background:var(--mcc-blue);border-radius:2px;}
+.comp-span2{grid-column:1/-1;}
+
+/* result card component */
+.result-card{border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;}
+.result-card .rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px;}
+.result-card .rc-name{font-weight:700;font-size:15px;color:var(--mcc-navy);line-height:1.25;}
+.result-card .rc-sub{font-size:12px;color:var(--muted);}
+.result-card .rc-val{font-family:var(--serif);font-size:32px;color:var(--ink);line-height:1;margin:10px 0 4px;}
+.result-card .rc-val b{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--muted);margin-left:4px;}
+.range-bar{margin-top:14px;}
+.range-track{height:8px;border-radius:6px;background:linear-gradient(90deg,var(--red-soft),var(--green-soft) 22%,var(--green-soft) 78%,var(--gold-soft));position:relative;}
+.range-track .ok{position:absolute;left:22%;right:22%;top:0;bottom:0;background:var(--green-soft);}
+.range-marker{position:absolute;top:-4px;width:4px;height:16px;border-radius:3px;background:var(--mcc-navy);transform:translateX(-50%);box-shadow:0 2px 6px rgba(27,58,107,.3);}
+.range-marker.warn{background:var(--mcc-gold);}
+.range-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:7px;}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;font-family:var(--sans);}
+.pill .pd{width:6px;height:6px;border-radius:50%;}
+.pill.within{background:var(--green-soft);color:var(--green);} .pill.within .pd{background:var(--green);}
+.pill.above{background:var(--gold-soft);color:#9a6500;} .pill.above .pd{background:var(--mcc-gold);}
+.pill.below{background:var(--red-soft);color:var(--red);} .pill.below .pd{background:var(--red);}
+.pill.final{background:var(--mcc-light);color:var(--mcc-blue);} .pill.final .pd{background:var(--mcc-blue);}
+.pill.neg{background:var(--green-soft);color:var(--green);} .pill.neg .pd{background:var(--green);}
+
+/* report row */
+.report-row{display:flex;align-items:center;gap:16px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;transition:.2s var(--ease);cursor:pointer;}
+.report-row:hover{border-color:var(--mcc-blue);box-shadow:var(--shadow-sm);transform:translateY(-1px);}
+.report-row .rr-date{font-weight:700;font-size:14px;color:var(--mcc-navy);min-width:120px;}
+.report-row .rr-org{font-size:13px;color:var(--muted);min-width:88px;}
+.report-row .rr-sec{font-size:13px;color:var(--ink);flex:1;}
+.report-row .rr-arrow{color:var(--mcc-blue);font-size:18px;transition:transform .2s var(--ease);}
+.report-row:hover .rr-arrow{transform:translateX(4px);}
+@media(max-width:560px){.report-row{flex-wrap:wrap;gap:8px;}.report-row .rr-date{min-width:0;}.report-row .rr-sec{flex-basis:100%;}}
+
+/* reports header + meta + analytics grid */
+.report-row .rr-date{display:flex;flex-direction:column;}
+.rr-time{font-family:var(--mono);font-size:10px;font-weight:400;color:var(--muted);letter-spacing:.02em;margin-top:2px;}
+.rr-shared{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:74px;text-align:right;}
+.rep-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line);}
+.rep-name{font-family:var(--sans);font-weight:700;font-size:22px;color:var(--mcc-navy);line-height:1.1;}
+.rep-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.03em;margin-top:4px;}
+.rep-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.screen-sub{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:-8px 0 18px;}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:620px){.result-grid{grid-template-columns:1fr;} .rr-shared{display:none;}}
+
+/* appointment card */
+.appt-card{border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;display:flex;gap:16px;align-items:center;}
+.appt-date{background:var(--mcc-light);border-radius:10px;width:62px;height:62px;display:grid;place-content:center;text-align:center;flex:none;}
+.appt-date .mo{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--mcc-blue);}
+.appt-date .dy{font-family:var(--serif);font-size:26px;color:var(--mcc-navy);line-height:1;}
+.appt-body{flex:1;}
+.appt-body .at{font-weight:700;font-size:15px;color:var(--mcc-navy);}
+.appt-body .al{font-size:13px;color:var(--muted);margin-top:2px;}
+.appt-actions{display:flex;gap:8px;margin-top:10px;}
+
+/* buttons */
+.btn{font-family:var(--sans);font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:.2s var(--ease);display:inline-flex;align-items:center;gap:8px;letter-spacing:.005em;}
+.btn-primary{background:var(--mcc-blue);color:#fff;box-shadow:0 4px 12px rgba(58,93,168,.25);}
+.btn-primary:hover{background:var(--mcc-navy);transform:translateY(-2px);box-shadow:0 8px 20px rgba(58,93,168,.3);}
+.btn-secondary{background:#fff;color:var(--mcc-blue);border-color:var(--mcc-blue);}
+.btn-secondary:hover{background:var(--mcc-light);}
+.btn-ghost{background:transparent;color:var(--mcc-blue);}
+.btn-ghost:hover{background:var(--mcc-light);}
+.btn-sm{padding:7px 13px;font-size:12.5px;border-radius:8px;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+
+/* mini nav component */
+.nav-comp{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;flex-wrap:wrap;box-shadow:var(--shadow-sm);}
+.nav-comp .nc-brand{display:flex;align-items:center;gap:8px;margin-right:14px;}
+.nav-comp .nc-mark{width:22px;height:22px;border-radius:7px;background:linear-gradient(150deg,var(--mcc-blue),var(--mcc-navy));flex:none;}
+.nav-comp .nc-name{font-weight:700;font-size:13px;color:var(--mcc-navy);}
+.nav-comp .nc-name b{color:var(--mcc-blue);}
+.nav-comp a{font-size:12px;font-weight:600;color:var(--muted);padding:6px 11px;border-radius:8px;}
+.nav-comp a.on{background:var(--mcc-light);color:var(--mcc-navy);}
+
+/* pills row */
+.pill-row{display:flex;flex-wrap:wrap;gap:10px;}
+
+/* ============ PROTOTYPE ============ */
+#prototype{background:var(--mcc-navy);color:#fff;border-top:1px solid var(--mcc-navy);}
+#prototype .eyebrow{color:#9DB6E8;}
+#prototype .eyebrow .nm{background:rgba(255,255,255,.1);color:#fff;}
+#prototype .sec-title{color:#fff;}
+#prototype .sec-title em{color:var(--mcc-gold);}
+#prototype .lead{color:rgba(255,255,255,.78);}
+.proto-frame{margin-top:var(--s5);background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);}
+.proto-browser{background:#EDF0F5;padding:11px 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);}
+.proto-dots{display:flex;gap:7px;}
+.proto-dots i{width:11px;height:11px;border-radius:50%;display:block;}
+.proto-url{flex:1;background:#fff;border-radius:8px;padding:6px 14px;font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;}
+.proto-url .lock{color:var(--green);font-size:10px;}
+/* app shell */
+.app-nav{display:flex;align-items:center;gap:4px;padding:12px 20px;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap;font-family:var(--sans);}
+.app-brand{display:flex;align-items:center;gap:9px;margin-right:auto;}
+.app-brand .am{width:26px;height:26px;border-radius:8px;background:linear-gradient(150deg,var(--mcc-blue),var(--mcc-navy));position:relative;flex:none;}
+.app-brand .am::before{content:"";position:absolute;inset:0;margin:auto;width:9px;height:9px;border:2px solid #fff;border-radius:50%;}
+.app-brand .an{font-weight:700;font-size:15px;color:var(--mcc-navy);}
+.app-brand .an b{color:var(--mcc-blue);}
+.app-tab{font-size:13px;font-weight:600;color:var(--muted);padding:8px 14px;border-radius:9px;cursor:pointer;transition:.18s var(--ease);background:none;border:none;font-family:var(--sans);}
+.app-tab:hover{background:var(--mcc-light);color:var(--mcc-navy);}
+.app-tab.on{background:var(--mcc-navy);color:#fff;}
+@media(max-width:620px){.app-tab{font-size:12px;padding:7px 10px;}}
+.app-body{padding:clamp(20px,4vw,40px);min-height:560px;background:var(--paper);position:relative;font-family:var(--sans);}
+.screen{display:none;animation:fadeScreen .45s var(--ease);}
+.screen.on{display:block;}
+@keyframes fadeScreen{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.app-welcome{font-family:var(--sans);font-weight:700;font-size:clamp(26px,4vw,34px);color:var(--mcc-navy);margin:0 0 2px;}
+.app-date{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;}
+.cta-card{background:linear-gradient(120deg,var(--mcc-navy),var(--mcc-blue));color:#fff;border-radius:16px;padding:26px 28px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 16px 40px rgba(27,58,107,.25);}
+.cta-card .cc-l .cc-lab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-bottom:7px;display:flex;align-items:center;gap:8px;}
+.cta-card .cc-l .cc-lab .pd{width:7px;height:7px;border-radius:50%;background:var(--mcc-gold);}
+.cta-card .cc-l .cc-t{font-family:var(--sans);font-weight:700;font-size:24px;line-height:1.15;}
+.cta-card .btn-primary{background:#fff;color:var(--mcc-navy);}
+.cta-card .btn-primary:hover{background:var(--mcc-gold);color:#5a3c00;}
+.qstats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;}
+@media(max-width:620px){.qstats{grid-template-columns:1fr;}}
+.qstat{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px;}
+.qstat .qk{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.qstat .qv{font-size:17px;font-weight:700;color:var(--mcc-navy);}
+.qstat .qa{font-size:12.5px;color:var(--mcc-blue);font-weight:600;margin-top:4px;cursor:pointer;}
+.qstat .qa:hover{text-decoration:underline;}
+.app-sec-title{font-size:14px;font-weight:700;color:var(--mcc-navy);margin:30px 0 14px;display:flex;align-items:center;gap:9px;}
+.app-sec-title .ln{flex:1;height:1px;background:var(--line);}
+.empty-clean{background:#fff;border:1px solid var(--line);border-radius:13px;padding:26px;text-align:center;color:var(--muted);font-size:14px;}
+.app-page-h{font-family:var(--sans);font-weight:700;font-size:clamp(24px,3.6vw,32px);color:var(--mcc-navy);margin:0 0 18px;}
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:18px;}
+.fake-select{font-size:13px;font-weight:600;color:var(--mcc-navy);background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:8px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;}
+.fake-select .ch{color:var(--muted);font-size:10px;}
+.toggle-chip{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--mcc-navy);}
+.tg{width:38px;height:22px;border-radius:999px;background:var(--mcc-blue);position:relative;transition:.2s;flex:none;}
+.tg::after{content:"";position:absolute;top:2px;left:18px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tg.off{background:#C9CFDA;}
+.tg.off::after{left:2px;}
+.ic.play{width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;}
+.ic.pause{width:9px;height:10px;border-left:3px solid currentColor;border-right:3px solid currentColor;}
+.report-list{display:flex;flex-direction:column;gap:10px;}
+.rep-acc{display:flex;flex-direction:column;gap:10px;}
+.rep-item{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;transition:border-color .2s var(--ease),box-shadow .2s var(--ease);}
+.rep-item.open{border-color:#D6E0F2;box-shadow:var(--shadow-sm);}
+.rep-acc-head{display:flex;align-items:center;gap:16px;width:100%;background:none;border:0;font-family:var(--sans);text-align:left;padding:16px 18px;cursor:pointer;}
+.rep-acc-head:hover{background:var(--paper);}
+.rah-date{display:flex;flex-direction:column;font-weight:700;font-size:14px;color:var(--mcc-navy);min-width:118px;}
+.rah-time{font-family:var(--mono);font-size:10px;font-weight:400;color:var(--muted);margin-top:2px;}
+.rah-sec{flex:1;font-size:13px;color:var(--ink);}
+.rah-chev{color:var(--mcc-blue);font-size:12px;transition:transform .3s var(--ease);}
+.rep-item.open .rah-chev{transform:rotate(180deg);}
+.rep-acc-body{display:none;padding:16px 18px 20px;border-top:1px solid var(--line);background:#FBFCFE;}
+.rep-item.open .rep-acc-body{display:block;animation:fadeScreen .35s var(--ease);}
+.pill.newp{background:var(--gold-soft);color:#9a6500;} .pill.newp .pd{background:var(--mcc-gold);}
+@keyframes repIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
+@keyframes repFlash{0%{box-shadow:0 0 0 3px var(--mcc-gold);}100%{box-shadow:var(--shadow-sm);}}
+.rep-item.just-in{animation:repIn .42s var(--ease), repFlash 1.7s var(--ease);}
+#simNewResult:disabled{opacity:.7;}
+#simNewResult.is-done{color:var(--muted);cursor:default;}
+.rep-pdfbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.rep-pdfbar .rpb-l{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.pdf-ic{font-family:var(--mono);font-size:9px;font-weight:700;background:var(--red);color:#fff;border-radius:4px;padding:2px 5px;letter-spacing:.04em;}
+.breadcrumb{font-family:var(--mono);font-size:12px;color:var(--mcc-blue);cursor:pointer;display:inline-flex;align-items:center;gap:7px;margin-bottom:16px;}
+.breadcrumb:hover{text-decoration:underline;}
+.detail-head{background:#fff;border:1px solid var(--line);border-radius:13px;padding:20px 22px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
+.detail-head .dh-t{font-family:var(--sans);font-weight:700;font-size:22px;color:var(--mcc-navy);}
+.detail-head .dh-s{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px;}
+.empty-illus{display:grid;place-items:center;padding:36px 20px;}
+.empty-art{width:120px;height:120px;position:relative;margin-bottom:20px;}
+.empty-art .cal{position:absolute;inset:14px;border:3px solid var(--mcc-light);border-radius:16px;background:#fff;box-shadow:var(--shadow-sm);}
+.empty-art .cal::before{content:"";position:absolute;top:-3px;left:0;right:0;height:24px;background:var(--mcc-blue);border-radius:13px 13px 0 0;}
+.empty-art .cal::after{content:"";position:absolute;top:-12px;left:24px;right:24px;height:18px;border-left:4px solid var(--mcc-navy);border-right:4px solid var(--mcc-navy);border-radius:4px;}
+.empty-art .pin{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--mcc-gold);bottom:26px;right:22px;box-shadow:0 4px 10px rgba(245,166,35,.4);border:2.5px solid #fff;}
+.empty-art .chk{position:absolute;inset:0;top:42px;display:grid;place-items:center;font-size:30px;color:var(--mcc-light);}
+.action-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;}
+@media(max-width:620px){.action-cards{grid-template-columns:1fr;}}
+.action-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;transition:.25s var(--ease);cursor:pointer;}
+.action-card:hover{border-color:var(--mcc-blue);box-shadow:var(--shadow);transform:translateY(-3px);}
+.action-card .ai{width:46px;height:46px;border-radius:12px;background:var(--mcc-light);display:grid;place-items:center;margin-bottom:16px;color:var(--mcc-blue);font-size:22px;}
+.action-card h4{margin:0 0 6px;font-size:16px;color:var(--mcc-navy);font-weight:700;}
+.action-card p{margin:0 0 16px;font-size:13.5px;color:var(--muted);line-height:1.5;}
+.appt-subtabs{display:flex;gap:8px;margin:22px 0 16px;border-bottom:1px solid var(--line);}
+.appt-subtab{font-size:13px;font-weight:600;color:var(--muted);padding:10px 4px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.appt-subtab.on{color:var(--mcc-navy);border-bottom-color:var(--mcc-blue);}
+
+/* ============ DASHBOARD (product IA) ============ */
+.dash-head{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px;}
+.app-welcome .uname{color:var(--mcc-blue);}
+.dash-jump{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.dash-jump a{color:var(--mcc-blue);font-weight:700;cursor:pointer;}
+.dash-jump a:hover{text-decoration:underline;}
+.dash-cols{display:grid;grid-template-columns:1.25fr .9fr;gap:18px;margin-top:20px;align-items:start;}
+@media(max-width:760px){.dash-cols{grid-template-columns:1fr;}}
+.dash-stack{display:flex;flex-direction:column;gap:18px;}
+.dpanel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow-sm);}
+.dpanel-h{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;color:var(--mcc-blue);margin-bottom:16px;}
+.dpanel-h .ico{width:18px;height:18px;border-radius:5px;background:var(--mcc-light);display:grid;place-items:center;color:var(--mcc-blue);font-size:11px;flex:none;}
+.dpanel-h .gear{margin-left:auto;color:var(--muted);font-size:15px;cursor:pointer;}
+.person-pill{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:9px 16px 9px 11px;font-weight:600;font-size:13.5px;color:var(--mcc-navy);background:var(--paper);}
+.person-pill .pp-av{width:24px;height:24px;border-radius:50%;background:linear-gradient(150deg,var(--mcc-blue),var(--mcc-navy));color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none;}
+.person-pills{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.ao-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:620px){.ao-grid{grid-template-columns:1fr;}}
+.ao-col{display:flex;flex-direction:column;gap:9px;}
+.ao-col .ao-t{font-weight:700;font-size:13.5px;color:var(--mcc-navy);}
+.ao-col .ao-d{font-size:12.5px;color:var(--muted);line-height:1.5;flex:1;}
+.recent-login{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:12px;}
+.recent-login b{color:var(--mcc-navy);font-weight:700;}
+.recent-scroll{max-height:212px;overflow-y:auto;border:1px solid var(--line);border-radius:9px;scrollbar-width:thin;scrollbar-color:#C7D4EC transparent;}
+.recent-scroll::-webkit-scrollbar{width:8px;}
+.recent-scroll::-webkit-scrollbar-thumb{background:#C7D4EC;border-radius:6px;}
+.recent-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;}
+.recent-tbl th{position:sticky;top:0;z-index:1;background:var(--mcc-navy);color:#fff;text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:9px 12px;font-weight:700;}
+.recent-tbl td{padding:11px 12px;color:var(--muted);border-top:1px solid var(--line);}
+.recent-tbl tbody tr:first-child td{border-top:none;}
+.recent-tbl td:first-child{font-family:var(--mono);font-size:11px;color:var(--mcc-navy);white-space:nowrap;}
+.ra{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:11.5px;color:var(--mcc-navy);}
+.ra::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mcc-blue);flex:none;}
+.ra-res::before{background:var(--green);}
+.ra-view::before{background:var(--mcc-blue);}
+.ra-appt::before{background:var(--mcc-gold);}
+.ra-done::before{background:var(--muted);}
+
+/* ============ BOOKING FLOW ============ */
+.book-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px;}
+.book-mod{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);background:var(--mcc-light);border:1px solid #D6E0F2;border-radius:999px;padding:6px 12px;display:inline-flex;align-items:center;gap:8px;}
+.book-mod b{color:var(--mcc-navy);}
+.book-mod .pwr{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.book-steps{display:flex;align-items:center;gap:0;margin:20px 0 24px;flex-wrap:wrap;}
+.bstep{display:flex;align-items:center;gap:9px;flex:1;min-width:120px;}
+.bstep .bsn{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:#fff;color:var(--muted);display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700;flex:none;transition:.25s var(--ease);}
+.bstep .bsl{font-size:12px;font-weight:700;color:var(--muted);transition:.25s var(--ease);white-space:nowrap;}
+.bstep .bsbar{flex:1;height:2px;background:var(--line);margin:0 10px;border-radius:2px;min-width:14px;}
+.bstep:last-child .bsbar{display:none;}
+.bstep.active .bsn{border-color:var(--mcc-blue);color:var(--mcc-blue);box-shadow:0 0 0 4px var(--mcc-light);}
+.bstep.active .bsl{color:var(--mcc-navy);}
+.bstep.done .bsn{background:var(--mcc-blue);border-color:var(--mcc-blue);color:#fff;}
+.bstep.done .bsl{color:var(--mcc-navy);}
+.book-panel{display:none;animation:fadeScreen .4s var(--ease);}
+.book-panel.on{display:block;}
+.book-q{font-family:var(--sans);font-weight:700;font-size:19px;color:var(--mcc-navy);margin:0 0 4px;}
+.book-sub{font-size:13.5px;color:var(--muted);margin:0 0 20px;}
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:560px){.who-grid{grid-template-columns:1fr;}}
+.who-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:24px;cursor:pointer;transition:.2s var(--ease);text-align:left;font-family:inherit;}
+.who-card:hover{border-color:var(--mcc-blue);box-shadow:var(--shadow);transform:translateY(-2px);}
+.who-card.sel{border-color:var(--mcc-navy);background:var(--mcc-light);}
+.who-card .wi{width:46px;height:46px;border-radius:12px;background:var(--mcc-light);display:grid;place-items:center;color:var(--mcc-blue);font-size:22px;margin-bottom:14px;}
+.who-card.sel .wi{background:#fff;}
+.who-card h4{margin:0 0 5px;font-size:16px;color:var(--mcc-navy);font-weight:700;}
+.who-card p{margin:0;font-size:13px;color:var(--muted);line-height:1.5;}
+.field{margin-bottom:16px;max-width:420px;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--mcc-navy);margin-bottom:7px;}
+.field .hint{font-weight:400;color:var(--muted);font-family:var(--mono);font-size:11px;}
+.field input,.field select{width:100%;font-family:var(--sans);font-size:14px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;transition:.2s var(--ease);}
+.field input:focus,.field select:focus{outline:none;border-color:var(--mcc-blue);box-shadow:0 0 0 3px var(--mcc-light);}
+.field input.err{border-color:var(--red);}
+.field .errmsg{color:var(--red);font-size:12px;margin-top:6px;display:none;}
+.field input.err ~ .errmsg{display:block;}
+.book-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center;}
+.who-chip{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--mcc-navy);background:var(--mcc-light);border:1px solid #D6E0F2;border-radius:999px;padding:6px 13px;}
+
+/* location step */
+.loc-search{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.loc-search .li{flex:1;min-width:200px;position:relative;}
+.loc-search .li input{width:100%;font-family:var(--sans);font-size:14px;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px 12px 38px;}
+.loc-search .li input:focus{outline:none;border-color:var(--mcc-blue);box-shadow:0 0 0 3px var(--mcc-light);}
+.loc-search .li .pin{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mcc-blue);font-size:14px;}
+.loc-geo{font-family:var(--sans);font-weight:700;font-size:13px;color:var(--mcc-blue);background:#fff;border:1.5px solid var(--mcc-blue);border-radius:10px;padding:11px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.2s var(--ease);}
+.loc-geo:hover{background:var(--mcc-light);}
+.loc-map{position:relative;height:200px;border-radius:14px;overflow:hidden;border:1px solid var(--line);margin-bottom:18px;background:#E8EEF6;
+  background-image:linear-gradient(rgba(58,93,168,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(58,93,168,.10) 1px,transparent 1px);
+  background-size:30px 30px;}
+.loc-map::before{content:"";position:absolute;left:-10%;top:38%;width:120%;height:24px;background:rgba(255,255,255,.55);transform:rotate(-8deg);}
+.loc-map::after{content:"";position:absolute;left:18%;top:-10%;width:26px;height:130%;background:rgba(255,255,255,.5);transform:rotate(11deg);}
+.map-pin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;z-index:2;display:flex;flex-direction:column;align-items:center;}
+.map-pin .mp-dot{width:26px;height:26px;border-radius:50% 50% 50% 0;background:var(--mcc-blue);transform:rotate(-45deg);border:2.5px solid #fff;box-shadow:0 4px 10px rgba(27,58,107,.35);transition:.2s var(--ease);display:grid;place-items:center;}
+.map-pin .mp-dot b{transform:rotate(45deg);color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;}
+.map-pin:hover .mp-dot,.map-pin.sel .mp-dot{background:var(--mcc-gold);transform:rotate(-45deg) scale(1.18);}
+.map-pin.sel .mp-dot b{color:#5a3c00;}
+.loc-list{display:flex;flex-direction:column;gap:12px;}
+.loc-card{border:1.5px solid var(--line);border-radius:14px;background:#fff;overflow:hidden;transition:border-color .2s var(--ease),box-shadow .2s var(--ease);}
+.loc-card.sel{border-color:var(--mcc-navy);box-shadow:var(--shadow);}
+.loc-card-head{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;cursor:pointer;}
+.loc-card-head .lc-idx{width:24px;height:24px;border-radius:50%;background:var(--mcc-light);color:var(--mcc-blue);display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700;flex:none;margin-top:2px;}
+.loc-card.sel .lc-idx{background:var(--mcc-navy);color:#fff;}
+.lc-main{flex:1;}
+.lc-name{font-weight:700;font-size:15px;color:var(--mcc-navy);}
+.lc-addr{font-size:13px;color:var(--muted);margin-top:2px;}
+.lc-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.lc-tag{font-family:var(--mono);font-size:10px;letter-spacing:.02em;background:var(--mcc-light);color:var(--mcc-navy);border-radius:6px;padding:3px 8px;}
+.lc-hours{font-size:12px;color:var(--green);font-weight:600;margin-top:8px;display:flex;align-items:center;gap:7px;}
+.lc-hours .od{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.lc-chev{color:var(--mcc-blue);font-size:13px;transition:transform .3s var(--ease);margin-top:3px;}
+.loc-card.open .lc-chev{transform:rotate(180deg);}
+.loc-body{display:none;border-top:1px solid var(--line);padding:18px;background:#FBFCFE;}
+.loc-card.open .loc-body{display:block;animation:fadeScreen .35s var(--ease);}
+.loc-body-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:620px){.loc-body-grid{grid-template-columns:1fr;}}
+
+/* calendar */
+.cal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.cal-title{font-weight:700;font-size:14px;color:var(--mcc-navy);}
+.cal-nav{display:flex;gap:6px;}
+.cal-nav button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--mcc-navy);cursor:pointer;font-size:13px;}
+.cal-nav button:hover{background:var(--mcc-light);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dow{text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--muted);padding:4px 0;text-transform:uppercase;}
+.cal-day{aspect-ratio:1;border:none;background:none;border-radius:9px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--mcc-navy);cursor:pointer;transition:.15s var(--ease);}
+.cal-day:hover:not(:disabled){background:var(--mcc-light);}
+.cal-day.muted{color:transparent;pointer-events:none;}
+.cal-day:disabled{color:#C2C8D4;cursor:default;}
+.cal-day.sel{background:var(--mcc-navy);color:#fff;}
+.cal-day.has::after{content:"";display:block;width:4px;height:4px;border-radius:50%;background:var(--mcc-gold);margin:1px auto 0;}
+.cal-day.sel.has::after{background:#fff;}
+
+/* time slots */
+.slot-label{font-weight:700;font-size:13px;color:var(--mcc-navy);margin-bottom:12px;}
+.slot-empty{font-size:13px;color:var(--muted);padding:20px 0;text-align:center;}
+.slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+@media(max-width:420px){.slot-grid{grid-template-columns:repeat(2,1fr);}}
+.slot{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--mcc-navy);background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:9px 6px;cursor:pointer;transition:.15s var(--ease);}
+.slot:hover:not(:disabled){border-color:var(--mcc-blue);color:var(--mcc-blue);}
+.slot:disabled{color:#C2C8D4;background:var(--paper);cursor:default;border-style:dashed;}
+.slot.sel{background:var(--mcc-navy);border-color:var(--mcc-navy);color:#fff;}
+.slot-cta{margin-top:16px;}
+
+/* hold timer + toast */
+.hold-bar{position:sticky;bottom:10px;margin-top:22px;display:none;align-items:center;gap:16px;background:var(--mcc-navy);color:#fff;border-radius:14px;padding:14px 18px;box-shadow:0 16px 40px rgba(27,58,107,.35);z-index:20;}
+.hold-bar.on{display:flex;}
+.hold-bar .hb-l{flex:1;min-width:0;}
+.hold-bar .hb-t{font-weight:700;font-size:13.5px;}
+.hold-bar .hb-s{font-size:12px;opacity:.8;margin-top:2px;}
+.hold-ring{position:relative;width:46px;height:46px;flex:none;}
+.hold-ring svg{transform:rotate(-90deg);}
+.hold-ring .ring-bg{stroke:rgba(255,255,255,.2);}
+.hold-ring .ring-fg{stroke:var(--mcc-gold);stroke-linecap:round;transition:stroke-dashoffset 1s linear;}
+.hold-ring .ht{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700;}
+.hold-bar.warn{background:#7a2535;}
+.hold-bar.warn .ring-fg{stroke:#ff97a8;}
+.hold-bar .btn-primary{background:#fff;color:var(--mcc-navy);}
+.hold-bar .btn-primary:hover{background:var(--mcc-gold);color:#5a3c00;}
+.book-toast{position:sticky;top:8px;z-index:21;display:none;align-items:flex-start;gap:12px;background:var(--gold-soft);border:1px solid #F3DEB0;border-radius:12px;padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow);}
+.book-toast.on{display:flex;animation:fadeScreen .4s var(--ease);}
+.book-toast .tx{flex:1;}
+.book-toast .tt{font-weight:700;font-size:13.5px;color:#9a6500;}
+.book-toast .ts{font-size:12.5px;color:#7a5200;margin-top:3px;line-height:1.5;}
+.book-toast .tclose{cursor:pointer;color:#9a6500;font-size:15px;font-weight:700;background:none;border:none;}
+.hold-expired{display:none;text-align:center;padding:30px 20px;}
+.hold-expired.on{display:block;}
+
+/* confirm step */
+.confirm-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow-sm);max-width:460px;}
+.confirm-row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line);font-size:14px;}
+.confirm-row:first-of-type{border-top:none;}
+.confirm-row .cl{color:var(--muted);}
+.confirm-row .cv{color:var(--mcc-navy);font-weight:700;text-align:right;}
+
+/* booked appointment cards + management */
+.appt-list{display:flex;flex-direction:column;gap:14px;}
+.appt-card{align-items:flex-start;}
+.appt-for{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--mcc-blue);background:var(--mcc-light);border-radius:6px;padding:3px 9px;margin-bottom:8px;}
+.appt-card .at{font-weight:700;font-size:15.5px;color:var(--mcc-navy);}
+.appt-card .al{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.45;}
+.appt-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative;}
+.cal-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:15;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow-lg);padding:6px;min-width:200px;display:none;}
+.cal-menu.on{display:block;animation:fadeScreen .2s var(--ease);}
+.cal-menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--mcc-navy);padding:10px 11px;border-radius:8px;cursor:pointer;}
+.cal-menu button:hover{background:var(--mcc-light);}
+.cal-menu .cm-i{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;font-size:11px;color:#fff;flex:none;}
+.appt-managed{border-color:#D6E0F2;}
+.resched-flag{font-family:var(--mono);font-size:10px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 7px;margin-left:6px;}
+
+/* ============ REFLECTION ============ */
+.takeaways{display:flex;flex-direction:column;gap:18px;margin-top:var(--s5);}
+.take{display:grid;grid-template-columns:auto 1fr;gap:24px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px 30px;box-shadow:var(--shadow-sm);transition:.3s var(--ease);}
+.take:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+.take .tnum{font-family:var(--serif);font-style:italic;font-size:54px;color:var(--mcc-light);line-height:.8;}
+.take h4{margin:0 0 8px;font-size:19px;font-weight:700;color:var(--mcc-navy);letter-spacing:-.01em;}
+.take p{margin:0;font-size:15px;color:var(--muted);line-height:1.6;}
+@media(max-width:560px){.take{grid-template-columns:1fr;gap:10px;}.take .tnum{font-size:40px;}}
+
+.evo{margin-top:var(--s5);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
+.evo-head{display:grid;grid-template-columns:1fr 1fr;}
+.evo-head .eh{padding:16px 24px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.evo-head .eh.was{background:var(--red-soft);color:var(--red);}
+.evo-head .eh.now{background:var(--green-soft);color:var(--green);}
+.evo-row{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);}
+.evo-row .ec{padding:16px 24px;font-size:14.5px;}
+.evo-row .ec.was{color:var(--muted);background:#fff;}
+.evo-row .ec.now{color:var(--mcc-navy);font-weight:600;background:#FCFDFE;border-left:1px solid var(--line);}
+@media(max-width:560px){.evo-head .eh,.evo-row .ec{padding:12px 14px;font-size:12.5px;}}
+
+.coda{padding:var(--s7) 0;text-align:center;background:linear-gradient(180deg,#fff,var(--mcc-light));border-top:1px solid var(--line);}
+.coda-text{font-family:var(--sans);font-weight:800;font-size:clamp(32px,6vw,64px);line-height:1.1;color:var(--mcc-navy);max-width:18ch;margin:0 auto;letter-spacing:-.01em;}
+.coda-text em{font-style:italic;color:var(--mcc-blue);display:block;}
+.coda .label{margin-top:var(--s4);}
+
+/* footer */
+footer{padding:var(--s5) 0;background:var(--mcc-navy);color:rgba(255,255,255,.7);}
+footer .inner{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
+footer .fb{display:flex;align-items:center;gap:11px;}
+footer .fb .mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(150deg,var(--mcc-blue),#fff);}
+footer .fb .fn{font-weight:700;color:#fff;font-size:14px;}
+footer .fmeta{font-family:var(--mono);font-size:11px;letter-spacing:.04em;}
+footer a{color:#9DB6E8;}
+
+
+/* ===== standalone app shell ===== */
+html,body{height:100%;}
+body{margin:0;background:var(--paper);overflow-x:hidden;}
+body::before{display:none;}
+.appwrap{min-height:100%;display:flex;flex-direction:column;background:#fff;}
+.app-chrome{position:sticky;top:0;z-index:40;}
+.app-chrome .app-nav{position:static;}
+.app-body{flex:1;}
+/* mobile: compact, horizontally-scrollable tab strip */
+@media(max-width:560px){
+  .app-nav{gap:2px;padding:10px 12px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;}
+  .app-nav::-webkit-scrollbar{display:none;}
+  .app-brand{margin-right:8px;}
+  .app-brand .an{font-size:13px;}
+  .app-tab{flex:none;font-size:12px;padding:7px 11px;}
+  .app-body{padding:18px 16px 28px;}
+}
+
+</style>
+</head>
+<body>
+<div class="appwrap">
+<div class="app-chrome">
+<div class="proto-browser">
+        <div class="proto-dots"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div>
+        <div class="proto-url"><span class="lock">●</span>on.mycarecompass.ca/dashboard</div>
+      </div>
+<div class="app-nav">
+        <div class="app-brand"><img src="assets/MyCareCompass_Logo.png" alt="" class="brand-logo" style="width:26px;height:26px" /><div class="an">My<b>Care</b>Compass</div></div>
+        <button class="app-tab on" data-screen="dashboard">Dashboard</button>
+        <button class="app-tab" data-screen="reports">Reports</button>
+        <button class="app-tab" data-screen="analytics">Analytics</button>
+        <button class="app-tab" data-screen="appointments">Appointments</button>
+      </div>
+</div>
+
+      <div class="app-body">
+        <!-- SCREEN 1 · DASHBOARD -->
+        <div class="screen on" id="screen-dashboard">
+          <div class="dash-head">
+            <h2 class="app-welcome">Welcome to MyCareCompass · <span class="uname">Mireille</span></h2>
+          </div>
+
+          <!-- results first, no promos above -->
+          <div class="cta-card">
+            <div class="cc-l">
+              <div class="cc-lab"><span class="pd"></span>New results</div>
+              <div class="cc-t">Your 13 Mar report is ready</div>
+            </div>
+            <button class="btn btn-primary" id="dashViewResults" data-goto="reports" data-open-report="rep-13mar">View results →</button>
+          </div>
+
+          <div class="dash-cols">
+            <!-- View reports -->
+            <div class="dpanel">
+              <div class="dpanel-h"><span class="ico">▦</span>View reports<span class="gear" title="Manage linked people">⚙</span></div>
+              <div class="person-pills" id="personPills">
+                <span class="person-pill"><span class="pp-av">MO</span>Mireille Okonkwo</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="linkIndivBtn">＋ Link an individual's report</button>
+            </div>
+
+            <!-- Recent activity -->
+            <div class="dpanel">
+              <div class="dpanel-h"><span class="ico">↻</span>Recent activity</div>
+              <div class="recent-login">Last login: <b>28-May-2026, 12:57 PM</b></div>
+              <div class="recent-scroll">
+                <table class="recent-tbl">
+                  <thead><tr><th>Date</th><th>Activity</th><th>Details</th></tr></thead>
+                  <tbody>
+                    <tr><td>13 Mar 2026</td><td><span class="ra ra-res">Results ready</span></td><td>Microbiology report</td></tr>
+                    <tr><td>13 Mar 2026</td><td><span class="ra ra-view">Viewed report</span></td><td>TSH · Glucose · STI panel</td></tr>
+                    <tr><td>02 Mar 2026</td><td><span class="ra ra-appt">Booked visit</span></td><td>Lab visit · Spadina</td></tr>
+                    <tr><td>24 Feb 2026</td><td><span class="ra ra-done">Visit completed</span></td><td>Bloodwork · College Park</td></tr>
+                    <tr><td>24 Aug 2025</td><td><span class="ra ra-res">Results ready</span></td><td>General Laboratory</td></tr>
+                    <tr><td>09 Aug 2025</td><td><span class="ra ra-view">Viewed report</span></td><td>Microbiology</td></tr>
+                    <tr><td>25 Jul 2025</td><td><span class="ra ra-res">Results ready</span></td><td>Microbiology</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appointment overview (full width) -->
+          <div class="dpanel" style="margin-top:18px">
+            <div class="dpanel-h"><span class="ico">▤</span>Appointment overview</div>
+            <div class="ao-grid">
+              <div class="ao-col">
+                <div class="ao-t">View appointments</div>
+                <div class="ao-d">Find your upcoming, previous and cancelled visits.</div>
+                <button class="btn btn-secondary btn-sm" data-goto="appointments">Manage appointments</button>
+              </div>
+              <div class="ao-col">
+                <div class="ao-t">Book an appointment</div>
+                <div class="ao-d">Book a test at the LifeLabs location nearest to you.</div>
+                <button class="btn btn-primary btn-sm" data-book="lab">Book a lab visit</button>
+              </div>
+              <div class="ao-col">
+                <div class="ao-t">We come to you</div>
+                <div class="ao-d">With MyVisit™ we travel to you to collect samples.</div>
+                <button class="btn btn-secondary btn-sm" data-book="home">Book a home visit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN · ADD INDIVIDUAL -->
+        <div class="screen" id="screen-addindiv">
+          <div class="breadcrumb" data-goto="dashboard">← Back to dashboard</div>
+          <h2 class="app-page-h" style="margin-bottom:6px">Link an individual</h2>
+          <p class="book-sub" style="max-width:54ch">Add someone in your care so you can view their reports and book appointments on their behalf. You'll need their name and Ontario health card number.</p>
+          <div class="confirm-card" style="max-width:480px">
+            <div class="field"><label>Full name</label><input type="text" id="indivName" placeholder="e.g. Harold Whitfield" /><div class="errmsg">Enter the person's full name.</div></div>
+            <div class="field"><label>Relationship <span class="hint">optional</span></label><select id="indivRel"><option>Spouse / partner</option><option>Child</option><option>Parent</option><option>Dependent</option><option>Other</option></select></div>
+            <div class="field" style="margin-bottom:2px"><label>Ontario health card number <span class="hint">10 digits + 2-letter version</span></label><input type="text" id="indivHc" inputmode="numeric" placeholder="1234-567-890 AB" maxlength="16" /><div class="errmsg">Enter a valid health card number (10 digits).</div></div>
+          </div>
+          <div class="book-actions">
+            <button class="btn btn-ghost" data-goto="dashboard">Cancel</button>
+            <button class="btn btn-primary" id="indivSave">Save individual</button>
+          </div>
+          <div id="indivToast" class="book-toast" style="position:static;margin-top:18px"><div class="tx"><div class="tt">Individual linked</div><div class="ts" id="indivToastMsg">They now appear under View reports and can be selected when booking.</div></div></div>
+        </div>
+
+        <!-- SCREEN 2 · REPORTS -->
+        <div class="screen" id="screen-reports">
+          <div class="rep-head">
+            <div class="rep-who">
+              <div class="rep-name">Mireille Okonkwo</div>
+              <div class="rep-sub">6 reports · LifeLabs</div>
+            </div>
+            <div class="rep-actions">
+              <button class="btn btn-secondary btn-sm" id="simNewResult">↻ Check for new results</button>
+              <button class="btn btn-secondary btn-sm">Share</button>
+              <button class="btn btn-secondary btn-sm">Print PDF</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <div class="fake-select">All test results <span class="ch">▾</span></div>
+            <div class="fake-select">All visits <span class="ch">▾</span></div>
+            <div class="toggle-chip">Out of range <span class="tg off" id="oorTg" role="switch" aria-checked="false"></span></div>
+          </div>
+          <div class="rep-acc">
+            <!-- 13 Mar 2026 -->
+            <div class="rep-item open" id="rep-13mar">
+              <button class="rep-acc-head">
+                <div class="rah-date">13 Mar 2026<span class="rah-time">2:44 PM</span></div>
+                <div class="rah-sec">Microbiology &amp; Chemistry · 4 results</div>
+                <span class="pill final"><span class="pd"></span>Final</span>
+                <span class="rah-chev">▾</span>
+              </button>
+              <div class="rep-acc-body">
+                <div class="rep-pdfbar">
+                  <span class="rpb-l">Collected at LifeLabs — Spadina · Reported 13 Mar 2026</span>
+                  <a class="btn btn-secondary btn-sm" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report</a>
+                </div>
+                <div class="result-grid">
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">TSH</div><div class="rc-sub">Thyroid Stimulating Hormone</div></div><span class="pill within"><span class="pd"></span>Within Range</span></div><div class="rc-val">2.4<b>mIU/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:39%"></div></div><div class="range-labels"><span>0.4</span><span>0.4–4.0</span><span>4.0</span></div></div></div>
+                  <div class="result-card" style="border-color:#F3DEB0"><div class="rc-top"><div><div class="rc-name">Glucose</div><div class="rc-sub">Fasting · Plasma</div></div><span class="pill above"><span class="pd"></span>Above Range</span></div><div class="rc-val">6.2<b>mmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker warn" style="left:88%"></div></div><div class="range-labels"><span>3.9</span><span>3.9–5.6</span><span>5.6</span></div></div></div>
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">Chlamydia trachomatis DNA (NAAT)</div><div class="rc-sub">Specimen · Urine</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val" style="font-size:24px">NEGATIVE</div><div class="range-labels" style="margin-top:10px"><span>Reference · N/A</span></div></div>
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">Neisseria gonorrhoeae DNA (NAAT)</div><div class="rc-sub">Specimen · Urine</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val" style="font-size:24px">NEGATIVE</div><div class="range-labels" style="margin-top:10px"><span>Reference · N/A</span></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 24 Aug 2025 -->
+            <div class="rep-item">
+              <button class="rep-acc-head">
+                <div class="rah-date">24 Aug 2025<span class="rah-time">9:30 AM</span></div>
+                <div class="rah-sec">General Laboratory · 2 results</div>
+                <span class="pill final"><span class="pd"></span>Final</span>
+                <span class="rah-chev">▾</span>
+              </button>
+              <div class="rep-acc-body">
+                <div class="rep-pdfbar">
+                  <span class="rpb-l">Collected at LifeLabs — College Park · Reported 24 Aug 2025</span>
+                  <a class="btn btn-secondary btn-sm" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report</a>
+                </div>
+                <div class="result-grid">
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">Hemoglobin</div><div class="rc-sub">Complete Blood Count</div></div><span class="pill within"><span class="pd"></span>Within Range</span></div><div class="rc-val">138<b>g/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:45%"></div></div><div class="range-labels"><span>120</span><span>120–160</span><span>160</span></div></div></div>
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">Ferritin</div><div class="rc-sub">Iron stores</div></div><span class="pill within"><span class="pd"></span>Within Range</span></div><div class="rc-val">42<b>µg/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:24%"></div></div><div class="range-labels"><span>15</span><span>15–200</span><span>200</span></div></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 9 Aug 2025 -->
+            <div class="rep-item">
+              <button class="rep-acc-head">
+                <div class="rah-date">9 Aug 2025<span class="rah-time">2:12 PM</span></div>
+                <div class="rah-sec">Microbiology · 1 result</div>
+                <span class="pill final"><span class="pd"></span>Final</span>
+                <span class="rah-chev">▾</span>
+              </button>
+              <div class="rep-acc-body">
+                <div class="rep-pdfbar">
+                  <span class="rpb-l">Collected at LifeLabs — Spadina · Reported 9 Aug 2025</span>
+                  <a class="btn btn-secondary btn-sm" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report</a>
+                </div>
+                <div class="result-grid">
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">Urine Culture</div><div class="rc-sub">Mid-stream specimen</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val" style="font-size:24px">NO GROWTH</div><div class="range-labels" style="margin-top:10px"><span>Reference · No growth at 48h</span></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 25 Jul 2025 -->
+            <div class="rep-item">
+              <button class="rep-acc-head">
+                <div class="rah-date">25 Jul 2025<span class="rah-time">5:39 PM</span></div>
+                <div class="rah-sec">Microbiology · 1 result</div>
+                <span class="pill final"><span class="pd"></span>Final</span>
+                <span class="rah-chev">▾</span>
+              </button>
+              <div class="rep-acc-body">
+                <div class="rep-pdfbar">
+                  <span class="rpb-l">Collected at LifeLabs — Dundas West · Reported 25 Jul 2025</span>
+                  <a class="btn btn-secondary btn-sm" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report</a>
+                </div>
+                <div class="result-grid">
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">Throat Swab</div><div class="rc-sub">Group A Streptococcus</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val" style="font-size:24px">NEGATIVE</div><div class="range-labels" style="margin-top:10px"><span>Reference · Not detected</span></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3 Jul 2025 -->
+            <div class="rep-item">
+              <button class="rep-acc-head">
+                <div class="rah-date">3 Jul 2025<span class="rah-time">7:17 PM</span></div>
+                <div class="rah-sec">Chemistry &amp; Microbiology · 2 results</div>
+                <span class="pill final"><span class="pd"></span>Final</span>
+                <span class="rah-chev">▾</span>
+              </button>
+              <div class="rep-acc-body">
+                <div class="rep-pdfbar">
+                  <span class="rpb-l">Collected at LifeLabs — Spadina · Reported 3 Jul 2025</span>
+                  <a class="btn btn-secondary btn-sm" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report</a>
+                </div>
+                <div class="result-grid">
+                  <div class="result-card"><div class="rc-top"><div><div class="rc-name">Total Cholesterol</div><div class="rc-sub">Lipid panel · Fasting</div></div><span class="pill within"><span class="pd"></span>Within Range</span></div><div class="rc-val">4.6<b>mmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:40%"></div></div><div class="range-labels"><span>&lt;5.2</span><span>Desirable</span><span>5.2</span></div></div></div>
+                  <div class="result-card" style="border-color:#F3C9D2"><div class="rc-top"><div><div class="rc-name">Vitamin D (25-OH)</div><div class="rc-sub">Serum</div></div><span class="pill below"><span class="pd"></span>Below Range</span></div><div class="rc-val">42<b>nmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:9%"></div></div><div class="range-labels"><span>50</span><span>50–125</span><span>125</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 3 · ANALYTICS -->
+        <div class="screen" id="screen-analytics">
+          <h2 class="app-page-h">Your results</h2>
+          <div class="screen-sub">Latest collection · 13 Mar 2026</div>
+          <div class="filter-bar">
+            <div class="fake-select">All tests <span class="ch">▾</span></div>
+            <div class="toggle-chip">Out of range only <span class="tg off" id="oorTg2" role="switch" aria-checked="false"></span></div>
+          </div>
+          <div class="result-grid" id="resultGrid">
+            <div class="result-card" data-range="in">
+              <div class="rc-top"><div><div class="rc-name">TSH</div><div class="rc-sub">Thyroid Stimulating Hormone</div></div><span class="pill within"><span class="pd"></span>Within Range</span></div>
+              <div class="rc-val">2.4<b>mIU/L</b></div>
+              <div class="range-bar"><div class="range-track"><div class="range-marker" style="left:39%"></div></div><div class="range-labels"><span>0.4</span><span>0.4–4.0</span><span>4.0</span></div></div>
+            </div>
+            <div class="result-card" data-range="out" style="border-color:#F3DEB0">
+              <div class="rc-top"><div><div class="rc-name">Glucose</div><div class="rc-sub">Fasting · Plasma</div></div><span class="pill above"><span class="pd"></span>Above Range</span></div>
+              <div class="rc-val">6.2<b>mmol/L</b></div>
+              <div class="range-bar"><div class="range-track"><div class="range-marker warn" style="left:88%"></div></div><div class="range-labels"><span>3.9</span><span>3.9–5.6</span><span>5.6</span></div></div>
+            </div>
+            <div class="result-card" data-range="in">
+              <div class="rc-top"><div><div class="rc-name">Chlamydia trachomatis DNA (NAAT)</div><div class="rc-sub">Specimen · Urine</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div>
+              <div class="rc-val" style="font-size:24px">NEGATIVE</div>
+              <div class="range-labels" style="margin-top:10px"><span>Reference · N/A</span><a href="#" data-goto="detail" style="font-weight:600">Learn more →</a></div>
+            </div>
+            <div class="result-card" data-range="in">
+              <div class="rc-top"><div><div class="rc-name">Neisseria gonorrhoeae DNA (NAAT)</div><div class="rc-sub">Specimen · Urine</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div>
+              <div class="rc-val" style="font-size:24px">NEGATIVE</div>
+              <div class="range-labels" style="margin-top:10px"><span>Reference · N/A</span><a href="#" data-goto="detail" style="font-weight:600">Learn more →</a></div>
+            </div>
+          </div>
+          <div class="empty-clean" id="oorEmpty" style="display:none;margin-top:14px">Good news — nothing is out of range.</div>
+        </div>
+
+        <!-- SCREEN 3 · REPORT DETAIL -->
+        <div class="screen" id="screen-detail">
+          <div class="breadcrumb" data-goto="reports">← Back to Reports</div>
+          <div class="detail-head">
+            <div><div class="dh-t">Report · 13 Mar 2026</div><div class="dh-s">MICROBIOLOGY · FINAL · LIFELABS</div></div>
+            <span class="pill final"><span class="pd"></span>Final</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="result-card">
+              <div class="rc-top">
+                <div><div class="rc-name">Chlamydia trachomatis DNA (NAAT)</div><div class="rc-sub">Specimen source · Urine</div></div>
+                <span class="pill neg"><span class="pd"></span>Negative</span>
+              </div>
+              <div class="rc-val" style="font-size:24px">NEGATIVE</div>
+              <div class="range-labels" style="margin-top:10px"><span>Reference range · N/A</span><a href="#system" style="font-weight:600">Learn more →</a></div>
+            </div>
+            <div class="result-card">
+              <div class="rc-top">
+                <div><div class="rc-name">Neisseria gonorrhoeae DNA (NAAT)</div><div class="rc-sub">Specimen source · Urine</div></div>
+                <span class="pill neg"><span class="pd"></span>Negative</span>
+              </div>
+              <div class="rc-val" style="font-size:24px">NEGATIVE</div>
+              <div class="range-labels" style="margin-top:10px"><span>Reference range · N/A</span><a href="#system" style="font-weight:600">Learn more →</a></div>
+            </div>
+            <div class="empty-clean" style="text-align:left;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap"><span><b style="color:var(--mcc-navy)">Specimen Source</b> · Urine</span><span class="label" style="text-transform:none">Collected 13-Mar-2026 · 2:44 PM</span></div>
+          </div>
+        </div>
+
+        <!-- SCREEN 4 · APPOINTMENTS -->
+        <div class="screen" id="screen-appointments">
+          <h2 class="app-page-h">Appointments</h2>
+          <div class="appt-subtabs">
+            <div class="appt-subtab on" data-subtab="upcoming">Upcoming</div>
+            <div class="appt-subtab" data-subtab="past">Past</div>
+          </div>
+
+          <div id="subtab-upcoming">
+            <!-- empty state -->
+            <div id="apptEmpty">
+              <div class="empty-illus">
+                <div class="empty-art">
+                  <div class="cal"></div>
+                  <div class="chk">✓</div>
+                  <div class="pin"></div>
+                </div>
+                <div style="font-weight:700;color:var(--mcc-navy);font-size:17px;margin-bottom:4px">No upcoming appointments</div>
+                <div style="color:var(--muted);font-size:14px;max-width:34ch;text-align:center">When you book a visit it'll show up here, with directions, calendar add and a reminder.</div>
+              </div>
+              <div class="action-cards">
+                <div class="action-card" data-book="lab">
+                  <div class="ai">⌖</div>
+                  <h4>Book a Lab Visit</h4>
+                  <p>Find the LifeLabs location nearest you and pick a time that works.</p>
+                  <button class="btn btn-primary btn-sm" data-book="lab">Find a location →</button>
+                </div>
+                <div class="action-card" data-book="home">
+                  <div class="ai">⌂</div>
+                  <h4>Book a Home Visit <span class="label" style="text-transform:none;color:var(--mcc-blue)">MyVisit™</span></h4>
+                  <p>Prefer to stay home? We'll come to you to collect your samples.</p>
+                  <button class="btn btn-primary btn-sm" data-book="home">Request a visit →</button>
+                </div>
+              </div>
+            </div>
+            <!-- filled list -->
+            <div id="apptFilled" style="display:none">
+              <div class="appt-list" id="apptList"></div>
+              <div style="margin-top:18px"><button class="btn btn-primary btn-sm" data-book="lab">＋ Book another appointment</button></div>
+            </div>
+          </div>
+
+          <div id="subtab-past" style="display:none">
+            <div class="empty-clean" style="margin-top:8px">There are no past appointments.</div>
+          </div>
+        </div>
+
+        <!-- SCREEN 5 · BOOKING FLOW (Health Connect module) -->
+        <div class="screen" id="screen-booking">
+          <div class="breadcrumb" id="bookBack">← Back to appointments</div>
+          <div class="book-head">
+            <h2 class="app-page-h" id="bookTitle" style="margin-bottom:0">Book a lab visit</h2>
+          </div>
+
+          <!-- urgency toast -->
+          <div class="book-toast" id="bookToast">
+            <div class="tx">
+              <div class="tt">Complete your booking soon</div>
+              <div class="ts">This slot is held just for you for <b>1 minute</b>. Finish before the timer runs out or it'll be released to other patients.</div>
+            </div>
+            <button class="tclose" id="toastClose" aria-label="Dismiss">✕</button>
+          </div>
+
+          <!-- step indicator -->
+          <div class="book-steps" id="bookSteps">
+            <div class="bstep" data-s="1"><div class="bsn">1</div><div class="bsl">Who for</div><div class="bsbar"></div></div>
+            <div class="bstep" data-s="2"><div class="bsn">2</div><div class="bsl">Health card</div><div class="bsbar"></div></div>
+            <div class="bstep" data-s="3"><div class="bsn">3</div><div class="bsl">Location</div><div class="bsbar"></div></div>
+            <div class="bstep" data-s="4"><div class="bsn">4</div><div class="bsl">Date &amp; time</div><div class="bsbar"></div></div>
+            <div class="bstep" data-s="5"><div class="bsn">5</div><div class="bsl">Confirm</div></div>
+          </div>
+
+          <!-- STEP 1 — who -->
+          <div class="book-panel" data-panel="1">
+            <h3 class="book-q">Who is this appointment for?</h3>
+            <p class="book-sub">Book for yourself, or for someone in your care.</p>
+            <div class="who-grid">
+              <button class="who-card" data-who="self"><div class="wi">🧍</div><h4>For myself</h4><p>Mireille Okonkwo</p></button>
+              <button class="who-card" data-who="other"><div class="wi">👪</div><h4>For someone else</h4><p>A family member or someone in your care</p></button>
+            </div>
+            <div class="book-actions"><button class="btn btn-primary" id="next1" data-next="1" disabled>Continue →</button></div>
+          </div>
+
+          <!-- STEP 2 — health card -->
+          <div class="book-panel" data-panel="2">
+            <h3 class="book-q">Add the health card number</h3>
+            <p class="book-sub" id="hcSub">For Mireille Okonkwo.</p>
+            <div id="linkedChips" class="pill-row" style="margin-bottom:16px;display:none"></div>
+            <div class="field" id="otherNameField" style="display:none">
+              <label>Full name of the person</label>
+              <input type="text" id="otherNameInput" placeholder="e.g. a parent or partner" />
+            </div>
+            <div class="field">
+              <label>Ontario health card number <span class="hint">10 digits + 2-letter version code</span></label>
+              <input type="text" id="hcInput" inputmode="numeric" placeholder="1234-567-890 AB" maxlength="16" />
+              <div class="errmsg">Enter a valid health card number (10 digits) to continue.</div>
+            </div>
+            <div class="book-actions">
+              <button class="btn btn-ghost" data-back="2">← Back</button>
+              <button class="btn btn-primary" data-next="2">Continue →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3+4 — location & date/time -->
+          <div class="book-panel" data-panel="3">
+            <h3 class="book-q">Where would you like your test?</h3>
+            <p class="book-sub">Search by area or postal code, or use your location. Pick a pin on the map or a card below — the card opens to choose a date and time.</p>
+            <div class="loc-search">
+              <div class="li"><span class="pin">⌕</span><input type="text" id="areaInput" placeholder="Area or postal code — e.g. M5T" value="M5T 1A1" /></div>
+              <button class="loc-geo" id="geoBtn">⌖ Use my location</button>
+            </div>
+            <div class="loc-map" id="locMap"></div>
+            <div class="loc-list" id="locList"></div>
+            <div class="book-actions"><button class="btn btn-ghost" data-back="3">← Back</button></div>
+          </div>
+
+          <!-- STEP 5 — confirm -->
+          <div class="book-panel" data-panel="5">
+            <h3 class="book-q">Confirm your appointment</h3>
+            <p class="book-sub">Review the details below, then book. Your slot is held for one minute.</p>
+            <div class="confirm-card" id="confirmCard"></div>
+            <div class="book-actions"><button class="btn btn-ghost" id="confirmBack">← Change date or time</button></div>
+          </div>
+
+          <!-- hold expired state -->
+          <div class="hold-expired" id="holdExpired">
+            <div class="empty-art" style="margin:0 auto 18px"><div class="cal"></div><div class="chk" style="color:var(--red-soft)">⌛</div><div class="pin" style="background:var(--red)"></div></div>
+            <div style="font-weight:700;color:var(--mcc-navy);font-size:18px;margin-bottom:6px">Your 1-minute hold expired</div>
+            <div style="color:var(--muted);font-size:14px;max-width:38ch;margin:0 auto 20px;line-height:1.5">We could only hold that slot for a minute and it's been released. Pick a time again to start a fresh booking.</div>
+            <button class="btn btn-primary" id="restartBook">Start a new booking</button>
+          </div>
+
+          <!-- sticky 1-minute hold timer -->
+          <div class="hold-bar" id="holdBar">
+            <div class="hold-ring">
+              <svg width="46" height="46" viewBox="0 0 46 46">
+                <circle class="ring-bg" cx="23" cy="23" r="19" fill="none" stroke-width="4"></circle>
+                <circle class="ring-fg" id="ringFg" cx="23" cy="23" r="19" fill="none" stroke-width="4" stroke-dasharray="119.38" stroke-dashoffset="0"></circle>
+              </svg>
+              <div class="ht" id="holdNum">60</div>
+            </div>
+            <div class="hb-l">
+              <div class="hb-t">Slot held — finish to confirm</div>
+              <div class="hb-s" id="holdSub">We're holding your time for 1 minute.</div>
+            </div>
+            <button class="btn btn-primary" id="holdBookBtn">Book appointment</button>
+          </div>
+        </div>
+      </div>
+</div>
+<script>
+(function(){
+"use strict";
+/* ---------- PROTOTYPE screen switching ---------- */
+  var tabs=document.querySelectorAll('.app-tab');
+  function showScreen(name){
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+    var el=document.getElementById('screen-'+name);
+    if(el)el.classList.add('on');
+    var navName=name;
+    if(name==='detail')navName='reports';
+    else if(name==='booking')navName='appointments';
+    else if(name==='addindiv')navName='dashboard';
+    tabs.forEach(function(t){t.classList.toggle('on',t.getAttribute('data-screen')===navName);});
+    var url=document.querySelector('.proto-url');
+    if(url){
+      var path=name;
+      if(name==='detail')path='reports/13-mar-2026';
+      else if(name==='booking')path='appointments/book';
+      url.innerHTML='<span class="lock">●</span>on.mycarecompass.ca/'+path;
+    }
+  }
+  window.__mccShowScreen=showScreen;
+  tabs.forEach(function(t){t.addEventListener('click',function(){showScreen(t.getAttribute('data-screen'));});});
+  document.querySelectorAll('[data-goto]').forEach(function(el){
+    el.addEventListener('click',function(e){
+      e.preventDefault();
+      showScreen(el.getAttribute('data-goto'));
+      var openId=el.getAttribute('data-open-report');
+      if(openId){
+        var item=document.getElementById(openId);
+        if(item){
+          item.classList.add('open');
+          item.classList.remove('just-in');void item.offsetWidth;
+          item.classList.add('just-in');
+        }
+      }
+    });
+  });
+
+  /* out of range toggle (Reports — visual) */
+  var oor=document.getElementById('oorTg');
+  if(oor){oor.addEventListener('click',function(){
+    var on=oor.getAttribute('aria-checked')==='true';
+    oor.setAttribute('aria-checked',(!on).toString());
+    oor.classList.toggle('off',on);
+  });}
+
+  /* out of range toggle (Analytics — filters result cards) */
+  var oor2=document.getElementById('oorTg2');
+  if(oor2){oor2.addEventListener('click',function(){
+    var next=oor2.getAttribute('aria-checked')!=='true';
+    oor2.setAttribute('aria-checked',next.toString());
+    oor2.classList.toggle('off',!next);
+    document.querySelectorAll('#resultGrid .result-card').forEach(function(c){
+      if(c.getAttribute('data-range')==='in'){c.style.display=next?'none':'';}
+    });
+  });}
+
+  /* appointment subtabs */
+  document.querySelectorAll('.appt-subtab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.appt-subtab').forEach(function(x){x.classList.remove('on');});
+      t.classList.add('on');
+      var which=t.getAttribute('data-subtab');
+      document.getElementById('subtab-upcoming').style.display=(which==='upcoming')?'':'none';
+      document.getElementById('subtab-past').style.display=(which==='past')?'':'none';
+    });
+  });
+
+  /* ---------- APPOINTMENT BOOKING — Health Connect module ---------- */
+  (function(){
+    var bookingScreen=document.getElementById('screen-booking');
+    if(!bookingScreen) return;
+
+    var LOCATIONS=[
+      {id:'spadina',name:'LifeLabs — Spadina',addr:'215 Spadina Ave, Toronto',tests:['Bloodwork','Urine','ECG'],hours:'Mon–Fri 7:00–15:00 · Sat 8:00–12:00',open:true,x:24,y:44},
+      {id:'college',name:'LifeLabs — College Park',addr:'444 Yonge St, Toronto',tests:['Bloodwork','Glucose','Pediatric'],hours:'Mon–Fri 6:30–16:00',open:true,x:55,y:28},
+      {id:'dundas',name:'LifeLabs — Dundas West',addr:'1500 Dundas St W, Toronto',tests:['Bloodwork','Urine','Swabs'],hours:'Mon–Fri 7:30–14:30',open:true,x:38,y:67},
+      {id:'queen',name:'LifeLabs — Queen East',addr:'620 Queen St E, Toronto',tests:['Bloodwork','ECG','Glucose'],hours:'Mon–Sat 7:00–15:30',open:true,x:73,y:60}
+    ];
+    var SELF='Mireille Okonkwo';
+    var SLOTS=['8:00 AM','8:30 AM','9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','1:00 PM','1:30 PM','2:00 PM','2:30 PM'];
+    var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var DOW=['Su','Mo','Tu','We','Th','Fr','Sa'];
+    var TODAY=new Date(2026,2,13); // 13 Mar 2026 (Friday)
+    var RING=119.38;
+
+    var appts=[];           // booked appointments
+    var booking=null;       // working draft
+    var editingId=null;     // reschedule target
+    var holdInt=null, holdLeft=60;
+    var calOffset=0;        // months from TODAY's month
+    var selKey=null;        // selected date key 'y-m-d'
+    var idSeq=1;
+
+    // ----- element refs -----
+    var panels=bookingScreen.querySelectorAll('.book-panel');
+    var stepEls=bookingScreen.querySelectorAll('.bstep');
+    var holdBar=document.getElementById('holdBar');
+    var holdNum=document.getElementById('holdNum');
+    var ringFg=document.getElementById('ringFg');
+    var holdSub=document.getElementById('holdSub');
+    var toast=document.getElementById('bookToast');
+    var holdExpired=document.getElementById('holdExpired');
+    var bookSteps=document.getElementById('bookSteps');
+    var locList=document.getElementById('locList');
+    var locMap=document.getElementById('locMap');
+    var confirmCard=document.getElementById('confirmCard');
+    var bookTitle=document.getElementById('bookTitle');
+
+    // ----- helpers -----
+    function key(d){return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();}
+    function pad(n){return (n<10?'0':'')+n;}
+    function fmtDate(d){return DOW[d.getDay()]+', '+d.getDate()+' '+MONTHS[d.getMonth()].slice(0,3)+' '+d.getFullYear();}
+    function locById(id){for(var i=0;i<LOCATIONS.length;i++){if(LOCATIONS[i].id===id)return LOCATIONS[i];}return null;}
+
+    function showPanel(p){ panels.forEach(function(el){el.classList.toggle('on',el.getAttribute('data-panel')===p);}); }
+    function setStep(n){
+      stepEls.forEach(function(el){
+        var s=+el.getAttribute('data-s');
+        el.classList.toggle('active',s===n);
+        el.classList.toggle('done',s<n);
+      });
+    }
+
+    // ----- flow control -----
+    function startBooking(mode){
+      stopHold(true);
+      booking={mode:mode||'lab',who:null,name:null,hc:null,locId:null,date:null,dateLabel:null,timeLabel:null};
+      editingId=null; selKey=null; calOffset=0;
+      bookTitle.textContent = booking.mode==='home' ? 'Book a home visit' : 'Book a lab visit';
+      holdExpired.classList.remove('on'); bookSteps.style.display='';
+      // reset who/health inputs
+      bookingScreen.querySelectorAll('.who-card').forEach(function(c){c.classList.remove('sel');});
+      document.getElementById('next1').disabled=true;
+      document.getElementById('otherNameField').style.display='none';
+      document.getElementById('otherNameInput').value='';
+      var hc=document.getElementById('hcInput'); hc.value=''; hc.classList.remove('err');
+      showPanel('1'); setStep(1);
+      window.__mccShowScreen('booking');
+    }
+
+    // entry buttons (dashboard + appointments + action cards)
+    document.querySelectorAll('[data-book]').forEach(function(el){
+      el.addEventListener('click',function(e){
+        e.preventDefault(); e.stopPropagation();
+        startBooking(el.getAttribute('data-book'));
+      });
+    });
+    document.getElementById('bookBack').addEventListener('click',function(){ stopHold(true); window.__mccShowScreen('appointments'); });
+    var geoBtn=document.getElementById('geoBtn');
+    if(geoBtn){geoBtn.addEventListener('click',function(){
+      var ai=document.getElementById('areaInput');
+      geoBtn.textContent='⌖ Locating…';
+      setTimeout(function(){ ai.value='Current location · Toronto, ON'; geoBtn.textContent='⌖ Using my location'; },600);
+    });}
+
+    // ----- STEP 1 : who -----
+    bookingScreen.querySelectorAll('.who-card').forEach(function(c){
+      c.addEventListener('click',function(){
+        bookingScreen.querySelectorAll('.who-card').forEach(function(x){x.classList.remove('sel');});
+        c.classList.add('sel');
+        booking.who=c.getAttribute('data-who');
+        document.getElementById('next1').disabled=false;
+      });
+    });
+    document.getElementById('next1').addEventListener('click',function(){
+      var isOther=booking.who==='other';
+      document.getElementById('otherNameField').style.display=isOther?'':'none';
+      document.getElementById('hcSub').textContent=isOther?'For the person you are booking for.':('For '+SELF+'.');
+      if(!isOther){ booking.name=SELF; }
+      var chips=document.getElementById('linkedChips');
+      if(chips){
+        var people=window.__mccLinked||[];
+        if(isOther && people.length){
+          chips.style.display='flex';
+          chips.innerHTML='<div style="flex-basis:100%;font-size:12px;color:var(--muted);margin-bottom:2px">Pick a linked individual, or enter someone new:</div>'+people.map(function(p,i){return '<button type="button" class="who-chip" data-li="'+i+'" style="cursor:pointer">'+p.name+'</button>';}).join('');
+          chips.querySelectorAll('[data-li]').forEach(function(b){b.addEventListener('click',function(){var p=people[+b.getAttribute('data-li')];document.getElementById('otherNameInput').value=p.name;booking.name=p.name;document.getElementById('otherNameInput').classList.remove('err');var hc=document.getElementById('hcInput');hc.value=p.hc;hc.classList.remove('err');});});
+        } else { chips.style.display='none'; chips.innerHTML=''; }
+      }
+      showPanel('2'); setStep(2);
+    });
+
+    // ----- STEP 2 : health card -----
+    bookingScreen.querySelector('[data-back="2"]').addEventListener('click',function(){ showPanel('1'); setStep(1); });
+    var hcInput=document.getElementById('hcInput');
+    hcInput.addEventListener('input',function(){
+      var v=hcInput.value.replace(/[^0-9]/g,'').slice(0,10);
+      var out=v;
+      if(v.length>4)out=v.slice(0,4)+'-'+v.slice(4);
+      if(v.length>7)out=v.slice(0,4)+'-'+v.slice(4,7)+'-'+v.slice(7);
+      hcInput.value=out; hcInput.classList.remove('err');
+    });
+    bookingScreen.querySelector('[data-next="2"]').addEventListener('click',function(){
+      var digits=hcInput.value.replace(/[^0-9]/g,'');
+      var nameOk=true;
+      if(booking.who==='other'){
+        var nm=document.getElementById('otherNameInput').value.trim();
+        if(nm.length<2){nameOk=false;document.getElementById('otherNameInput').classList.add('err');}
+        else{booking.name=nm;document.getElementById('otherNameInput').classList.remove('err');}
+      }
+      if(digits.length<10){ hcInput.classList.add('err'); return; }
+      if(!nameOk) return;
+      booking.hc=hcInput.value;
+      buildLocations(); showPanel('3'); setStep(3);
+    });
+
+    // ----- STEP 3 : locations + map -----
+    function buildLocations(){
+      locList.innerHTML=''; locMap.innerHTML='';
+      LOCATIONS.forEach(function(loc,i){
+        // map pin
+        var pin=document.createElement('div');
+        pin.className='map-pin'; pin.style.left=loc.x+'%'; pin.style.top=loc.y+'%';
+        pin.setAttribute('data-loc',loc.id);
+        pin.innerHTML='<div class="mp-dot"><b>'+(i+1)+'</b></div>';
+        pin.addEventListener('click',function(){ openLoc(loc.id,true); });
+        locMap.appendChild(pin);
+
+        // card
+        var card=document.createElement('div');
+        card.className='loc-card'; card.setAttribute('data-loc',loc.id);
+        var tags=loc.tests.map(function(t){return '<span class="lc-tag">'+t+'</span>';}).join('');
+        card.innerHTML=
+          '<div class="loc-card-head">'+
+            '<div class="lc-idx">'+(i+1)+'</div>'+
+            '<div class="lc-main">'+
+              '<div class="lc-name">'+loc.name+'</div>'+
+              '<div class="lc-addr">'+loc.addr+'</div>'+
+              '<div class="lc-meta">'+tags+'</div>'+
+              '<div class="lc-hours"><span class="od"></span>'+loc.hours+'</div>'+
+            '</div>'+
+            '<div class="lc-chev">▼</div>'+
+          '</div>'+
+          '<div class="loc-body"><div class="loc-body-grid">'+
+            '<div class="cal-wrap"></div>'+
+            '<div class="slot-wrap"><div class="slot-label">Select a date to see times</div><div class="slot-empty">Pick a day on the calendar.</div></div>'+
+          '</div></div>';
+        card.querySelector('.loc-card-head').addEventListener('click',function(){
+          if(card.classList.contains('open')){ closeAll(); }
+          else { openLoc(loc.id,false); }
+        });
+        locList.appendChild(card);
+      });
+    }
+    function closeAll(){
+      locList.querySelectorAll('.loc-card').forEach(function(c){c.classList.remove('open','sel');});
+      locMap.querySelectorAll('.map-pin').forEach(function(p){p.classList.remove('sel');});
+      setStep(3);
+    }
+    function openLoc(id,fromMap){
+      closeAll();
+      var card=locList.querySelector('.loc-card[data-loc="'+id+'"]');
+      var pin=locMap.querySelector('.map-pin[data-loc="'+id+'"]');
+      if(card){card.classList.add('open','sel');}
+      if(pin){pin.classList.add('sel');}
+      booking.locId=id; selKey=null; calOffset=0;
+      renderCalendar(card); renderSlots(card,null);
+      setStep(4);
+      if(card){ try{card.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){} }
+    }
+
+    // ----- calendar -----
+    function renderCalendar(card){
+      var wrap=card.querySelector('.cal-wrap'); if(!wrap)return;
+      var base=new Date(TODAY.getFullYear(),TODAY.getMonth()+calOffset,1);
+      var y=base.getFullYear(), m=base.getMonth();
+      var first=new Date(y,m,1).getDay();
+      var days=new Date(y,m+1,0).getDate();
+      var html='<div class="cal-h"><div class="cal-title">'+MONTHS[m]+' '+y+'</div>'+
+        '<div class="cal-nav"><button data-nav="-1"'+(calOffset<=0?' disabled':'')+'>‹</button>'+
+        '<button data-nav="1"'+(calOffset>=2?' disabled':'')+'>›</button></div></div>';
+      html+='<div class="cal-grid">';
+      DOW.forEach(function(d){html+='<div class="cal-dow">'+d+'</div>';});
+      for(var i=0;i<first;i++){html+='<div class="cal-day muted"></div>';}
+      for(var d=1;d<=days;d++){
+        var date=new Date(y,m,d);
+        var isPast=date<=TODAY;
+        var isSun=date.getDay()===0;
+        var disabled=isPast||isSun;
+        var k=key(date);
+        var cls='cal-day'+(disabled?'':' has')+(k===selKey?' sel':'');
+        html+='<button class="'+cls+'"'+(disabled?' disabled':'')+' data-k="'+k+'" data-d="'+d+'">'+d+'</button>';
+      }
+      html+='</div>';
+      wrap.innerHTML=html;
+      wrap.querySelectorAll('[data-nav]').forEach(function(b){
+        b.addEventListener('click',function(){ calOffset+=(+b.getAttribute('data-nav')); renderCalendar(card); });
+      });
+      wrap.querySelectorAll('.cal-day:not(.muted):not(:disabled)').forEach(function(b){
+        b.addEventListener('click',function(){
+          selKey=b.getAttribute('data-k');
+          wrap.querySelectorAll('.cal-day').forEach(function(x){x.classList.remove('sel');});
+          b.classList.add('sel');
+          var parts=selKey.split('-');
+          var sd=new Date(+parts[0],+parts[1],+parts[2]);
+          booking.date=sd; booking.dateLabel=fmtDate(sd);
+          renderSlots(card,sd);
+        });
+      });
+    }
+    function renderSlots(card,date){
+      var wrap=card.querySelector('.slot-wrap'); if(!wrap)return;
+      if(!date){ wrap.innerHTML='<div class="slot-label">Select a date to see times</div><div class="slot-empty">Pick a day on the calendar.</div>'; return; }
+      var html='<div class="slot-label">Times for '+fmtDate(date)+'</div><div class="slot-grid">';
+      SLOTS.forEach(function(s,i){
+        var off=((date.getDate()+i)%4===0);
+        html+='<button class="slot"'+(off?' disabled':'')+' data-t="'+s+'">'+s+'</button>';
+      });
+      html+='</div>';
+      wrap.innerHTML=html;
+      wrap.querySelectorAll('.slot:not(:disabled)').forEach(function(b){
+        b.addEventListener('click',function(){
+          wrap.querySelectorAll('.slot').forEach(function(x){x.classList.remove('sel');});
+          b.classList.add('sel');
+          booking.timeLabel=b.getAttribute('data-t');
+          goConfirm();
+        });
+      });
+    }
+
+    // ----- confirm + hold -----
+    function goConfirm(){
+      var loc=locById(booking.locId);
+      confirmCard.innerHTML=
+        '<div class="confirm-row"><span class="cl">For</span><span class="cv">'+booking.name+'</span></div>'+
+        '<div class="confirm-row"><span class="cl">Health card</span><span class="cv">'+booking.hc+'</span></div>'+
+        '<div class="confirm-row"><span class="cl">Location</span><span class="cv">'+loc.name+'<br><span style="font-weight:400;color:var(--muted);font-size:12px">'+loc.addr+'</span></span></div>'+
+        '<div class="confirm-row"><span class="cl">Date</span><span class="cv">'+booking.dateLabel+'</span></div>'+
+        '<div class="confirm-row"><span class="cl">Time</span><span class="cv">'+booking.timeLabel+'</span></div>';
+      showPanel('5'); setStep(5);
+      startHold();
+    }
+    document.getElementById('confirmBack').addEventListener('click',function(){
+      stopHold(true);
+      var card=locList.querySelector('.loc-card[data-loc="'+booking.locId+'"]');
+      showPanel('3'); if(card){card.classList.add('open','sel');} setStep(4);
+    });
+
+    function startHold(){
+      stopHold(false);
+      holdLeft=60;
+      toast.classList.add('on');
+      holdBar.classList.add('on'); holdBar.classList.remove('warn');
+      updateRing();
+      holdInt=setInterval(function(){
+        holdLeft--;
+        if(holdLeft<=10)holdBar.classList.add('warn');
+        if(holdLeft<=0){ expireHold(); return; }
+        updateRing();
+      },1000);
+    }
+    function updateRing(){
+      holdNum.textContent=holdLeft;
+      var off=RING*(1-holdLeft/60);
+      ringFg.style.strokeDashoffset=off;
+      holdSub.textContent=holdLeft+' second'+(holdLeft===1?'':'s')+' left on your hold.';
+    }
+    function stopHold(hideUI){
+      if(holdInt){clearInterval(holdInt);holdInt=null;}
+      if(hideUI){ holdBar.classList.remove('on','warn'); toast.classList.remove('on'); }
+    }
+    function expireHold(){
+      stopHold(true);
+      showPanel('x'); // hide all panels
+      bookSteps.style.display='none';
+      holdExpired.classList.add('on');
+    }
+    document.getElementById('toastClose').addEventListener('click',function(){ toast.classList.remove('on'); });
+    document.getElementById('restartBook').addEventListener('click',function(){ startBooking(booking?booking.mode:'lab'); });
+    document.getElementById('holdBookBtn').addEventListener('click',finalize);
+
+    // ----- finalize -----
+    function finalize(){
+      stopHold(true);
+      var loc=locById(booking.locId);
+      var sd=booking.date;
+      var rec={
+        id: editingId || ('a'+(idSeq++)),
+        name: booking.name,
+        who: booking.who,
+        hc: booking.hc,
+        locName: loc.name,
+        addr: loc.addr,
+        date: sd,
+        dateLabel: booking.dateLabel,
+        timeLabel: booking.timeLabel,
+        mode: booking.mode,
+        rescheduled: !!editingId
+      };
+      if(editingId){
+        for(var i=0;i<appts.length;i++){ if(appts[i].id===editingId){ appts[i]=rec; break; } }
+      } else {
+        appts.push(rec);
+      }
+      editingId=null;
+      renderAppts();
+      window.__mccShowScreen('appointments');
+    }
+
+    // ----- appointments list -----
+    function isoStamp(rec,end){
+      var d=rec.date; var t=rec.timeLabel.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      var hh=+t[1]%12 + (/pm/i.test(t[3])?12:0); var mm=+t[2];
+      if(end)mm+=30;
+      var dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),hh,mm);
+      return dt.getFullYear()+pad(dt.getMonth()+1)+pad(dt.getDate())+'T'+pad(dt.getHours())+pad(dt.getMinutes())+'00';
+    }
+    function gcalUrl(rec){
+      var text=encodeURIComponent('LifeLabs lab visit — '+rec.name);
+      var dates=isoStamp(rec,false)+'/'+isoStamp(rec,true);
+      var details=encodeURIComponent('MyCareCompass appointment for '+rec.name+'. Bring your health card.');
+      var loc=encodeURIComponent(rec.locName+', '+rec.addr);
+      return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&dates='+dates+'&details='+details+'&location='+loc;
+    }
+    function icsBlob(rec){
+      var ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//MyCareCompass//EN','BEGIN:VEVENT',
+        'UID:'+rec.id+'@mycarecompass','DTSTART:'+isoStamp(rec,false),'DTEND:'+isoStamp(rec,true),
+        'SUMMARY:LifeLabs lab visit — '+rec.name,'LOCATION:'+rec.locName+'\\, '+rec.addr,
+        'DESCRIPTION:MyCareCompass appointment for '+rec.name+'. Bring your health card.','END:VEVENT','END:VCALENDAR'].join('\r\n');
+      return URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));
+    }
+    function renderAppts(){
+      var empty=document.getElementById('apptEmpty');
+      var filled=document.getElementById('apptFilled');
+      var list=document.getElementById('apptList');
+      if(!appts.length){ empty.style.display=''; filled.style.display='none'; return; }
+      empty.style.display='none'; filled.style.display='';
+      list.innerHTML='';
+      appts.slice().sort(function(a,b){return a.date-b.date;}).forEach(function(rec){
+        var card=document.createElement('div');
+        card.className='appt-card card'+(rec.rescheduled?' appt-managed':'');
+        var mo=MONTHS[rec.date.getMonth()].slice(0,3);
+        card.innerHTML=
+          '<div class="appt-date"><div class="mo">'+mo+'</div><div class="dy">'+rec.date.getDate()+'</div></div>'+
+          '<div class="appt-body">'+
+            '<div class="appt-for">'+(rec.who==='other'?'For '+rec.name:'For you')+(rec.rescheduled?'<span class="resched-flag">Rescheduled</span>':'')+'</div>'+
+            '<div class="at">Lab visit · '+rec.timeLabel+'</div>'+
+            '<div class="al">'+rec.locName+' — '+rec.addr+'</div>'+
+            '<div class="appt-actions">'+
+              '<button class="btn btn-secondary btn-sm act-cal">＋ Add to calendar ▾</button>'+
+              '<button class="btn btn-secondary btn-sm act-manage">Manage appointment</button>'+
+              '<button class="btn btn-ghost btn-sm act-cancel">Cancel</button>'+
+              '<div class="cal-menu">'+
+                '<button data-cal="google"><span class="cm-i" style="background:#4285F4">G</span>Google Calendar</button>'+
+                '<button data-cal="ical"><span class="cm-i" style="background:#333"></span>Apple iCal (.ics)</button>'+
+                '<button data-cal="outlook"><span class="cm-i" style="background:#0A66C2">O</span>Outlook (.ics)</button>'+
+              '</div>'+
+            '</div>'+
+          '</div>';
+        // add to calendar menu
+        var menu=card.querySelector('.cal-menu');
+        card.querySelector('.act-cal').addEventListener('click',function(e){
+          e.stopPropagation();
+          document.querySelectorAll('.cal-menu').forEach(function(m){if(m!==menu)m.classList.remove('on');});
+          menu.classList.toggle('on');
+        });
+        menu.querySelector('[data-cal="google"]').addEventListener('click',function(){ window.open(gcalUrl(rec),'_blank'); menu.classList.remove('on'); });
+        function dl(rec){ var a=document.createElement('a'); a.href=icsBlob(rec); a.download='lifelabs-'+rec.id+'.ics'; document.body.appendChild(a); a.click(); a.remove(); menu.classList.remove('on'); }
+        menu.querySelector('[data-cal="ical"]').addEventListener('click',function(){ dl(rec); });
+        menu.querySelector('[data-cal="outlook"]').addEventListener('click',function(){ dl(rec); });
+        // manage → reschedule
+        card.querySelector('.act-manage').addEventListener('click',function(){ reschedule(rec); });
+        card.querySelector('.act-cancel').addEventListener('click',function(){
+          appts=appts.filter(function(a){return a.id!==rec.id;}); renderAppts();
+        });
+        list.appendChild(card);
+      });
+    }
+    document.addEventListener('click',function(){ document.querySelectorAll('.cal-menu.on').forEach(function(m){m.classList.remove('on');}); });
+
+    function reschedule(rec){
+      booking={mode:rec.mode,who:rec.who,name:rec.name,hc:rec.hc,locId:null,date:null,dateLabel:null,timeLabel:null};
+      editingId=rec.id; selKey=null; calOffset=0;
+      bookTitle.textContent='Reschedule appointment';
+      holdExpired.classList.remove('on'); bookSteps.style.display='';
+      // mark who/health steps done
+      buildLocations();
+      showPanel('3'); setStep(3);
+      window.__mccShowScreen('booking');
+      // preselect the existing location & open it
+      var match=LOCATIONS.filter(function(l){return l.name===rec.locName;})[0];
+      if(match){ openLoc(match.id,false); }
+    }
+
+    renderAppts();
+  })();
+  
+})();
+</script>
+<script>
+/* ---------- Link an individual (add name + health card) ---------- */
+(function(){
+  var go=window.__mccShowScreen||function(){};
+  window.__mccLinked = window.__mccLinked || [];
+  var btn=document.getElementById('linkIndivBtn');
+  var nameI=document.getElementById('indivName');
+  var hcI=document.getElementById('indivHc');
+  var relI=document.getElementById('indivRel');
+  var pills=document.getElementById('personPills');
+  var toast=document.getElementById('indivToast');
+  var toastMsg=document.getElementById('indivToastMsg');
+  function fmtHc(v){v=(v||'').replace(/[^0-9]/g,'').slice(0,10);var o=v;if(v.length>4)o=v.slice(0,4)+'-'+v.slice(4);if(v.length>7)o=v.slice(0,4)+'-'+v.slice(4,7)+'-'+v.slice(7);return o;}
+  function initials(n){return n.trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();}
+  if(hcI)hcI.addEventListener('input',function(){hcI.value=fmtHc(hcI.value);hcI.classList.remove('err');});
+  if(nameI)nameI.addEventListener('input',function(){nameI.classList.remove('err');});
+  if(btn)btn.addEventListener('click',function(){ if(nameI)nameI.value=''; if(hcI)hcI.value=''; if(toast)toast.classList.remove('on'); go('addindiv'); });
+  var save=document.getElementById('indivSave');
+  if(save)save.addEventListener('click',function(){
+    var nm=(nameI.value||'').trim();
+    var digits=(hcI.value||'').replace(/[^0-9]/g,'');
+    var ok=true;
+    if(nm.length<2){nameI.classList.add('err');ok=false;}
+    if(digits.length<10){hcI.classList.add('err');ok=false;}
+    if(!ok)return;
+    window.__mccLinked.push({name:nm, hc:hcI.value, rel:relI?relI.value:''});
+    if(pills){var p=document.createElement('span');p.className='person-pill';p.innerHTML='<span class="pp-av">'+initials(nm)+'</span>'+nm;pills.appendChild(p);}
+    if(toastMsg)toastMsg.textContent=nm+' now appears under View reports and can be selected when booking.';
+    if(toast)toast.classList.add('on');
+    setTimeout(function(){ go('dashboard'); }, 1100);
+  });
+})();
+
+/* ---------- Reports accordion + incoming results ---------- */
+(function(){
+  var acc=document.querySelector('#screen-reports .rep-acc');
+  if(!acc) return;
+  // expand / collapse — delegated so dynamically-added reports behave like the rest
+  acc.addEventListener('click',function(e){
+    var h=e.target.closest('.rep-acc-head');
+    if(h&&acc.contains(h)) h.closest('.rep-item').classList.toggle('open');
+  });
+
+  var sub=document.querySelector('#screen-reports .rep-sub');
+  function refreshCount(){
+    if(sub) sub.textContent=acc.querySelectorAll('.rep-item').length+' reports · LifeLabs';
+  }
+  refreshCount();
+
+  // results that haven't landed in the account yet
+  var PENDING=[{
+    date:'10 Jun 2026', time:'8:15 AM', sec:'Chemistry · 2 results',
+    loc:'College Park', reported:'10 Jun 2026',
+    cards:
+      '<div class="result-card"><div class="rc-top"><div><div class="rc-name">Hemoglobin A1c</div><div class="rc-sub">Diabetes monitoring</div></div><span class="pill within"><span class="pd"></span>Within Range</span></div><div class="rc-val">5.4<b>%</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:47%"></div></div><div class="range-labels"><span>4.0</span><span>4.0–6.0</span><span>6.0</span></div></div></div>'+
+      '<div class="result-card"><div class="rc-top"><div><div class="rc-name">Vitamin B12</div><div class="rc-sub">Serum</div></div><span class="pill within"><span class="pd"></span>Within Range</span></div><div class="rc-val">410<b>pmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:53%"></div></div><div class="range-labels"><span>138</span><span>138–652</span><span>652</span></div></div></div>'
+  }];
+
+  var btn=document.getElementById('simNewResult');
+  if(!btn) return;
+  btn.addEventListener('click',function(){
+    if(!PENDING.length) return;
+    var r=PENDING.shift();
+    var item=document.createElement('div');
+    item.className='rep-item open just-in';
+    item.innerHTML=
+      '<button class="rep-acc-head">'+
+        '<div class="rah-date">'+r.date+'<span class="rah-time">'+r.time+'</span></div>'+
+        '<div class="rah-sec">'+r.sec+'</div>'+
+        '<span class="pill newp"><span class="pd"></span>New</span>'+
+        '<span class="pill final"><span class="pd"></span>Final</span>'+
+        '<span class="rah-chev">▾</span>'+
+      '</button>'+
+      '<div class="rep-acc-body">'+
+        '<div class="rep-pdfbar"><span class="rpb-l">Collected at LifeLabs — '+r.loc+' · Reported '+r.reported+'</span>'+
+        '<a class="btn btn-secondary btn-sm" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report</a></div>'+
+        '<div class="result-grid">'+r.cards+'</div>'+
+      '</div>';
+    acc.insertBefore(item, acc.firstElementChild);
+    refreshCount();
+    setTimeout(function(){ item.classList.remove('just-in'); },1700);
+    if(!PENDING.length){ btn.disabled=true; btn.textContent='✓ All results loaded'; btn.classList.add('is-done'); }
+  });
+})();
+</script>
+</body>
+</html>

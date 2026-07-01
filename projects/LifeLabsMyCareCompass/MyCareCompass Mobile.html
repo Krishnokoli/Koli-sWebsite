@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=390, initial-scale=1.0" />
+<title>MyCareCompass · Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" href="assets/MyCareCompass_Logo.png" />
+<style>
+:root{
+  --mcc-navy:#1B3A6B; --mcc-blue:#3A5DA8; --mcc-light:#EBF0FA; --mcc-gold:#F5A623;
+  --paper:#F7F8FA; --ink:#1A1A2E; --muted:#6B7080; --line:#E2E6EE; --white:#fff;
+  --green:#1F8A5B; --green-soft:#E3F3EC; --gold-soft:#FCEFD6; --red:#C2566B; --red-soft:#F8E6EA;
+  --serif:"Source Serif 4", Georgia, serif;
+  --sans:"Open Sans", system-ui, -apple-system, sans-serif;
+  --mono:"Space Mono", ui-monospace, monospace;
+  --shadow-sm:0 1px 2px rgba(27,58,107,.06), 0 2px 8px rgba(27,58,107,.05);
+  --shadow:0 4px 14px rgba(27,58,107,.08), 0 18px 40px rgba(27,58,107,.07);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{font-family:var(--sans);background:#0d1a31;color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+button{font-family:inherit;}
+::selection{background:var(--mcc-blue);color:#fff;}
+
+.m-app{position:relative;width:390px;height:100vh;margin:0 auto;background:var(--paper);display:flex;flex-direction:column;overflow:hidden;}
+
+/* status bar */
+.m-status{height:46px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 7px;background:var(--paper);}
+.m-status .clk{font-weight:700;font-size:15px;color:var(--mcc-navy);}
+.m-status .sr{display:flex;align-items:center;gap:7px;color:var(--mcc-navy);}
+.m-status .sr svg{display:block;}
+
+/* mobile browser bar */
+.m-browser{flex:none;display:flex;align-items:center;gap:8px;padding:2px 12px 10px;background:var(--paper);}
+.m-url{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:9px 13px;box-shadow:var(--shadow-sm);min-width:0;}
+.m-url .lk{width:13px;height:13px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+.m-url .u{font-family:var(--sans);font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.m-url .u b{color:var(--mcc-navy);font-weight:700;}
+.m-brefresh{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--mcc-navy);flex:none;}
+.m-brefresh svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+
+/* app bar */
+.m-appbar{flex:none;display:flex;align-items:center;gap:12px;padding:6px 18px 12px;background:var(--paper);}
+.m-appbar .ab-logo{display:flex;align-items:center;gap:9px;margin-right:auto;}
+.m-appbar .ab-logo img{width:26px;height:26px;display:block;}
+.m-appbar .ab-name{font-weight:800;font-size:16px;color:var(--mcc-navy);letter-spacing:-.01em;}
+.m-appbar .ab-name b{color:var(--mcc-blue);}
+.m-iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;color:var(--mcc-navy);cursor:pointer;position:relative;}
+.m-iconbtn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.m-iconbtn .dot{position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--mcc-gold);border:1.5px solid #fff;}
+.m-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,var(--mcc-blue),var(--mcc-navy));color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none;}
+
+/* scroll area */
+.m-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 120px;}
+.m-scroll::-webkit-scrollbar{width:0;}
+
+/* tab bar */
+.m-tabbar{position:absolute;bottom:0;left:0;right:0;height:86px;background:rgba(255,255,255,.94);backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);border-top:1px solid var(--line);display:flex;padding:11px 6px 24px;flex:none;z-index:30;}
+.m-tab{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--muted);font-weight:600;font-size:11px;cursor:pointer;transition:color .2s var(--ease);}
+.m-tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.m-tab.on{color:var(--mcc-blue);}
+.m-tab .bk-fab{width:30px;height:30px;border-radius:11px;background:var(--mcc-blue);display:grid;place-items:center;color:#fff;box-shadow:0 6px 14px rgba(58,93,168,.35);transition:.2s var(--ease);}
+.m-tab .bk-fab svg{width:18px;height:18px;stroke-width:2.2;}
+.m-tab.on .bk-fab{background:var(--mcc-navy);}
+
+/* screens */
+.m-screen{display:none;}
+.m-screen.on{display:block;animation:mfade .35s var(--ease);}
+@keyframes mfade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* shared bits */
+.m-greet{margin:4px 2px 18px;}
+.m-greet .g1{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);}
+.m-greet .g2{font-weight:800;font-size:27px;color:var(--mcc-navy);line-height:1.08;margin-top:5px;letter-spacing:-.02em;}
+.m-sec{display:flex;align-items:center;justify-content:space-between;margin:26px 2px 13px;}
+.m-sec h3{font-weight:700;font-size:16px;color:var(--mcc-navy);margin:0;}
+.m-sec a{font-size:13px;font-weight:600;color:var(--mcc-blue);cursor:pointer;}
+.m-back{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;color:var(--mcc-blue);background:none;border:0;cursor:pointer;padding:6px 0;margin-bottom:6px;}
+.m-h{font-weight:800;font-size:25px;color:var(--mcc-navy);margin:6px 0 4px;letter-spacing:-.02em;}
+.m-subh{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+
+/* buttons */
+.btn{font-weight:700;font-size:14px;padding:12px 18px;border-radius:11px;border:1px solid transparent;cursor:pointer;transition:.2s var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary{background:var(--mcc-blue);color:#fff;box-shadow:0 4px 12px rgba(58,93,168,.25);}
+.btn-primary:active{background:var(--mcc-navy);transform:scale(.99);}
+.btn-secondary{background:#fff;color:var(--mcc-blue);border-color:var(--mcc-blue);}
+.btn-secondary:active{background:var(--mcc-light);}
+.btn-ghost{background:transparent;color:var(--mcc-blue);}
+.btn-block{width:100%;}
+
+/* hero */
+.m-hero{background:linear-gradient(135deg,var(--mcc-navy),var(--mcc-blue));color:#fff;border-radius:20px;padding:22px;box-shadow:0 16px 36px rgba(27,58,107,.28);position:relative;overflow:hidden;cursor:pointer;}
+.m-hero::after{content:"";position:absolute;right:-50px;bottom:-60px;width:170px;height:170px;border-radius:50%;border:26px solid rgba(255,255,255,.06);}
+.m-hero .hl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.85;display:flex;align-items:center;gap:8px;}
+.m-hero .hl .pd{width:7px;height:7px;border-radius:50%;background:var(--mcc-gold);}
+.m-hero .ht{font-weight:700;font-size:21px;line-height:1.22;margin:13px 0 17px;max-width:15ch;position:relative;z-index:1;}
+.m-hero .hg{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--mcc-navy);font-weight:700;font-size:14px;padding:11px 17px;border-radius:11px;position:relative;z-index:1;}
+
+/* empty appointment card */
+.m-emptycard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px 22px;text-align:center;box-shadow:var(--shadow-sm);}
+.m-emptycard .ei{width:54px;height:54px;border-radius:15px;background:var(--mcc-light);display:grid;place-items:center;margin:0 auto 14px;color:var(--mcc-blue);}
+.m-emptycard .ei svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.m-emptycard .et{font-weight:700;color:var(--mcc-navy);font-size:16px;}
+.m-emptycard .ed{color:var(--muted);font-size:13.5px;margin:6px 0 16px;line-height:1.5;}
+
+/* action rows */
+.m-actions{display:flex;flex-direction:column;gap:10px;}
+.m-action{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px 16px;cursor:pointer;transition:.18s var(--ease);text-align:left;width:100%;}
+.m-action:active{transform:scale(.99);border-color:var(--mcc-blue);}
+.m-action .aic{width:44px;height:44px;border-radius:12px;background:var(--mcc-light);display:grid;place-items:center;color:var(--mcc-blue);flex:none;}
+.m-action .aic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.m-action .atx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.m-action .at{display:block;font-weight:700;font-size:14.5px;color:var(--mcc-navy);}
+.m-action .ad{display:block;font-size:12.5px;color:var(--muted);line-height:1.4;}
+.m-action .arr{color:var(--mcc-blue);font-size:17px;flex:none;}
+.m-action .tag{font-family:var(--mono);font-size:9px;letter-spacing:.03em;color:var(--mcc-blue);background:var(--mcc-light);border-radius:5px;padding:2px 6px;margin-left:7px;vertical-align:middle;}
+
+.m-note{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;margin-top:22px;}
+.m-note b{color:var(--mcc-navy);font-weight:700;}
+
+/* person chip + toggle */
+.m-rowbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px;}
+.m-personchip{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;font-weight:700;font-size:13px;color:var(--mcc-navy);cursor:pointer;}
+.m-personchip .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(150deg,var(--mcc-blue),var(--mcc-navy));color:#fff;display:grid;place-items:center;font-size:11px;flex:none;}
+.m-personchip .cv{color:var(--muted);font-size:10px;}
+.toggle-chip{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--mcc-navy);}
+.tg{width:38px;height:22px;border-radius:999px;background:var(--mcc-blue);position:relative;transition:.2s;flex:none;cursor:pointer;}
+.tg::after{content:"";position:absolute;top:2px;left:18px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tg.off{background:#C9CFDA;}
+.tg.off::after{left:2px;}
+
+/* report rows */
+.m-list{display:flex;flex-direction:column;gap:10px;}
+.m-report{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px 16px;cursor:pointer;transition:.18s var(--ease);text-align:left;width:100%;}
+.m-report:active{transform:scale(.99);border-color:var(--mcc-blue);}
+.m-report .rmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.m-report .rd1{font-weight:700;font-size:14px;color:var(--mcc-navy);}
+.m-report .rd2{font-size:12.5px;color:var(--muted);}
+.m-report .pill{flex:none;}
+.m-report .rarr{color:var(--mcc-blue);font-size:17px;flex:none;}
+
+/* reports accordion */
+.m-racc{display:flex;flex-direction:column;gap:10px;}
+.m-ritem{border:1px solid var(--line);border-radius:15px;background:#fff;overflow:hidden;}
+.m-ritem.open{border-color:#D6E0F2;box-shadow:var(--shadow-sm);}
+.m-rhead{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;font-family:inherit;text-align:left;padding:15px 16px;cursor:pointer;}
+.m-rdate{flex:1;display:flex;flex-direction:column;font-weight:700;font-size:14px;color:var(--mcc-navy);min-width:0;}
+.m-rdate .t{font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.m-rchev{color:var(--mcc-blue);font-size:12px;transition:transform .3s var(--ease);flex:none;}
+.m-ritem.open .m-rchev{transform:rotate(180deg);}
+.m-rbody{display:none;padding:14px 16px 16px;border-top:1px solid var(--line);background:#FBFCFE;}
+.m-ritem.open .m-rbody{display:block;animation:mfade .3s var(--ease);}
+.m-pdf{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 14px;text-decoration:none;font-weight:700;font-size:13.5px;color:var(--mcc-navy);margin-bottom:12px;}
+.m-pdf .arr{margin-left:auto;color:var(--mcc-blue);font-size:16px;}
+.pdf-ic{font-family:var(--mono);font-size:9px;font-weight:700;background:var(--red);color:#fff;border-radius:4px;padding:3px 6px;letter-spacing:.04em;}
+.m-results-cards{display:flex;flex-direction:column;gap:10px;}
+.m-results-cards .result-card{margin-bottom:0;}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;}
+.pill .pd{width:6px;height:6px;border-radius:50%;}
+.pill.within,.pill.neg{background:var(--green-soft);color:var(--green);} .pill.within .pd,.pill.neg .pd{background:var(--green);}
+.pill.above{background:var(--gold-soft);color:#9a6500;} .pill.above .pd{background:var(--mcc-gold);}
+.pill.final{background:var(--mcc-light);color:var(--mcc-blue);} .pill.final .pd{background:var(--mcc-blue);}
+.pill.newp{background:var(--gold-soft);color:#9a6500;} .pill.newp .pd{background:var(--mcc-gold);}
+.m-checkbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:11px;font-family:inherit;font-weight:700;font-size:13.5px;color:var(--mcc-blue);cursor:pointer;transition:.18s var(--ease);}
+.m-checkbtn:active{transform:scale(.99);}
+.m-checkbtn.is-done{color:var(--muted);cursor:default;}
+@keyframes mRepIn{from{opacity:0;transform:translateY(-9px);}to{opacity:1;transform:none;}}
+@keyframes mRepFlash{0%{box-shadow:0 0 0 3px var(--mcc-gold);}100%{box-shadow:var(--shadow-sm);}}
+.m-ritem.just-in{animation:mRepIn .4s var(--ease), mRepFlash 1.7s var(--ease);}
+
+/* result cards */
+.detail-head{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.detail-head .dh-t{font-weight:700;font-size:17px;color:var(--mcc-navy);}
+.detail-head .dh-s{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.03em;}
+.result-card{border:1px solid var(--line);border-radius:14px;padding:17px;background:#fff;margin-bottom:12px;}
+.result-card .rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px;}
+.result-card .rc-name{font-weight:700;font-size:14.5px;color:var(--mcc-navy);line-height:1.25;}
+.result-card .rc-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.result-card .rc-val{font-family:var(--serif);font-size:30px;color:var(--ink);line-height:1;margin:12px 0 2px;}
+.result-card .rc-val b{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--muted);margin-left:4px;}
+.result-card .rc-val.neg{font-size:21px;font-weight:700;font-family:var(--sans);color:var(--green);}
+.range-bar{margin-top:14px;}
+.range-track{height:8px;border-radius:6px;background:linear-gradient(90deg,var(--red-soft),var(--green-soft) 22%,var(--green-soft) 78%,var(--gold-soft));position:relative;}
+.range-marker{position:absolute;top:-4px;width:4px;height:16px;border-radius:3px;background:var(--mcc-navy);transform:translateX(-50%);box-shadow:0 2px 6px rgba(27,58,107,.3);}
+.range-marker.warn{background:var(--mcc-gold);}
+.range-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:8px;}
+
+/* booking */
+.m-steps{display:flex;align-items:center;gap:7px;margin:2px 0 7px;}
+.m-step{flex:1;height:5px;border-radius:3px;background:var(--line);transition:.35s var(--ease);}
+.m-step.on{background:var(--mcc-blue);}
+.m-steplbl{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:18px;}
+.book-mod{font-family:var(--mono);font-size:10px;letter-spacing:.03em;color:var(--muted);background:var(--mcc-light);border:1px solid #D6E0F2;border-radius:999px;padding:6px 12px;display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;}
+.book-mod b{color:var(--mcc-navy);}
+.book-mod .pwr{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.bpanel{display:none;}
+.bpanel.on{display:block;animation:mfade .3s var(--ease);padding-bottom:96px;}
+.m-bq{font-weight:700;font-size:19px;color:var(--mcc-navy);margin:0 0 4px;letter-spacing:-.01em;}
+.m-bsub{font-size:13.5px;color:var(--muted);margin:0 0 18px;line-height:1.5;}
+.m-typecards{display:flex;flex-direction:column;gap:12px;}
+.m-typecard{display:flex;gap:14px;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:18px;cursor:pointer;text-align:left;width:100%;transition:.18s var(--ease);}
+.m-typecard.sel{border-color:var(--mcc-navy);background:var(--mcc-light);}
+.m-typecard .ti{width:48px;height:48px;border-radius:13px;background:var(--mcc-light);display:grid;place-items:center;color:var(--mcc-blue);flex:none;}
+.m-typecard.sel .ti{background:#fff;}
+.m-typecard .ti svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.m-typecard .ttx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.m-typecard .tt{display:block;font-weight:700;font-size:15.5px;color:var(--mcc-navy);}
+.m-typecard .td{display:block;font-size:12.5px;color:var(--muted);line-height:1.45;}
+.m-typecard .tck{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;color:#fff;}
+.m-typecard .tck svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+.m-typecard.sel .tck{background:var(--mcc-navy);border-color:var(--mcc-navy);}
+.m-typecard.sel .tck svg{opacity:1;}
+
+.m-search{position:relative;margin-bottom:14px;}
+.m-search input{width:100%;font-family:var(--sans);font-size:14px;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px 13px 40px;background:#fff;}
+.m-search input:focus{outline:none;border-color:var(--mcc-blue);box-shadow:0 0 0 3px var(--mcc-light);}
+.m-search .pin{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mcc-blue);}
+.m-search .pin svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;}
+.m-loclist{display:flex;flex-direction:column;gap:11px;}
+.m-loc{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:15px 16px;cursor:pointer;width:100%;text-align:left;transition:.18s var(--ease);}
+.m-loc.sel{border-color:var(--mcc-navy);box-shadow:var(--shadow-sm);}
+.m-loc .lr{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px;display:grid;place-items:center;}
+.m-loc.sel .lr{border-color:var(--mcc-navy);}
+.m-loc.sel .lr::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--mcc-navy);}
+.m-loc .lmain{flex:1;min-width:0;display:flex;flex-direction:column;}
+.m-loc .ln{display:block;font-weight:700;font-size:14.5px;color:var(--mcc-navy);}
+.m-loc .la{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;}
+.m-loc .lh{font-size:11.5px;color:var(--green);font-weight:600;margin-top:9px;display:flex;align-items:center;gap:6px;}
+.m-loc .lh .od{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.m-loc .ldist{font-family:var(--mono);font-size:11px;color:var(--mcc-blue);font-weight:700;flex:none;}
+
+.m-dates{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;margin-bottom:22px;}
+.m-dates::-webkit-scrollbar{display:none;}
+.m-date{flex:none;width:60px;border:1.5px solid var(--line);border-radius:15px;padding:12px 0;text-align:center;background:#fff;cursor:pointer;transition:.18s var(--ease);}
+.m-date.sel{background:var(--mcc-navy);border-color:var(--mcc-navy);}
+.m-date .dw{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;}
+.m-date.sel .dw{color:rgba(255,255,255,.72);}
+.m-date .dd{font-family:var(--serif);font-size:23px;color:var(--mcc-navy);line-height:1.05;margin-top:4px;}
+.m-date.sel .dd{color:#fff;}
+.m-times{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.m-time{border:1.5px solid var(--line);border-radius:12px;padding:13px 0;text-align:center;background:#fff;font-weight:700;font-size:13.5px;color:var(--mcc-navy);cursor:pointer;transition:.16s var(--ease);}
+.m-time.sel{background:var(--mcc-blue);border-color:var(--mcc-blue);color:#fff;}
+
+/* confirm summary */
+.m-summary{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.m-srow{display:flex;align-items:center;gap:13px;padding:16px 18px;border-bottom:1px solid var(--line);}
+.m-srow:last-child{border-bottom:0;}
+.m-srow .si{width:38px;height:38px;border-radius:11px;background:var(--mcc-light);display:grid;place-items:center;color:var(--mcc-blue);flex:none;}
+.m-srow .si svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.m-srow .sk{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);}
+.m-srow .sv{font-weight:700;font-size:14.5px;color:var(--mcc-navy);margin-top:2px;}
+
+/* booking action bar */
+.m-bbar{position:absolute;left:0;right:0;bottom:86px;padding:16px 18px 18px;background:linear-gradient(180deg,rgba(247,248,250,0),var(--paper) 38%);display:none;gap:12px;z-index:25;}
+.m-app[data-screen="book"] .m-bbar{display:flex;}
+.m-bbar .btn{flex:1;padding:15px;font-size:15px;}
+.m-bbar #bBack{flex:0 0 auto;width:54px;}
+
+/* success */
+.m-success{text-align:center;padding:30px 8px 0;}
+.m-success .sc{width:88px;height:88px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center;margin:0 auto 22px;animation:pop .5s var(--ease);}
+.m-success .sc svg{width:42px;height:42px;stroke:var(--green);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+@keyframes pop{0%{transform:scale(.5);opacity:0;}60%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+.m-success h2{font-weight:800;font-size:24px;color:var(--mcc-navy);margin:0 0 8px;}
+.m-success p{font-size:14px;color:var(--muted);margin:0 0 24px;line-height:1.5;}
+
+/* appointment card */
+.m-appt{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow-sm);}
+.m-appt .top{display:flex;gap:14px;align-items:center;}
+.m-appt .date{background:var(--mcc-light);border-radius:12px;width:60px;height:60px;display:grid;place-content:center;text-align:center;flex:none;}
+.m-appt .date .mo{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--mcc-blue);}
+.m-appt .date .dy{font-family:var(--serif);font-size:25px;color:var(--mcc-navy);line-height:1;}
+.m-appt .info{flex:1;min-width:0;}
+.m-appt .info .t{font-weight:700;font-size:15px;color:var(--mcc-navy);}
+.m-appt .info .l{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.m-appt .acts{display:flex;gap:10px;margin-top:15px;}
+.m-appt .acts .btn{flex:1;padding:11px;font-size:13px;}
+
+/* segmented */
+.m-seg{display:flex;background:var(--mcc-light);border-radius:13px;padding:4px;margin-bottom:16px;}
+.m-seg button{flex:1;border:0;background:none;padding:11px;border-radius:10px;font-weight:700;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.18s var(--ease);}
+.m-seg button.on{background:#fff;color:var(--mcc-navy);box-shadow:var(--shadow-sm);}
+.m-empty{background:#fff;border:1px solid var(--line);border-radius:15px;padding:30px 22px;text-align:center;color:var(--muted);font-size:13.5px;}
+</style>
+</head>
+<body>
+<div class="m-app" id="mApp" data-screen="home">
+
+  <!-- status bar -->
+  <div class="m-status">
+    <span class="clk">9:41</span>
+    <span class="sr">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4.5" width="3" height="7.5" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity="0.35"/></svg>
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><path d="M8.5 2.4c2.3 0 4.4.9 6 2.4l1.4-1.5A11 11 0 0 0 8.5.3 11 11 0 0 0 1 3.3l1.5 1.5a8.6 8.6 0 0 1 6-2.4Zm0 4a4.6 4.6 0 0 1 3.2 1.3l1.4-1.5a6.7 6.7 0 0 0-9.2 0l1.4 1.5A4.6 4.6 0 0 1 8.5 6.4Zm0 3.6 1.8-1.9a2.6 2.6 0 0 0-3.6 0Z"/></svg>
+      <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="1" y="1" width="21" height="11" rx="3" stroke="currentColor" stroke-opacity="0.4"/><rect x="2.5" y="2.5" width="16" height="8" rx="1.5" fill="currentColor"/><rect x="23.5" y="4" width="2" height="5" rx="1" fill="currentColor" fill-opacity="0.5"/></svg>
+    </span>
+  </div>
+
+  <!-- mobile browser bar -->
+  <div class="m-browser">
+    <span class="m-url"><svg class="lk" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="u" id="mUrl"><b>on.mycarecompass.ca</b>/home</span></span>
+    <span class="m-brefresh"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></svg></span>
+  </div>
+
+  <!-- app bar -->
+  <div class="m-appbar">
+    <div class="ab-logo"><img src="assets/MyCareCompass_Logo.png" alt="" /><span class="ab-name">My<b>Care</b>Compass</span></div>
+    <button class="m-iconbtn" aria-label="Notifications"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+    <div class="m-avatar">MO</div>
+  </div>
+
+  <!-- scroll content -->
+  <div class="m-scroll" id="mScroll">
+
+    <!-- ============ HOME ============ -->
+    <section class="m-screen on" id="m-home">
+      <div class="m-greet"><div class="g1">Friday · 13 Mar 2026</div><div class="g2">Hi, Mireille</div></div>
+
+      <div class="m-hero" onclick="go('results','m-rep-13mar')">
+        <div class="hl"><span class="pd"></span>New results</div>
+        <div class="ht">Your 13 Mar report is ready</div>
+        <span class="hg">View results <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+
+      <div class="m-sec"><h3>Up next</h3><a onclick="go('visits')">All visits</a></div>
+      <div id="mHomeNext">
+        <div class="m-emptycard">
+          <div class="ei"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></div>
+          <div class="et">No upcoming visits</div>
+          <div class="ed">Book a lab or home visit and it'll appear here with reminders and directions.</div>
+          <button class="btn btn-primary btn-block" onclick="startBooking('lab')">Book a visit</button>
+        </div>
+      </div>
+
+      <div class="m-sec"><h3>Quick actions</h3></div>
+      <div class="m-actions">
+        <button class="m-action" onclick="startBooking('lab')">
+          <span class="aic"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/></svg></span>
+          <span class="atx"><span class="at">Book a lab visit</span><span class="ad">Find the LifeLabs nearest you</span></span>
+          <span class="arr">›</span>
+        </button>
+        <button class="m-action" onclick="startBooking('home')">
+          <span class="aic"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/></svg></span>
+          <span class="atx"><span class="at">Book a home visit<span class="tag">MyVisit™</span></span><span class="ad">We come to you to collect samples</span></span>
+          <span class="arr">›</span>
+        </button>
+        <button class="m-action" onclick="go('results')">
+          <span class="aic"><svg viewBox="0 0 24 24"><path d="M9 7h7M9 12h7M9 17h4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></span>
+          <span class="atx"><span class="at">View reports</span><span class="ad">6 reports · bloodwork &amp; STI</span></span>
+          <span class="arr">›</span>
+        </button>
+      </div>
+
+      <div class="m-note">Last login · <b>28 May 2026, 12:57 PM</b></div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section class="m-screen" id="m-results">
+      <h1 class="m-h">Reports</h1>
+      <div class="m-rowbar">
+        <span class="m-personchip"><span class="av">MO</span>Mireille <span class="cv">▾</span></span>
+        <span class="toggle-chip">Out of range <span class="tg off" id="oorTg" role="switch" aria-checked="false"></span></span>
+      </div>
+      <button class="m-checkbtn" id="mSimNewResult">↻ Check for new results</button>
+      <div class="m-racc" id="mReportList">
+        <!-- 13 Mar 2026 -->
+        <div class="m-ritem open" id="m-rep-13mar">
+          <button class="m-rhead">
+            <span class="m-rdate">13 Mar 2026<span class="t">2:44 PM · Microbiology &amp; Chemistry</span></span>
+            <span class="pill final"><span class="pd"></span>Final</span>
+            <span class="m-rchev">▾</span>
+          </button>
+          <div class="m-rbody">
+            <a class="m-pdf" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report<span class="arr">›</span></a>
+            <div class="m-results-cards">
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">TSH</div><div class="rc-sub">Thyroid Stimulating Hormone</div></div><span class="pill within"><span class="pd"></span>Within</span></div><div class="rc-val">2.4<b>mIU/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:39%"></div></div><div class="range-labels"><span>0.4</span><span>0.4–4.0</span><span>4.0</span></div></div></div>
+              <div class="result-card" style="border-color:#F3DEB0"><div class="rc-top"><div><div class="rc-name">Glucose</div><div class="rc-sub">Fasting · Plasma</div></div><span class="pill above"><span class="pd"></span>Above</span></div><div class="rc-val">6.2<b>mmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker warn" style="left:88%"></div></div><div class="range-labels"><span>3.9</span><span>3.9–5.6</span><span>5.6</span></div></div></div>
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">Chlamydia trachomatis DNA</div><div class="rc-sub">Specimen · Urine</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val neg">NEGATIVE</div><div class="range-labels" style="margin-top:10px"><span>Reference · N/A</span></div></div>
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">Neisseria gonorrhoeae DNA</div><div class="rc-sub">Specimen · Urine</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val neg">NEGATIVE</div><div class="range-labels" style="margin-top:10px"><span>Reference · N/A</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 24 Aug 2025 -->
+        <div class="m-ritem">
+          <button class="m-rhead">
+            <span class="m-rdate">24 Aug 2025<span class="t">9:30 AM · General Laboratory</span></span>
+            <span class="pill final"><span class="pd"></span>Final</span>
+            <span class="m-rchev">▾</span>
+          </button>
+          <div class="m-rbody">
+            <a class="m-pdf" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report<span class="arr">›</span></a>
+            <div class="m-results-cards">
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">Hemoglobin</div><div class="rc-sub">Complete Blood Count</div></div><span class="pill within"><span class="pd"></span>Within</span></div><div class="rc-val">138<b>g/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:45%"></div></div><div class="range-labels"><span>120</span><span>120–160</span><span>160</span></div></div></div>
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">Ferritin</div><div class="rc-sub">Iron stores</div></div><span class="pill within"><span class="pd"></span>Within</span></div><div class="rc-val">42<b>µg/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:24%"></div></div><div class="range-labels"><span>15</span><span>15–200</span><span>200</span></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9 Aug 2025 -->
+        <div class="m-ritem">
+          <button class="m-rhead">
+            <span class="m-rdate">9 Aug 2025<span class="t">2:12 PM · Microbiology</span></span>
+            <span class="pill final"><span class="pd"></span>Final</span>
+            <span class="m-rchev">▾</span>
+          </button>
+          <div class="m-rbody">
+            <a class="m-pdf" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report<span class="arr">›</span></a>
+            <div class="m-results-cards">
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">Urine Culture</div><div class="rc-sub">Mid-stream specimen</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val neg">NO GROWTH</div><div class="range-labels" style="margin-top:10px"><span>Reference · No growth at 48h</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 25 Jul 2025 -->
+        <div class="m-ritem">
+          <button class="m-rhead">
+            <span class="m-rdate">25 Jul 2025<span class="t">5:39 PM · Microbiology</span></span>
+            <span class="pill final"><span class="pd"></span>Final</span>
+            <span class="m-rchev">▾</span>
+          </button>
+          <div class="m-rbody">
+            <a class="m-pdf" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report<span class="arr">›</span></a>
+            <div class="m-results-cards">
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">Throat Swab</div><div class="rc-sub">Group A Streptococcus</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div><div class="rc-val neg">NEGATIVE</div><div class="range-labels" style="margin-top:10px"><span>Reference · Not detected</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Jul 2025 -->
+        <div class="m-ritem">
+          <button class="m-rhead">
+            <span class="m-rdate">3 Jul 2025<span class="t">7:17 PM · Chemistry &amp; Microbiology</span></span>
+            <span class="pill final"><span class="pd"></span>Final</span>
+            <span class="m-rchev">▾</span>
+          </button>
+          <div class="m-rbody">
+            <a class="m-pdf" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report<span class="arr">›</span></a>
+            <div class="m-results-cards">
+              <div class="result-card"><div class="rc-top"><div><div class="rc-name">Total Cholesterol</div><div class="rc-sub">Lipid panel · Fasting</div></div><span class="pill within"><span class="pd"></span>Within</span></div><div class="rc-val">4.6<b>mmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:40%"></div></div><div class="range-labels"><span>&lt;5.2</span><span>Desirable</span><span>5.2</span></div></div></div>
+              <div class="result-card" style="border-color:#F3C9D2"><div class="rc-top"><div><div class="rc-name">Vitamin D (25-OH)</div><div class="rc-sub">Serum</div></div><span class="pill below"><span class="pd"></span>Below</span></div><div class="rc-val">42<b>nmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:9%"></div></div><div class="range-labels"><span>50</span><span>50–125</span><span>125</span></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ REPORT DETAIL ============ -->
+    <section class="m-screen" id="m-detail">
+      <button class="m-back" onclick="go('results')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Reports</button>
+      <h1 class="m-h">13 Mar 2026</h1>
+      <div class="m-subh">Microbiology · Final · LifeLabs</div>
+
+      <div class="result-card">
+        <div class="rc-top"><div><div class="rc-name">TSH</div><div class="rc-sub">Thyroid Stimulating Hormone</div></div><span class="pill within"><span class="pd"></span>Within</span></div>
+        <div class="rc-val">2.4<b>mIU/L</b></div>
+        <div class="range-bar"><div class="range-track"><div class="range-marker" style="left:39%"></div></div><div class="range-labels"><span>0.4</span><span>0.4–4.0</span><span>4.0</span></div></div>
+      </div>
+      <div class="result-card" style="border-color:#F3DEB0">
+        <div class="rc-top"><div><div class="rc-name">Glucose</div><div class="rc-sub">Fasting · Plasma</div></div><span class="pill above"><span class="pd"></span>Above</span></div>
+        <div class="rc-val">6.2<b>mmol/L</b></div>
+        <div class="range-bar"><div class="range-track"><div class="range-marker warn" style="left:88%"></div></div><div class="range-labels"><span>3.9</span><span>3.9–5.6</span><span>5.6</span></div></div>
+      </div>
+      <div class="result-card">
+        <div class="rc-top"><div><div class="rc-name">Chlamydia trachomatis DNA</div><div class="rc-sub">Specimen · Urine</div></div><span class="pill neg"><span class="pd"></span>Negative</span></div>
+        <div class="rc-val neg">NEGATIVE</div>
+        <div class="range-labels" style="margin-top:10px"><span>Reference · N/A</span><span style="color:var(--mcc-blue);font-weight:700">Learn more ›</span></div>
+      </div>
+    </section>
+
+    <!-- ============ BOOK ============ -->
+    <section class="m-screen" id="m-book">
+      <button class="m-back" id="bExit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Cancel</button>
+      <div class="m-steps"><div class="m-step on" data-s="1"></div><div class="m-step" data-s="2"></div><div class="m-step" data-s="3"></div></div>
+      <div class="m-steplbl" id="bStepLbl">Step 1 of 3</div>
+
+      <!-- step 1: type -->
+      <div class="bpanel on" data-step="1">
+        <h2 class="m-bq">What kind of visit?</h2>
+        <p class="m-bsub">Either option takes about a minute to book.</p>
+        <div class="m-typecards" id="mTypeCards">
+          <button class="m-typecard sel" data-type="lab">
+            <span class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/></svg></span>
+            <span class="ttx"><span class="tt">Lab visit</span><span class="td">Visit a LifeLabs location near you</span></span>
+            <span class="tck"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span>
+          </button>
+          <button class="m-typecard" data-type="home">
+            <span class="ti"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/></svg></span>
+            <span class="ttx"><span class="tt">Home visit · MyVisit™</span><span class="td">A nurse comes to you to collect samples</span></span>
+            <span class="tck"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- step 2: location -->
+      <div class="bpanel" data-step="2">
+        <h2 class="m-bq" id="bStep2Q">Choose a location</h2>
+        <p class="m-bsub">Closest LifeLabs locations to M5T 2C2.</p>
+        <div class="m-search"><span class="pin"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></span><input type="text" placeholder="Search address or postal code" /></div>
+        <div class="m-loclist" id="mLocList">
+          <button class="m-loc sel" data-name="LifeLabs — Spadina" data-addr="215 Spadina Ave, Toronto"><span class="lr"></span><span class="lmain"><span class="ln">LifeLabs — Spadina</span><span class="la">215 Spadina Ave, Toronto</span><span class="lh"><span class="od"></span>Open · 7:00–15:00</span></span><span class="ldist">0.8 km</span></button>
+          <button class="m-loc" data-name="LifeLabs — College Park" data-addr="444 Yonge St, Toronto"><span class="lr"></span><span class="lmain"><span class="ln">LifeLabs — College Park</span><span class="la">444 Yonge St, Toronto</span><span class="lh"><span class="od"></span>Open · 6:30–16:00</span></span><span class="ldist">1.6 km</span></button>
+          <button class="m-loc" data-name="LifeLabs — Dundas West" data-addr="1500 Dundas St W, Toronto"><span class="lr"></span><span class="lmain"><span class="ln">LifeLabs — Dundas West</span><span class="la">1500 Dundas St W, Toronto</span><span class="lh"><span class="od"></span>Open · 7:30–14:30</span></span><span class="ldist">2.3 km</span></button>
+          <button class="m-loc" data-name="LifeLabs — Queen East" data-addr="620 Queen St E, Toronto"><span class="lr"></span><span class="lmain"><span class="ln">LifeLabs — Queen East</span><span class="la">620 Queen St E, Toronto</span><span class="lh"><span class="od"></span>Open · 7:00–15:30</span></span><span class="ldist">3.1 km</span></button>
+        </div>
+      </div>
+
+      <!-- step 3: time -->
+      <div class="bpanel" data-step="3">
+        <h2 class="m-bq">Pick a time</h2>
+        <p class="m-bsub">Appointments are 15 minutes. Walk-ins also welcome.</p>
+        <div class="m-dates" id="mDates">
+          <button class="m-date sel" data-w="Mon" data-d="16"><span class="dw">Mon</span><span class="dd">16</span></button>
+          <button class="m-date" data-w="Tue" data-d="17"><span class="dw">Tue</span><span class="dd">17</span></button>
+          <button class="m-date" data-w="Wed" data-d="18"><span class="dw">Wed</span><span class="dd">18</span></button>
+          <button class="m-date" data-w="Thu" data-d="19"><span class="dw">Thu</span><span class="dd">19</span></button>
+          <button class="m-date" data-w="Fri" data-d="20"><span class="dw">Fri</span><span class="dd">20</span></button>
+          <button class="m-date" data-w="Sat" data-d="21"><span class="dw">Sat</span><span class="dd">21</span></button>
+        </div>
+        <div class="m-times" id="mTimes">
+          <button class="m-time sel">8:00 AM</button><button class="m-time">8:30 AM</button><button class="m-time">9:00 AM</button>
+          <button class="m-time">9:30 AM</button><button class="m-time">10:00 AM</button><button class="m-time">10:30 AM</button>
+          <button class="m-time">11:00 AM</button><button class="m-time">1:00 PM</button><button class="m-time">1:30 PM</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BOOKING SUCCESS ============ -->
+    <section class="m-screen" id="m-booksuccess">
+      <div class="m-success">
+        <div class="sc"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div>
+        <h2>You're booked</h2>
+        <p>We've sent a confirmation and a calendar invite. A reminder follows the day before.</p>
+      </div>
+      <div class="m-summary" id="mSummary"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:20px" onclick="go('visits')">View appointment</button>
+      <button class="btn btn-ghost btn-block" style="margin-top:8px" onclick="go('home')">Back to home</button>
+    </section>
+
+    <!-- ============ VISITS ============ -->
+    <section class="m-screen" id="m-visits">
+      <h1 class="m-h">Appointments</h1>
+      <div class="m-seg"><button class="on" data-seg="up" onclick="segVisits('up')">Upcoming</button><button data-seg="past" onclick="segVisits('past')">Past</button></div>
+      <div id="vUp">
+        <div id="vUpEmpty" class="m-empty">No upcoming appointments yet.<br/>Book a visit and it'll show up here.</div>
+        <div id="vUpFilled" style="display:none"></div>
+      </div>
+      <div id="vPast" style="display:none">
+        <div class="m-empty">There are no past appointments.</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- booking action bar -->
+  <div class="m-bbar"><button class="btn btn-secondary" id="bBack" aria-label="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="btn btn-primary" id="bNext">Continue</button></div>
+
+  <!-- bottom tab bar -->
+  <nav class="m-tabbar">
+    <button class="m-tab on" data-tab="home" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/></svg>Home</button>
+    <button class="m-tab" data-tab="results" onclick="go('results')"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Reports</button>
+    <button class="m-tab" data-tab="book" onclick="startBooking('lab')"><span class="bk-fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Book</button>
+    <button class="m-tab" data-tab="visits" onclick="go('visits')"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4M9 14l2 2 4-4"/></svg>Visits</button>
+  </nav>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var app=document.getElementById('mApp');
+  var scroll=document.getElementById('mScroll');
+  var tabFor={detail:'results', book:'book', booksuccess:'book'};
+
+  window.go=function(screen, openId){
+    document.querySelectorAll('.m-screen').forEach(function(s){s.classList.toggle('on', s.id==='m-'+screen);});
+    app.setAttribute('data-screen', screen);
+    var tab=tabFor[screen]||screen;
+    document.querySelectorAll('.m-tab').forEach(function(b){b.classList.toggle('on', b.getAttribute('data-tab')===tab);});
+    var paths={home:'/home',results:'/reports',detail:'/reports/13-mar-2026',book:'/book',booksuccess:'/book/confirmed',visits:'/appointments'};
+    var u=document.getElementById('mUrl'); if(u) u.innerHTML='<b>on.mycarecompass.ca</b>'+(paths[screen]||'/'+screen);
+    if(scroll) scroll.scrollTop=0;
+    if(openId){
+      var item=document.getElementById(openId);
+      if(item){
+        item.classList.add('open');
+        item.classList.remove('just-in');void item.offsetWidth;
+        item.classList.add('just-in');
+        setTimeout(function(){ item.classList.remove('just-in'); },1700);
+      }
+    }
+  };
+
+  /* ---------- out-of-range toggle ---------- */
+  var oor=document.getElementById('oorTg');
+  if(oor){oor.addEventListener('click',function(){
+    var on=oor.getAttribute('aria-checked')==='true';
+    oor.setAttribute('aria-checked',(!on).toString());
+    oor.classList.toggle('off',on);
+  });}
+
+  /* ---------- reports accordion + incoming results ---------- */
+  (function(){
+    var list=document.getElementById('mReportList');
+    if(!list) return;
+    list.addEventListener('click',function(e){
+      var h=e.target.closest('.m-rhead');
+      if(h&&list.contains(h)) h.closest('.m-ritem').classList.toggle('open');
+    });
+    var PENDING=[{
+      date:'10 Jun 2026', meta:'8:15 AM · Chemistry',
+      cards:
+        '<div class="result-card"><div class="rc-top"><div><div class="rc-name">Hemoglobin A1c</div><div class="rc-sub">Diabetes monitoring</div></div><span class="pill within"><span class="pd"></span>Within</span></div><div class="rc-val">5.4<b>%</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:47%"></div></div><div class="range-labels"><span>4.0</span><span>4.0–6.0</span><span>6.0</span></div></div></div>'+
+        '<div class="result-card"><div class="rc-top"><div><div class="rc-name">Vitamin B12</div><div class="rc-sub">Serum</div></div><span class="pill within"><span class="pd"></span>Within</span></div><div class="rc-val">410<b>pmol/L</b></div><div class="range-bar"><div class="range-track"><div class="range-marker" style="left:53%"></div></div><div class="range-labels"><span>138</span><span>138–652</span><span>652</span></div></div></div>'
+    }];
+    var btn=document.getElementById('mSimNewResult');
+    if(!btn) return;
+    btn.addEventListener('click',function(){
+      if(!PENDING.length) return;
+      var r=PENDING.shift();
+      var item=document.createElement('div');
+      item.className='m-ritem open just-in';
+      item.innerHTML=
+        '<button class="m-rhead">'+
+          '<span class="m-rdate">'+r.date+'<span class="t">'+r.meta+'</span></span>'+
+          '<span class="pill newp"><span class="pd"></span>New</span>'+
+          '<span class="m-rchev">▾</span>'+
+        '</button>'+
+        '<div class="m-rbody">'+
+          '<a class="m-pdf" href="assets/MyCareCompass-Report.pdf" target="_blank" rel="noopener"><span class="pdf-ic">PDF</span>View full report<span class="arr">›</span></a>'+
+          '<div class="m-results-cards">'+r.cards+'</div>'+
+        '</div>';
+      list.insertBefore(item, list.firstElementChild);
+      setTimeout(function(){ item.classList.remove('just-in'); },1700);
+      if(!PENDING.length){ btn.textContent='✓ All results loaded'; btn.classList.add('is-done'); btn.disabled=true; }
+    });
+  })();
+
+  /* ---------- visits segmented ---------- */
+  window.segVisits=function(which){
+    document.querySelectorAll('.m-seg button').forEach(function(b){b.classList.toggle('on', b.getAttribute('data-seg')===which);});
+    document.getElementById('vUp').style.display = which==='up'?'':'none';
+    document.getElementById('vPast').style.display = which==='past'?'':'none';
+  };
+
+  /* ---------- booking ---------- */
+  var bstep=1;
+  var panels=document.querySelectorAll('#m-book .bpanel');
+  var stepEls=document.querySelectorAll('#m-book .m-step');
+  var stepLbl=document.getElementById('bStepLbl');
+  var bNext=document.getElementById('bNext');
+  var bBack=document.getElementById('bBack');
+  var step2Q=document.getElementById('bStep2Q');
+
+  function renderStep(){
+    panels.forEach(function(p){p.classList.toggle('on', +p.getAttribute('data-step')===bstep);});
+    stepEls.forEach(function(s){s.classList.toggle('on', +s.getAttribute('data-s')<=bstep);});
+    stepLbl.textContent='Step '+bstep+' of 3';
+    bNext.textContent = bstep===3 ? 'Confirm booking' : 'Continue';
+    if(scroll) scroll.scrollTop=0;
+  }
+
+  window.startBooking=function(type){
+    bstep=1;
+    // preset type
+    document.querySelectorAll('#mTypeCards .m-typecard').forEach(function(c){c.classList.toggle('sel', c.getAttribute('data-type')===type);});
+    step2Q.textContent = type==='home' ? 'Where should we come?' : 'Choose a location';
+    renderStep();
+    go('book');
+  };
+
+  bNext.addEventListener('click',function(){
+    if(bstep<3){ bstep++; renderStep(); }
+    else { confirmBooking(); }
+  });
+  bBack.addEventListener('click',function(){
+    if(bstep>1){ bstep--; renderStep(); } else { go('home'); }
+  });
+  document.getElementById('bExit').addEventListener('click',function(){ go('home'); });
+
+  /* type select */
+  document.querySelectorAll('#mTypeCards .m-typecard').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('#mTypeCards .m-typecard').forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel');
+      var t=c.getAttribute('data-type');
+      step2Q.textContent = t==='home' ? 'Where should we come?' : 'Choose a location';
+    });
+  });
+  /* location select */
+  document.querySelectorAll('#mLocList .m-loc').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('#mLocList .m-loc').forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel');
+    });
+  });
+  /* date + time select */
+  document.querySelectorAll('#mDates .m-date').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('#mDates .m-date').forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel');
+    });
+  });
+  document.querySelectorAll('#mTimes .m-time').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('#mTimes .m-time').forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel');
+    });
+  });
+
+  function svgFor(kind){
+    if(kind==='type') return '<svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/></svg>';
+    if(kind==='loc') return '<svg viewBox="0 0 24 24"><circle cx="12" cy="11" r="2.4"/><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11Z"/></svg>';
+    return '<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>';
+  }
+
+  function confirmBooking(){
+    var type=document.querySelector('#mTypeCards .m-typecard.sel');
+    var loc=document.querySelector('#mLocList .m-loc.sel');
+    var date=document.querySelector('#mDates .m-date.sel');
+    var time=document.querySelector('#mTimes .m-time.sel');
+    var isHome = type.getAttribute('data-type')==='home';
+    var typeLabel = isHome ? 'Home visit · MyVisit™' : 'Lab visit';
+    var dy=date.getAttribute('data-d'), dw=date.getAttribute('data-w');
+    var locName = isHome ? 'Home visit' : loc.getAttribute('data-name');
+    var locAddr = isHome ? '12 Bayview Cres, Toronto' : loc.getAttribute('data-addr');
+    var timeStr = time.textContent;
+
+    /* summary */
+    document.getElementById('mSummary').innerHTML =
+      row('type','Visit type',typeLabel)+
+      row('loc', isHome?'Address':'Location', locName + (isHome?'' : '<br><span style="font-weight:400;color:var(--muted);font-size:12.5px">'+locAddr+'</span>'))+
+      row('date','Date & time', dw+' '+dy+' Mar 2026 · '+timeStr);
+
+    /* visits filled */
+    var filled=document.getElementById('vUpFilled');
+    filled.innerHTML =
+      '<div class="m-appt"><div class="top">'+
+        '<div class="date"><div class="mo">Mar</div><div class="dy">'+dy+'</div></div>'+
+        '<div class="info"><div class="t">'+typeLabel+'</div><div class="l">'+dw+' '+dy+' Mar · '+timeStr+'<br>'+locName+'</div></div>'+
+      '</div><div class="acts">'+
+        '<button class="btn btn-secondary">Directions</button>'+
+        '<button class="btn btn-ghost" id="vCancel">Cancel</button>'+
+      '</div></div>';
+    document.getElementById('vUpEmpty').style.display='none';
+    filled.style.display='';
+    document.getElementById('vCancel').addEventListener('click',cancelAppt);
+
+    /* home next */
+    document.getElementById('mHomeNext').innerHTML =
+      '<div class="m-appt"><div class="top">'+
+        '<div class="date"><div class="mo">Mar</div><div class="dy">'+dy+'</div></div>'+
+        '<div class="info"><div class="t">'+typeLabel+'</div><div class="l">'+dw+' '+dy+' Mar · '+timeStr+'</div></div>'+
+      '</div></div>';
+
+    go('booksuccess');
+  }
+
+  function cancelAppt(){
+    document.getElementById('vUpFilled').style.display='none';
+    document.getElementById('vUpFilled').innerHTML='';
+    document.getElementById('vUpEmpty').style.display='';
+    document.getElementById('mHomeNext').innerHTML =
+      '<div class="m-emptycard">'+
+        '<div class="ei"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></div>'+
+        '<div class="et">No upcoming visits</div>'+
+        '<div class="ed">Book a lab or home visit and it\'ll appear here with reminders and directions.</div>'+
+        '<button class="btn btn-primary btn-block" onclick="startBooking(\'lab\')">Book a visit</button>'+
+      '</div>';
+  }
+
+  function row(icon,k,v){
+    return '<div class="m-srow"><div class="si">'+svgFor(icon)+'</div><div><div class="sk">'+k+'</div><div class="sv">'+v+'</div></div></div>';
+  }
+})();
+</script>
+</body>
+</html>

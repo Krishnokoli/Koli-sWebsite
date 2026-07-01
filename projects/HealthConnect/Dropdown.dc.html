@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div ref="{{ setRef }}" style="position:relative;width:100%;font-family:inherit;">
+  <div onClick="{{ toggle }}" style="{{ buttonStyle }}">
+    <span style="{{ labelStyle }}">{{ label }}</span>
+    <span style="color:#8a8f99;font-size:10px;margin-left:8px;transform:translateY(1px);">{{ chevron }}</span>
+  </div>
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ menuStyle }}">
+      <sc-for list="{{ opts }}" as="o" hint-placeholder-count="3">
+        <div onClick="{{ o.onClick }}" style="{{ o.style }}" style-hover="background:#eef3fb;color:#005FB2;">{{ o.label }}</div>
+      </sc-for>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:190,&quot;height&quot;:40},&quot;options&quot;:{&quot;editor&quot;:null,&quot;default&quot;:[&quot;Colonoscopy&quot;,&quot;Pap Smear&quot;,&quot;X-Ray&quot;]},&quot;value&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;},&quot;onChange&quot;:{&quot;editor&quot;:null},&quot;placeholder&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Select…&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;sm&quot;],&quot;default&quot;:&quot;&quot;}}">
+class Component extends DCLogic {
+  state = { open:false, internal:undefined, menuPos:null };
+  componentDidMount(){
+    this._h = (e)=>{ if(this._root && !this._root.contains(e.target)) this.setState({open:false}); };
+    document.addEventListener('mousedown', this._h);
+    this._sc = ()=>{ if(this.state.open) this.setState({open:false}); };
+    window.addEventListener('scroll', this._sc, true);
+    window.addEventListener('resize', this._sc);
+  }
+  componentWillUnmount(){ document.removeEventListener('mousedown', this._h); window.removeEventListener('scroll', this._sc, true); window.removeEventListener('resize', this._sc); }
+  norm(){ return (this.props.options||[]).map(o=> (o && typeof o==='object') ? {label:String(o.label),value:o.value} : {label:String(o),value:o}); }
+  current(opts){
+    if (this.props.value!==undefined && this.props.value!==null) return this.props.value;
+    if (this.state.internal!==undefined) return this.state.internal;
+    return opts.length ? opts[0].value : undefined;
+  }
+  renderVals(){
+    const opts = this.norm();
+    const cur = this.current(opts);
+    const sel = opts.find(o=>o.value===cur);
+    const placeholder = this.props.placeholder || 'Select…';
+    const sm = this.props.size==='sm';
+    const pad = sm ? '5px 8px' : '7px 11px';
+    const fs = sm ? '11.5px' : '13px';
+    return {
+      label: sel ? sel.label : placeholder,
+      chevron: this.state.open ? '▲' : '▼',
+      open: this.state.open,
+      menuStyle: (this.state.menuPos
+        ? `position:fixed;top:${this.state.menuPos.top}px;left:${this.state.menuPos.left}px;min-width:${this.state.menuPos.width}px;`
+        : `position:absolute;top:calc(100% + 4px);left:0;min-width:100%;`) + `background:#fff;border:1px solid #d6d9de;border-radius:6px;box-shadow:0 12px 30px -8px rgba(16,26,44,0.3);z-index:9999;overflow-y:auto;max-height:240px;`,
+      buttonStyle: `display:flex;align-items:center;justify-content:space-between;border:1px solid ${this.state.open?'#0f7bd4':'#d6d9de'};border-radius:6px;padding:${pad};font-size:${fs};cursor:pointer;background:#fff;user-select:none;white-space:nowrap;transition:border-color .15s;`,
+      labelStyle: `color:${sel?'#181818':'#9aa0ab'};overflow:hidden;text-overflow:ellipsis;`,
+      toggle: ()=>{ if(this.state.open){ this.setState({open:false}); return; } const r=this._root&&this._root.getBoundingClientRect?this._root.getBoundingClientRect():null; this.setState({open:true, menuPos: r?{top:r.bottom+4,left:r.left,width:r.width}:null}); },
+      setRef: (el)=>{ this._root = el; },
+      opts: opts.map(o=>({ label:o.label, value:o.value,
+        style:`padding:${sm?'6px 10px':'8px 12px'};cursor:pointer;font-size:${fs};white-space:nowrap;background:${o.value===cur?'#eaf2fc':'transparent'};color:${o.value===cur?'#005FB2':'#3a3e47'};font-weight:${o.value===cur?'600':'400'};`,
+        onClick:()=>{ this.setState({open:false, internal:o.value}); if(this.props.onChange) this.props.onChange(o.value); } }))
+    };
+  }
+}
+</script>
+</body>
+</html>

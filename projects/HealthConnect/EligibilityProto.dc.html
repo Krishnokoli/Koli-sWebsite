@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="image-slot.js"></script>
+<style>
+  @keyframes pulseHint{0%{box-shadow:0 0 0 0 rgba(0,95,178,0.45);}70%{box-shadow:0 0 0 12px rgba(0,95,178,0);}100%{box-shadow:0 0 0 0 rgba(0,95,178,0);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</helmet>
+<div style="font-family:'Open Sans',system-ui,sans-serif;color:#16181d;background:#fff;border:1px solid #e7eaef;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px -45px rgba(0,95,178,0.4);">
+  <div style="display:grid;grid-template-columns:248px 1fr;min-height:600px;">
+    <aside style="background:#fafbfc;border-right:1px solid #eef0f3;padding:22px 18px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#9aa0ab;margin-bottom:14px;">Persona</div>
+      <div style="border:1px solid #bcd6f3;background:#fff;border-radius:12px;box-shadow:0 8px 20px -14px rgba(0,95,178,0.6);overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:11px;padding:13px 13px 12px;">
+          <div style="width:48px;height:48px;border-radius:50%;flex:none;overflow:hidden;background:#eef3fb;display:flex;align-items:flex-end;justify-content:center;">
+            <img src="assets/sm/einstein.png" alt="Trevor Hollett" style="width:124%;height:124%;object-fit:cover;object-position:center top;"/>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-size:14px;font-weight:700;">Trevor Hollett</div>
+            <div style="font-size:11.5px;color:#61656e;line-height:1.3;">Program Manager · NLHS</div>
+          </div>
+        </div>
+        <div style="padding:0 13px 14px;border-top:1px solid #eef0f3;padding-top:12px;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px;">
+            <span style="background:#eef3fb;color:#3a5da8;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;">Program admin</span>
+            <span style="background:#eef7df;color:#4d7a00;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;">Eligibility</span>
+            <span style="background:#f3eefe;color:#6b3fd0;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;">NLHS</span>
+          </div>
+          <div style="font-size:12px;color:#5a5e67;line-height:1.55;margin-bottom:12px;">Trevor runs cancer screening programs at NL Health Services - he configures eligibility rules and runs automated checks so eligible people get invited to screen.</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div style="display:flex;align-items:center;gap:9px;font-size:11.5px;color:#3a3e47;"><span style="font-size:14px;">📋</span>Configures eligibility programs &amp; rules</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:11.5px;color:#3a3e47;"><span style="font-size:14px;">🌙</span>Runs automated overnight checks</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:11.5px;color:#3a3e47;"><span style="font-size:14px;">✉️</span>Invites eligible people to screen</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11px;font-weight:700;color:#8a8f99;">Program</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#16181d;background:#eef7df;border:1px solid #cbe39a;border-radius:9px;padding:9px 11px;">🎗️ Cervical Screening</div>
+      </div>
+    </aside>
+    <div style="padding:26px 28px 30px;display:flex;flex-direction:column;">
+      <div style="position:sticky;top:0;z-index:30;background:#fff;margin:-26px -28px 22px;padding:26px 28px 16px;border-bottom:1px solid #eef0f3;">
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#005FB2;margin-bottom:14px;">Trevor's journey · automated eligibility</div>
+        <div style="display:flex;align-items:flex-start;">
+          <sc-for list="{{ journey }}" as="j" hint-placeholder-count="5">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;">
+              <div style="{{ j.lineStyle }}"></div>
+              <div style="{{ j.nodeStyle }}">{{ j.icon }}</div>
+              <div style="{{ j.labelStyle }}">{{ j.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="width:100%;max-width:660px;display:flex;flex-direction:column;align-items:center;">
+          <div style="width:100%;background:#16325c;border-radius:14px;padding:4px;box-shadow:0 30px 55px -28px rgba(16,26,44,0.5);">
+            <div style="background:#f4f6f9;border-radius:10px;overflow:hidden;height:444px;display:flex;flex-direction:column;position:relative;">
+              <div style="height:30px;background:#16325c;display:flex;align-items:center;gap:8px;padding:0 12px;flex:none;">
+                <div style="display:flex;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:#ff5f57;"></span><span style="width:9px;height:9px;border-radius:50%;background:#febc2e;"></span><span style="width:9px;height:9px;border-radius:50%;background:#28c840;"></span></div>
+                <div style="margin-left:8px;font-size:11px;color:#cdd8ee;font-weight:600;">Connect Suite · Eligibility</div>
+                <div style="margin-left:auto;font-size:10.5px;color:#8ea3c7;">Trevor Hollett</div>
+              </div>
+              <div style="height:44px;background:#fff;border-bottom:1px solid #e6e9ef;display:flex;align-items:center;padding:0 14px;gap:10px;flex:none;">
+                <div style="width:22px;height:22px;border-radius:5px;background:#005FB2;display:flex;align-items:center;justify-content:center;font-size:11px;flex:none;">🎗️</div>
+                <div style="min-width:0;">
+                  <div style="font-size:13px;font-weight:700;color:#16181d;line-height:1.1;white-space:nowrap;">NL Health Services</div>
+                  <div style="font-size:9.5px;color:#9aa0ab;line-height:1.1;">Eligibility Connect</div>
+                </div>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:13px;">
+                  <div title="Notifications" style="position:relative;font-size:15px;color:#54698d;cursor:pointer;">🔔<span style="position:absolute;top:-3px;right:-4px;width:13px;height:13px;border-radius:50%;background:#ea001e;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;">2</span></div>
+                  <div title="Settings" style="font-size:15px;color:#54698d;cursor:pointer;">⚙️</div>
+                  <div style="width:30px;height:30px;border-radius:50%;overflow:hidden;background:#eef3fb;border:1.5px solid #d6e2f2;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;flex:none;"><img src="assets/sm/einstein.png" alt="Trevor Hollett" style="width:124%;height:124%;object-fit:cover;object-position:center top;"/></div>
+                </div>
+              </div>
+              <div style="flex:1;overflow-y:auto;">{{ screen }}</div>
+              {{ screenModal }}
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+          <div onClick="{{ onBack }}" style="{{ backStyle }}">← Back</div>
+          <div style="font-size:12px;color:#8a8f99;">Step {{ stepNum }} of {{ stepTotal }}</div>
+          <div onClick="{{ onReset }}" style="font-size:12px;color:#005FB2;cursor:pointer;font-weight:600;">Restart</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:960,&quot;height&quot;:640}}">
+class Component extends DCLogic {
+  state = { step:0, sent:false, exprDD:false, creating:false, dd:null, checkList:'', checkProgram:'Cervical Screening Program 2026', calMonth:0, calStart:1, calEnd:59 };
+  // calStart/calEnd are day-of-year offsets from Jan 1 2026
+  calMonths(){ return [['January',2026,31,0],['February',2026,28,31]]; }
+  pickDay(abs){ this.setState(s=>{ if(s.calStart!=null && s.calEnd==null){ if(abs<s.calStart) return {calStart:abs,calEnd:null}; return {calEnd:abs}; } return {calStart:abs,calEnd:null}; }); }
+  fmt(abs){ const m=this.calMonths(); let d=abs; for(const mo of m){ if(d<mo[2]) return mo[0].slice(0,3)+' '+(d+1)+', '+mo[1]; d-=mo[2]; } return ''; }
+  rangeLabel(){ const a=this.state.calStart, b=this.state.calEnd; if(a!=null&&b!=null) return this.fmt(a)+' → '+this.fmt(b); if(a!=null) return 'Start '+this.fmt(a)+' - pick end date'; return 'Pick a start date'; }
+  calendarPicker(){
+    const mi=this.state.calMonth; const m=this.calMonths()[mi];
+    const offset=mi===0?0:31; // abs offset for this month's day 0
+    const firstDow=new Date(m[1],mi,1).getDay();
+    const {calStart,calEnd}=this.state;
+    const cells=[];
+    for(let i=0;i<firstDow;i++) cells.push(this.h('div',{key:'b'+i}));
+    for(let d=1; d<=m[2]; d++){
+      const abs=offset+(d-1);
+      const isStart=abs===calStart, isEnd=abs===calEnd;
+      const inRange=calStart!=null&&calEnd!=null&&abs>calStart&&abs<calEnd;
+      const sel=isStart||isEnd;
+      cells.push(this.h('div',{key:d,onClick:()=>this.pickDay(abs),style:{aspectRatio:'1',display:'flex',alignItems:'center',justifyContent:'center',borderRadius:'50%',fontSize:'12px',fontWeight:sel?700:500,cursor:'pointer',background:sel?'#16325c':(inRange?'#e8f0fb':'transparent'),color:sel?'#fff':'#16181d'}},String(d)));
+    }
+    return this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'10px',padding:'14px 16px',background:'#fff',width:'300px',flex:'none'}},
+      this.h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'9px'}},
+        this.h('div',{onClick:()=>this.setState(s=>({calMonth:Math.max(0,s.calMonth-1)})),style:{width:'26px',height:'26px',borderRadius:'7px',border:'1px solid #e7eaef',display:'flex',alignItems:'center',justifyContent:'center',color:'#16325c',cursor:'pointer',fontSize:'13px'}},'‹'),
+        this.h('div',{style:{fontSize:'13px',fontWeight:800,color:'#16325c'}},m[0]+' '+m[1]),
+        this.h('div',{onClick:()=>this.setState(s=>({calMonth:Math.min(1,s.calMonth+1)})),style:{width:'26px',height:'26px',borderRadius:'7px',border:'1px solid #e7eaef',display:'flex',alignItems:'center',justifyContent:'center',color:'#16325c',cursor:'pointer',fontSize:'13px'}},'›')),
+      this.h('div',{style:{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:'2px',marginBottom:'3px'}},...['SU','MO','TU','WE','TH','FR','SA'].map((w,j)=>this.h('div',{key:j,style:{textAlign:'center',fontSize:'9px',color:'#8a8f99',fontWeight:700}},w))),
+      this.h('div',{style:{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:'2px'}},...cells),
+      this.h('div',{style:{marginTop:'9px',fontSize:'11.5px',fontWeight:600,color:'#16325c'}},this.rangeLabel()));
+  }
+  steps(){ return [
+    ['📋','Create program'],
+    ['🧮','Expression set'],
+    ['🔗','Link to program'],
+    ['🗂️','Build list'],
+    ['▶️','Run check'],
+    ['🗓️','Schedule'],
+    ['🌙','Run + email'],
+    ['👥','Review results'],
+    ['✉️','Send comms'],
+  ]; }
+  sendComms(){ this.setState({sent:true,step:8,sentN:0,deliv:0,opened:0}); clearInterval(this._d); this._d=setInterval(()=>{ this.setState(s=>{ const sentN=Math.min(1284,s.sentN+Math.max(8,Math.ceil((1284-s.sentN)/3))); const deliv=sentN<400?0:Math.min(1271,s.deliv+Math.max(2,Math.ceil((1271-s.deliv)/14))); const opened=deliv<300?0:Math.min(486,s.opened+Math.max(1,Math.ceil((486-s.opened)/26))); if(sentN>=1284&&deliv>=1271&&opened>=486) clearInterval(this._d); return {sentN,deliv,opened}; }); },200); }
+  componentWillUnmount(){ clearInterval(this._d); }
+  next(){ this.setState(s=>({step:Math.min(this.steps().length-1,s.step+1)})); }
+  back(){ this.setState(s=>({step:Math.max(0,s.step-1)})); }
+  reset(){ this.setState({step:0,sent:false,exprDD:false,creating:false,dd:null,checkList:'',checkProgram:'Cervical Screening Program 2026',viewProgram:null,viewAccount:null,calMonth:0,calStart:1,calEnd:59}); }
+  programsTable(includeNew){
+    const base=[
+      ['🫁 Lung Screening Program 2025','CSEG_Lung_RuleSet','Trevor Hollett','Active',false],
+      ['🎀 Breast Screening Program 2025','CSEG_Breast_RuleSet','Nithya Sankaran','Active',false],
+      ['🧬 Colon (FIT) Screening 2025','CSEG_Colon_RuleSet','Vitaly Makarkin','Active',false],
+      ['❤️ Cardiac Risk Screening 2025','CSEG_Cardiac_RuleSet','Trevor Hollett','Draft',false],
+    ];
+    const rows = includeNew ? [['🎗️ Cervical Screening Program 2026','CSEG_Cervical_RuleSet','Trevor Hollett','Active',true],...base] : base;
+    return this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden'}},
+      this.h('div',{style:{display:'grid',gridTemplateColumns:'1.7fr 1fr 1fr 0.8fr',background:'#f7f8fa',borderBottom:'1px solid #e3e3e3',fontSize:'10.5px',fontWeight:700,color:'#3a3e47'}},...['Program name','Expression set','Created by','Status'].map((c,i)=>this.h('div',{key:i,style:{padding:'8px 11px'}},c))),
+      ...rows.map((r,ri)=>this.h('div',{key:ri,onClick:()=>this.setState({viewProgram:r[0]}),style:{display:'grid',gridTemplateColumns:'1.7fr 1fr 1fr 0.8fr',borderBottom:ri<rows.length-1?'1px solid #f1f3f6':'none',fontSize:'11.5px',alignItems:'center',background:r[4]?'#f3f8ff':'#fff',cursor:'pointer'}},
+        this.h('div',{style:{padding:'8px 11px',fontWeight:r[4]?700:600,color:'#0b66c2'}},r[0],r[4]?this.h('span',{style:{marginLeft:'7px',background:'#005FB2',color:'#fff',fontSize:'8.5px',fontWeight:700,padding:'2px 6px',borderRadius:'10px',verticalAlign:'middle'}},'NEW'):null),
+        this.h('div',{style:{padding:'8px 11px',color:'#4a4e57',fontFamily:'ui-monospace,monospace',fontSize:'10px'}},r[1]),
+        this.h('div',{style:{padding:'8px 11px',color:'#4a4e57'}},r[2]),
+        this.h('div',{style:{padding:'8px 11px'}},this.h('span',{style:{background:r[3]==='Active'?'#eef7df':'#f3f3f3',color:r[3]==='Active'?'#3d6b00':'#8a8f99',fontSize:'10px',fontWeight:600,padding:'3px 9px',borderRadius:'20px'}},r[3])))));
+  }
+
+  h(t,p,...k){ return React.createElement(t,p,...k); }
+  cta(label,onClick,hint){ return this.h('button',{onClick,style:{background:'#005FB2',color:'#fff',border:'none',borderRadius:'6px',padding:'10px 22px',fontSize:'13px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',animation:hint?'pulseHint 1.8s infinite':'none'}},label); }
+  ghost(label,onClick){ return this.h('button',{onClick,style:{background:'#fff',color:'#005FB2',border:'1px solid #c6d6e8',borderRadius:'6px',padding:'9px 18px',fontSize:'13px',fontWeight:600,cursor:'pointer',fontFamily:'inherit'}},label); }
+  title(t,sub){ return this.h('div',{style:{marginBottom:'14px'}}, this.h('div',{style:{fontSize:'16px',fontWeight:800,letterSpacing:'-0.01em'}},t), sub?this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginTop:'2px'}},sub):null); }
+  appTabs(){
+    const step=this.state.step;
+    const active = step<=2 ? 0 : (step<=6 ? 1 : 2);
+    const tabs=[['Eligibility Program',0],['Eligibility Check',3],['Program Eligibilities',7]];
+    const node=(t,i)=>{
+      const done=i<active, on=i===active; const c=done?'#86bc25':on?'#005FB2':'#cdd3db';
+      return this.h('div',{key:i,onClick:()=>this.setState({step:t[1],viewProgram:null,creating:false}),style:{position:'relative',flex:1,display:'flex',flexDirection:'column',alignItems:'center',cursor:'pointer',minWidth:0}},
+        i>0?this.h('div',{style:{position:'absolute',top:'13px',left:'-50%',width:'100%',height:'2px',background:i<=active?'#86bc25':'#e3e7ec',zIndex:0}}):null,
+        this.h('div',{style:{position:'relative',zIndex:1,width:'26px',height:'26px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:700,background:on?'#005FB2':done?'#eef7df':'#fff',border:'2px solid '+c,color:on?'#fff':done?'#3d6b00':'#9aa0ab'}},done?'✓':String(i+1)),
+        this.h('div',{style:{marginTop:'6px',fontSize:'11.5px',fontWeight:on?700:500,color:on?'#16181d':'#8a8f99',textAlign:'center',whiteSpace:'nowrap'}},t[0]));
+    };
+    return this.h('div',{style:{position:'sticky',top:'-18px',zIndex:20,margin:'-18px -20px 16px',background:'#fff',borderBottom:'1px solid #e3e3e3',boxShadow:'0 10px 22px -16px rgba(16,26,44,0.4)',padding:'14px 28px 13px'}},
+      this.h('div',{style:{display:'flex',alignItems:'flex-start'}}, ...tabs.map(node)));
+  }
+  wrap(children, footer){
+    return this.h('div',{style:{minHeight:'100%',display:'flex',flexDirection:'column'}},
+      this.h('div',{style:{padding:'18px 20px',flex:'1',fontFamily:"'Open Sans',system-ui,sans-serif"}}, this.appTabs(), ...children),
+      footer?this.h('div',{style:{position:'sticky',bottom:0,padding:'12px 20px',borderTop:'1px solid #eef0f3',background:'rgba(255,255,255,0.97)',backdropFilter:'blur(6px)',WebkitBackdropFilter:'blur(6px)',display:'flex',justifyContent:'flex-end',gap:'10px',alignItems:'center',zIndex:10}}, ...footer):null);
+  }
+  ddField(label,value,placeholder,key,options,pulseTrigger){
+    const open=this.state.dd===key;
+    const pulse=pulseTrigger&&!value&&!open;
+    return this.h('div',{style:{position:'relative'}},
+      label?this.h('div',{style:{fontSize:'11px',color:'#5b5b5b',marginBottom:'4px'}},label):null,
+      this.h('div',{onClick:()=>this.setState(s=>({dd:s.dd===key?null:key})),style:{display:'flex',alignItems:'center',justifyContent:'space-between',border:'1.5px solid '+(open||pulse?'#0f7bd4':'#d6d9de'),borderRadius:'5px',padding:'8px 11px',fontSize:'12.5px',background:pulse?'#f3f8ff':'#fff',cursor:'pointer',color:value?'#16181d':(pulse?'#005FB2':'#9aa0ab'),fontWeight:pulse?600:400,animation:pulse?'pulseHint 1.8s infinite':'none'}},
+        this.h('span',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},value||placeholder),this.h('span',{style:{fontSize:'10px',color:'#8a8f99'}},open?'▲':'▼')),
+      open? this.h('div',{style:{position:'absolute',top:'100%',left:0,right:0,marginTop:'4px',background:'#fff',border:'1px solid #d6d9de',borderRadius:'6px',boxShadow:'0 12px 30px -8px rgba(16,26,44,0.3)',zIndex:40,overflow:'hidden',maxHeight:'190px',overflowY:'auto'}},
+        ...options.map((o,i)=>this.h('div',{key:i,onClick:o.onClick,style:{padding:'9px 12px',fontSize:'12.5px',cursor:'pointer',display:'flex',alignItems:'center',gap:'8px',borderBottom:i<options.length-1?'1px solid #f1f3f6':'none',fontWeight:o.pulse?700:(value===o.label?600:400),color:o.pulse?'#005FB2':(value===o.label?'#005FB2':'#16181d'),background:o.pulse?'#f3f8ff':(value===o.label?'#eaf2fc':'transparent'),animation:o.pulse?'pulseHint 1.8s infinite':'none'}},
+          o.pulse?this.h('span',{style:{fontSize:'14px'}},'+'):null,o.label))) : null);
+  }
+
+  renderVals(){
+    const step=this.state.step; const st=this.steps();
+    const journey=st.map((n,i)=>{ const done=i<step, active=i===step; const c=done?'#86bc25':active?'#005FB2':'#cdd3db';
+      return {icon:n[0],label:n[1],
+        lineStyle:`position:absolute;top:15px;left:-50%;width:100%;height:2px;background:${i===0?'transparent':(i<=step?'#86bc25':'#e3e7ec')};z-index:0;`,
+        nodeStyle:`position:relative;z-index:1;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:${active?'#005FB2':done?'#eef7df':'#fff'};border:2px solid ${c};color:${active?'#fff':'#16181d'};`,
+        labelStyle:`margin-top:8px;font-size:11px;line-height:1.3;max-width:92px;color:${active?'#16181d':'#8a8f99'};font-weight:${active?'700':'500'};`}; });
+    return { journey, stepNum:step+1, stepTotal:st.length,
+      backStyle:`font-size:12px;font-weight:600;cursor:${step>0?'pointer':'default'};color:${step>0?'#005FB2':'#c3c8d0'};`,
+      onBack:()=>this.back(), onReset:()=>this.reset(), screen:this.renderScreen(step), screenModal:null };
+  }
+
+  field(l,v,mono){ return this.h('div',null, this.h('div',{style:{fontSize:'11px',color:'#5b5b5b',marginBottom:'4px'}},l), this.h('div',{style:{border:'1px solid #d6d9de',borderRadius:'5px',padding:'8px 11px',fontSize:'12.5px',background:'#fff',fontFamily:mono?'ui-monospace,monospace':'inherit',color:'#16181d'}},v)); }
+  bre(label){ return this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',padding:'8px 14px',background:'#eef3fb',borderBottom:'1px solid #dbe6f5'}},
+    this.h('div',{style:{width:'20px',height:'20px',borderRadius:'4px',background:'#0b5cab',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',color:'#fff',flex:'none'}},'⚙'),
+    this.h('div',{style:{fontSize:'11px',fontWeight:700,color:'#0b3b66'}},'Business Rules Engine'),
+    this.h('div',{style:{marginLeft:'auto',fontSize:'10.5px',color:'#5a7596'}},label)); }
+  ruleRow(obj,op,val){ return this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'8px',marginBottom:'8px'}},
+    this.field('Resource',obj), this.field('Operator',op), this.field('Value',val,true)); }
+
+  flowNode(icon,iconBg,title,sub,rows){
+    return this.h('div',{style:{width:'186px',flex:'none',border:'1px solid #e3e7ec',borderRadius:'8px',background:'#fff',boxShadow:'0 4px 12px -8px rgba(16,26,44,0.4)',overflow:'hidden'}},
+      this.h('div',{style:{display:'flex',alignItems:'center',gap:'7px',padding:'7px 9px',borderBottom:'1px solid #f1f3f6',background:title.indexOf('Condition')>-1?'#f3f6fb':'#faf7fe'}},
+        this.h('div',{style:{width:'18px',height:'18px',borderRadius:'4px',background:iconBg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',color:'#fff',flex:'none'}},icon),
+        this.h('div',{style:{lineHeight:1.1}},this.h('div',{style:{fontSize:'10.5px',fontWeight:700,color:'#16181d'}},title),this.h('div',{style:{fontSize:'8.5px',color:'#9aa0ab'}},sub))),
+      this.h('div',{style:{padding:'8px 9px',display:'flex',flexDirection:'column',gap:'6px'}},...rows));
+  }
+  fField(label,val,c){ return this.h('div',{style:{flex:1,minWidth:0}},this.h('div',{style:{fontSize:'7.5px',color:'#9aa0ab',textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:'2px'}},label),this.h('div',{style:{border:'1px solid #dde2e9',borderRadius:'3px',padding:'3px 5px',fontSize:'9px',fontFamily:'ui-monospace,monospace',color:c||'#16181d',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},val)); }
+  condRow(res,op,val){ return this.h('div',{style:{display:'flex',gap:'4px'}}, this.fField('Resource',res), this.fField('Operator',op), this.fField('Value',val,'#0b3b66')); }
+  connector(){ return this.h('div',{style:{width:'2px',height:'18px',background:'#cdd3db',margin:'0 auto'}}); }
+  flowDiagram(){
+    const paths=[
+      {res:'Age',op:'< 25',label:'Set Ineligible',reason:'INELIG_RSN_AGE_MIN'},
+      {res:'Age',op:'> 69',label:'Set Ineligible',reason:'INELIG_RSN_AGE_MAX'},
+      {res:'Last_Screen',op:'< 3 YRS',label:'Set Ineligible',reason:'INELIG_RSN_RECENT'},
+    ];
+    const col=(p,i)=>this.h('div',{key:i,style:{display:'flex',flexDirection:'column',alignItems:'center'}},
+      this.h('div',{style:{fontSize:'8.5px',fontWeight:700,color:'#9aa0ab',marginBottom:'4px'}},'Path '+(i+1)),
+      this.flowNode('◈','#2f6fd0','Condition','Account · '+p.res,[ this.fField('Requirements','All met (AND)'), this.condRow(p.res,p.op,'-') ]),
+      this.connector(),
+      this.flowNode('fx','#7a3fd0','Set Eligibility','Calculation',[ this.h('div',{style:{display:'flex',gap:'5px',alignItems:'center'}}, this.fField('Formula','INELIG','#9b1c2a'), this.h('span',{style:{fontSize:'10px',color:'#9aa0ab'}},'='), this.fField('Output','Eligibility_Result')) ]),
+      this.connector(),
+      this.flowNode('fx','#7a3fd0','Set Reason','Calculation',[ this.h('div',{style:{display:'flex',gap:'5px',alignItems:'center'}}, this.fField('Formula',p.reason,'#9b1c2a'), this.h('span',{style:{fontSize:'10px',color:'#9aa0ab'}},'='), this.fField('Output','Reason')) ]));
+    return this.h('div',{style:{border:'1px solid #e7eaef',borderRadius:'10px',background:'#fbfcfe',padding:'14px',overflowX:'auto'}},
+      // top calculation node
+      this.h('div',{style:{display:'flex',justifyContent:'center'}}, this.flowNode('fx','#7a3fd0','Set Record Id','Calculation',[ this.h('div',{style:{display:'flex',gap:'5px',alignItems:'center'}}, this.fField('Formula','Record_Id'), this.h('span',{style:{fontSize:'10px',color:'#9aa0ab'}},'='), this.fField('Output','Record_Id')) ])),
+      this.connector(),
+      // branch label
+      this.h('div',{style:{display:'flex',justifyContent:'center',marginBottom:'6px'}},this.h('div',{style:{fontSize:'9px',fontWeight:700,color:'#5a7596',background:'#eef3fb',border:'1px solid #dbe6f5',borderRadius:'12px',padding:'2px 12px'}},'Branch ⎌')),
+      // three paths
+      this.h('div',{style:{display:'flex',gap:'16px',justifyContent:'center',alignItems:'flex-start',minWidth:'620px'}}, ...paths.map(col),
+        // eligible terminal
+        this.h('div',{style:{alignSelf:'center'}}, this.flowNode('fx','#1a7f4b','Set Eligible result','Calculation · ELSE',[ this.fField('Formula','ELIG','#1a5c34') ]))),
+      this.h('div',{style:{fontSize:'10px',color:'#8a8f99',marginTop:'12px',textAlign:'center'}},'Each participant Account is evaluated top-down. Any matching condition path → Ineligible (with reason); otherwise → Eligible.'));
+  }
+
+  renderScreen(step){
+    const next=()=>this.next();
+    if(this.state.viewAccount){
+      const a=this.state.viewAccount; // [name,age,gender,pref,terr,hcn,status,elig]
+      return this.wrap([
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'10px',marginBottom:'14px'}},
+          this.h('button',{onClick:()=>this.setState({viewAccount:null}),style:{background:'#fff',border:'1px solid #c6d6e8',color:'#005FB2',borderRadius:'7px',padding:'6px 12px',fontSize:'12px',fontWeight:600,cursor:'pointer',fontFamily:'inherit',flex:'none'}},'← Results'),
+          this.h('div',{style:{display:'flex',alignItems:'center',gap:'10px'}},
+            this.h('div',{style:{width:'34px',height:'34px',borderRadius:'50%',background:'#f5a623',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'15px',flex:'none'}},'👤'),
+            this.h('div',null,this.h('div',{style:{fontSize:'16px',fontWeight:800,letterSpacing:'-0.01em'}},a[0]),this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginTop:'1px'}},'Account · Participant record')))),
+        this.bre('Account'),
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginTop:'14px'}},
+          this.field('Full name',a[0]),
+          this.field('Age',a[1]),
+          this.field('Gender',a[2]),
+          this.field('Healthcare number',a[5],true),
+          this.field('Territory','Newfoundland & Labrador'),
+          this.field('Preferred communication',a[3])),
+        this.h('div',{style:{marginTop:'12px',display:'flex',alignItems:'center',gap:'9px',padding:'11px 14px',border:'1px solid '+(a[7]?'#cbe39a':'#e3e3e3')+';',borderRadius:'10px',background:a[7]?'#f3faec':'#fafbfc'}},
+          this.h('span',{style:{fontSize:'11px',color:'#5b5b5b',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em'}},'Eligibility'),
+          this.h('span',{style:{background:a[7]?'#eef7df':'#f3f3f3',color:a[7]?'#3d6b00':'#8a8f99',fontSize:'11px',fontWeight:700,padding:'3px 11px',borderRadius:'20px'}},a[6]),
+          this.h('span',{style:{fontSize:'11.5px',color:'#8a8f99'}},'Cervical Screening Program 2026'))
+      ],[ this.ghost('← Back to results',()=>this.setState({viewAccount:null})) ]);
+    }
+    if(this.state.viewProgram){
+      const nm=this.state.viewProgram;
+      return this.wrap([
+        this.h('div',{style:{display:'flex',alignItems:'center',gap:'10px',marginBottom:'14px'}},
+          this.h('button',{onClick:()=>this.setState({viewProgram:null}),style:{background:'#fff',border:'1px solid #c6d6e8',color:'#005FB2',borderRadius:'7px',padding:'6px 12px',fontSize:'12px',fontWeight:600,cursor:'pointer',fontFamily:'inherit',flex:'none'}},'← Programs'),
+          this.h('div',null,this.h('div',{style:{fontSize:'16px',fontWeight:800,letterSpacing:'-0.01em'}},nm),this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginTop:'1px'}},'Eligibility Program · details'))),
+        this.bre('Eligibility Program'),
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginTop:'14px'}},
+          this.field('Program name',nm),
+          this.field('Status','Active'),
+          this.field('Rules engine','Salesforce BRE'),
+          this.field('Record type / object','Account (participants)'),
+          this.field('Expression set','CSEG_'+nm.split(' ')[0].replace(/[^A-Za-z]/g,'')+'_RuleSet',true),
+          this.field('Query fields','Id, Name, Age, Gender, Territory',true)),
+        this.h('div',{style:{marginTop:'12px',background:'#f3f8ff',border:'1.5px solid #bcd6f3',borderRadius:'10px',padding:'12px 14px',fontSize:'12px',color:'#1f4fa8',lineHeight:1.5}},'Run this program against a participant list to evaluate eligibility.')
+      ],[ this.cta('Start eligibility check →',()=>this.setState({viewProgram:null,checkProgram:nm,step:4}),true) ]);
+    }
+    if(step===0 && !this.state.creating){
+      return this.wrap([
+        this.h('div',{style:{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:'14px',gap:'10px',flexWrap:'wrap'}},
+          this.h('div',null,this.h('div',{style:{fontSize:'16px',fontWeight:800,letterSpacing:'-0.01em'}},'Eligibility Programs'),this.h('div',{style:{fontSize:'12px',color:'#8a8f99',marginTop:'2px'}},'4 items · Screening programs in Eligibility Connect')),
+          this.h('div',{style:{display:'flex',alignItems:'center',gap:'8px',flex:'none'}},
+            this.h('button',{onClick:()=>this.setState({creating:true}),style:{background:'#fff',color:'#005FB2',border:'1px solid #c6d6e8',borderRadius:'5px',padding:'8px 16px',fontSize:'12.5px',fontWeight:700,cursor:'pointer',fontFamily:'inherit',animation:'pulseHint 1.8s infinite'}},'Create new eligibility program'),
+            this.h('div',{title:'Filter',style:{width:'34px',height:'34px',border:'1px solid #d6d9de',borderRadius:'5px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px',color:'#5a5e67',cursor:'pointer'}},'⛛'),
+            this.h('div',{title:'List settings',style:{width:'34px',height:'34px',border:'1px solid #d6d9de',borderRadius:'5px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px',color:'#5a5e67',cursor:'pointer'}},'⚙'))),
+        this.programsTable(false)
+      ],null);
+    }
+    if(step===0){
+      return this.wrap([
+        this.title('New Eligibility Program','Eligibility Connect · create the program record'),
+        this.bre('Eligibility Program'),
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginTop:'14px'}},
+          this.field('Program name','Cervical Screening Program 2026'),
+          this.field('Record type / object','Account (participants)'),
+          this.field('Rules engine','Salesforce BRE'),
+          this.h('div',{style:{position:'relative'}},
+            this.h('div',{style:{fontSize:'11px',color:'#5b5b5b',marginBottom:'4px'}},'Expression set'),
+            this.h('div',{onClick:()=>this.setState(s=>({exprDD:!s.exprDD})),style:{display:'flex',alignItems:'center',justifyContent:'space-between',border:'1.5px solid #005FB2',borderRadius:'5px',padding:'8px 11px',fontSize:'12.5px',background:'#f3f8ff',color:'#005FB2',fontWeight:600,cursor:'pointer',animation:this.state.exprDD?'none':'pulseHint 1.8s infinite'}},
+              this.h('span',null,'+ Add expression set'),this.h('span',{style:{fontSize:'10px'}},this.state.exprDD?'▲':'▼')),
+            this.state.exprDD? this.h('div',{style:{position:'absolute',top:'100%',left:0,right:0,marginTop:'4px',background:'#fff',border:'1px solid #d6d9de',borderRadius:'6px',boxShadow:'0 12px 30px -8px rgba(16,26,44,0.3)',zIndex:30,overflow:'hidden'}},
+              this.h('div',{onClick:next,style:{padding:'10px 12px',fontSize:'12.5px',fontWeight:600,color:'#16181d',cursor:'pointer',display:'flex',alignItems:'center',gap:'8px'}},this.h('span',{style:{color:'#005FB2',fontSize:'14px'}},'+'),'Create new expression set')) : null),
+          this.field('Create eligibility results','✓ Enabled'),
+          this.field('Query fields','Id, Name, Age, Gender, Territory',true))
+      ],[ this.ghost('← Back to list',()=>this.setState({creating:false,exprDD:false})), this.ghost('Save program',next) ]);
+    }
+    if(step===1){
+      return this.wrap([
+        this.title('Create expression set','CSEG_Cervical_RuleSet · Business Rules Engine'),
+        this.flowDiagram()
+      ],[ this.ghost('Stay & keep editing',()=>{}), this.cta('Save rules & link to program',next,true) ]);
+    }
+    if(step===2){
+      return this.wrap([
+        this.h('div',{style:{display:'inline-flex',alignItems:'center',gap:'8px',background:'#eef7df',color:'#3d6b00',fontSize:'11px',fontWeight:700,padding:'4px 11px',borderRadius:'20px',marginBottom:'12px'}},'✓ Program saved - expression set linked'),
+        this.title('Eligibility Programs','Screening programs configured in Eligibility Connect'),
+        this.h('div',{style:{marginBottom:'4px'}}, this.programsTable(true)),
+        this.h('div',{style:{position:'sticky',bottom:'16px',marginTop:'18px',zIndex:8}},
+          this.h('div',{onClick:()=>this.setState({step:4}),style:{display:'flex',alignItems:'center',gap:'14px',border:'2px solid #005FB2',borderRadius:'14px',padding:'16px 18px',cursor:'pointer',background:'#f3f8ff',boxShadow:'0 18px 40px -16px rgba(0,95,178,0.55)',animation:'pulseHint 1.8s infinite'}},
+            this.h('div',{style:{fontSize:'26px',flex:'none'}},'▶️'),
+            this.h('div',{style:{flex:1}},
+              this.h('div',{style:{fontSize:'14px',fontWeight:700,marginBottom:'3px',color:'#005FB2'}},'Start eligibility check'),
+              this.h('div',{style:{fontSize:'12px',color:'#5a7596',lineHeight:1.5}},'Run this program against a participant list in the Eligibility Check app.')),
+            this.h('div',{style:{color:'#005FB2',fontSize:'20px',flex:'none'}},'→')))
+      ],null);
+    }
+    if(step===3){
+      return this.wrap([
+        this.title('Build a list - List Maker','Target the population to check'),
+        this.bre('List Maker'),
+        this.h('div',{style:{marginTop:'14px',display:'flex',flexDirection:'column',gap:'12px',maxWidth:'460px'}},
+          this.field('List name','All Women Participants List'),
+          this.field('Master object','Account'),
+          this.field('Table type','Participant accounts')),
+        this.h('div',{style:{marginTop:'12px',border:'1px solid #e7eaef',borderRadius:'10px',padding:'13px'}},
+          this.h('div',{style:{fontSize:'11px',fontWeight:700,color:'#8a8f99',marginBottom:'9px',textTransform:'uppercase',letterSpacing:'0.05em'}},'Rules'),
+          ...[['Record type','Account'],['Gender','Female'],['Territory','Newfoundland & Labrador']].map((r,i)=>
+            this.h('div',{key:i,style:{display:'flex',alignItems:'center',gap:'8px',fontSize:'12px',padding:'6px 0',borderBottom:i<2?'1px solid #f1f3f6':'none'}},
+              this.h('span',{style:{color:'#8a8f99',minWidth:'90px'}},r[0]),this.h('span',{style:{color:'#16181d'}},'is'),this.h('span',{style:{fontWeight:700,color:'#0b3b66'}},r[1]))))
+      ],[ this.ghost('← Back',()=>this.back()), this.cta('Save list',()=>this.setState({checkList:'All Women Participants List',step:4}),true) ]);
+    }
+    if(step===4){
+      return this.wrap([
+        this.title('Program Eligibility Check','Run the program against a list of participants'),
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}},
+          this.ddField('Select list',this.state.checkList,'Select a List Maker configuration…','list',[
+            {label:'Create new list',pulse:true,onClick:()=>this.setState({dd:null,step:3})},
+            {label:'All Women Participants List',onClick:()=>this.setState({dd:null,checkList:'All Women Participants List'})},
+            {label:'Population Group - Coastal NL',onClick:()=>this.setState({dd:null,checkList:'Population Group - Coastal NL'})},
+            {label:'Age Group 50–74',onClick:()=>this.setState({dd:null,checkList:'Age Group 50–74'})},
+            {label:'Age Group 25–69 · Female',onClick:()=>this.setState({dd:null,checkList:'Age Group 25–69 · Female'})},
+            {label:'High-Risk Family History',onClick:()=>this.setState({dd:null,checkList:'High-Risk Family History'})},
+          ],true),
+          this.ddField('Select eligibility program',this.state.checkProgram,'Select a program…','prog',[
+            {label:'Cervical Screening Program 2026',onClick:()=>this.setState({dd:null,checkProgram:'Cervical Screening Program 2026'})},
+            {label:'Lung Screening Program 2025',onClick:()=>this.setState({dd:null,checkProgram:'Lung Screening Program 2025'})},
+            {label:'Breast Screening Program 2025',onClick:()=>this.setState({dd:null,checkProgram:'Breast Screening Program 2025'})},
+            {label:'Colon (FIT) Screening 2025',onClick:()=>this.setState({dd:null,checkProgram:'Colon (FIT) Screening 2025'})},
+          ])),
+        this.state.checkList ? this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden',marginBottom:'12px'}},
+          this.h('div',{style:{display:'grid',gridTemplateColumns:'1.6fr 1fr 1fr',background:'#f7f8fa',borderBottom:'1px solid #e3e3e3',fontSize:'10.5px',fontWeight:700,color:'#3a3e47'}},...['Record name','Territory','Status'].map((c,i)=>this.h('div',{key:i,style:{padding:'8px 11px'}},c))),
+          ...[['Aalayiah Murphy','NL'],['Brenda Tucker','NL'],['Carol Pike','NL'],['Denise Hynes','NL']].map((r,i)=>this.h('div',{key:i,style:{display:'grid',gridTemplateColumns:'1.6fr 1fr 1fr',borderBottom:i<3?'1px solid #f1f3f6':'none',fontSize:'11.5px',alignItems:'center'}},
+            this.h('div',{style:{padding:'8px 11px',color:'#0b66c2'}},r[0]),this.h('div',{style:{padding:'8px 11px',color:'#4a4e57'}},r[1]),this.h('div',{style:{padding:'8px 11px',color:'#9aa0ab'}},'Not checked'))),
+          this.h('div',{style:{padding:'7px 11px',fontSize:'11px',color:'#8a8f99',background:'#fafbfc'}},'42,184 participants in list'))
+        : this.h('div',{style:{border:'1px dashed #c3ccd6',borderRadius:'8px',padding:'34px 16px',textAlign:'center',color:'#9aa0ab',fontSize:'12.5px',marginBottom:'12px'}},'Select a list to load participants'),
+        this.h('div',{style:{fontSize:'11.5px',color:'#8a8f99'}},'Choose to check now, or schedule it to run automatically overnight.')
+      ],[ this.ghost('Check eligibility now',()=>this.setState({step:7})), this.cta('Schedule for later',next,true) ]);
+    }
+    if(step===5){
+      return this.wrap([
+        this.title('Schedule eligibility check','Recurring - aligned to the screening calendar'),
+        this.h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',maxWidth:'480px',marginBottom:'14px'}},
+          this.field('Run at','5:00 AM daily'),
+          this.field('Recurring','Yes'),
+          this.field('List','All Women Participants List'),
+          this.field('Notify on complete','Trevor Hollett · 8:00 AM')),
+        this.h('div',{style:{fontSize:'11px',fontWeight:700,color:'#8a8f99',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}},'Screening window - pick start & end'),
+        this.h('div',{style:{display:'flex',gap:'16px',alignItems:'flex-start',flexWrap:'wrap'}},
+          this.calendarPicker(),
+          this.h('div',{style:{flex:'1',minWidth:'150px',maxWidth:'200px'}},
+            this.h('div',{style:{fontSize:'11px',color:'#5b5b5b',marginBottom:'4px'}},'Run time (daily)'),
+            this.ddField('',this.state.runTime||'5:00 AM','Select a time…','time',['5:00 AM','6:00 AM','7:00 AM','12:00 AM','2:00 AM'].map(t=>({label:t,onClick:()=>this.setState({dd:null,runTime:t})}))),
+            this.h('div',{style:{marginTop:'12px',fontSize:'11px',color:'#5b5b5b',marginBottom:'4px'}},'Timezone'),
+            this.field('','NST · Newfoundland')))
+      ],[ this.ghost('← Back',()=>this.back()), this.cta('Schedule check',next,true) ]);
+    }
+    if(step===6){
+      return this.wrap([
+        this.h('div',{style:{display:'inline-flex',alignItems:'center',gap:'8px',background:'#eef7df',color:'#3d6b00',fontSize:'11px',fontWeight:700,padding:'4px 11px',borderRadius:'20px',marginBottom:'12px'}},'✓ Successfully scheduled eligibility check'),
+        this.title('Inbox · 8:00 AM','Eligibility run complete'),
+        this.h('div',{style:{border:'1px solid #e7eaef',borderRadius:'12px',overflow:'hidden',maxWidth:'500px'}},
+          this.h('div',{style:{background:'#f7f8fa',padding:'12px 15px',borderBottom:'1px solid #eef0f3'}},
+            this.h('div',{style:{fontSize:'13px',fontWeight:700,color:'#16181d'}},'Your eligibility check is complete'),
+            this.h('div',{style:{fontSize:'11px',color:'#8a8f99',marginTop:'2px'}},'Eligibility Connect · noreply@connectsuite.health → Trevor Hollett')),
+          this.h('div',{style:{padding:'15px',fontSize:'12.5px',color:'#4a4e57',lineHeight:1.6}},
+            this.h('div',{style:{marginBottom:'8px'}},'Good morning Trevor,'),
+            this.h('div',{style:{marginBottom:'10px'}},'The scheduled eligibility check for ',this.h('strong',null,'Cervical Screening Program 2026'),' finished at 5:42 AM. ',this.h('strong',{style:{color:'#04844B'}},'1,284'),' of 42,184 participants are eligible.'),
+            this.h('button',{onClick:next,style:{display:'inline-flex',alignItems:'center',gap:'7px',background:'#005FB2',color:'#fff',fontSize:'12px',fontWeight:700,padding:'10px 18px',borderRadius:'6px',border:'none',cursor:'pointer',fontFamily:'inherit',animation:'pulseHint 1.8s infinite'}},'View eligible participants →')))
+      ],null);
+    }
+    if(step===7){
+      const rows=[['Aalayiah Murphy','42','Female','Email','NL','7251 442 118','Eligible',true],['Brenda Tucker','51','Female','Letter','NL','7251 338 904','Eligible',true],['Carol Pike','38','Female','Email','NL','7251 771 220','Eligible',true],['Erin Foley','22','Female','Email','NL','7251 905 663','Ineligible',false],['Sara Vokey','71','Female','Letter','NL','7251 110 587','Ineligible',false]];
+      return this.wrap([
+        this.title('Program Eligibilities','Cervical Screening Program 2026 · results'),
+        this.h('div',{style:{display:'flex',gap:'10px',marginBottom:'12px'}},
+          this.stat('42,184','Evaluated','#16325c'),
+          this.stat('1,284','Eligible','#04844B'),
+          this.stat('40,900','Ineligible','#9aa0ab')),
+        this.h('div',{style:{border:'1px solid #e3e3e3',borderRadius:'8px',overflow:'hidden'}},
+          this.h('div',{style:{display:'grid',gridTemplateColumns:'1.5fr 0.5fr 1fr 0.9fr',background:'#f7f8fa',borderBottom:'1px solid #e3e3e3',fontSize:'10.5px',fontWeight:700,color:'#3a3e47'}},...['Participant','Age','Preferred','Status'].map((c,i)=>this.h('div',{key:i,style:{padding:'8px 11px'}},c))),
+          ...rows.map((r,ri)=>this.h('div',{key:ri,onClick:()=>this.setState({viewAccount:r}),style:{display:'grid',gridTemplateColumns:'1.5fr 0.5fr 1fr 0.9fr',borderBottom:ri<rows.length-1?'1px solid #f1f3f6':'none',fontSize:'11.5px',alignItems:'center',cursor:'pointer'}},
+            this.h('div',{style:{padding:'8px 11px',fontWeight:600,color:'#0b66c2'}},r[0]),
+            this.h('div',{style:{padding:'8px 11px'}},r[1]),
+            this.h('div',{style:{padding:'8px 11px',color:'#4a4e57'}},r[3]),
+            this.h('div',{style:{padding:'8px 11px'}},this.h('span',{style:{background:r[7]?'#eef7df':'#f3f3f3',color:r[7]?'#3d6b00':'#8a8f99',fontSize:'10.5px',fontWeight:600,padding:'3px 9px',borderRadius:'20px'}},r[6]))))),
+        this.h('div',{style:{fontSize:'11px',color:'#8a8f99',marginTop:'8px'}},'Click a participant to open their Account record.')
+      ],[ this.cta('Send communication →',()=>this.sendComms(),true) ]);
+    }
+    const snt=this.state.sentN||0, dlv=this.state.deliv||0, opn=this.state.opened||0;
+    const sc=(n,l,c)=>this.h('div',{style:{flex:1,border:'1px solid #e7eaef',borderRadius:'10px',padding:'12px 13px',textAlign:'center'}},
+      this.h('div',{style:{fontSize:'22px',fontWeight:800,color:c}},n.toLocaleString()),
+      this.h('div',{style:{fontSize:'10.5px',color:'#8a8f99',marginTop:'2px'}},l));
+    return this.wrap([
+      this.h('div',{style:{textAlign:'center',paddingTop:'10px'}},
+        this.h('div',{style:{width:'56px',height:'56px',borderRadius:'50%',background:'#eef7df',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'26px',margin:'0 auto 12px'}},'✉️'),
+        this.h('div',{style:{fontSize:'18px',fontWeight:800}},'Communications sent'),
+        this.h('div',{style:{fontSize:'12.5px',color:'#4a4e57',marginTop:'6px',maxWidth:'400px',margin:'6px auto 0',lineHeight:1.6}},'Each eligible participant is being contacted on their preferred channel.')),
+      this.h('div',{style:{display:'flex',gap:'10px',margin:'16px auto 0',maxWidth:'440px'}},
+        sc(snt,'Sent','#16325c'), sc(dlv,'Delivered','#04844B'), sc(opn,'Opened','#005FB2')),
+      this.h('div',{style:{maxWidth:'440px',margin:'8px auto 0',height:'6px',borderRadius:'4px',background:'#eef0f3',overflow:'hidden'}},
+        this.h('div',{style:{height:'100%',width:Math.round(snt/1284*100)+'%',background:'#16325c',transition:'width .25s'}})),
+      this.h('div',{style:{maxWidth:'440px',margin:'5px auto 0',fontSize:'10.5px',color:'#9aa0ab',textAlign:'center'}},Math.round(snt/1284*100)+'% sent · live'),
+      this.h('div',{style:{margin:'16px auto 0',maxWidth:'420px',border:'1.5px solid #bcd6f3',borderRadius:'12px',overflow:'hidden',background:'#fff'}},
+        this.h('div',{style:{background:'#f3f8ff',padding:'10px 14px',borderBottom:'1px solid #dbe6f5',fontSize:'11px',fontWeight:700,color:'#0b3b66'}},'📨 Delivered · Aalayiah Murphy'),
+        this.h('div',{style:{padding:'14px',fontSize:'12px',color:'#2a2e36',lineHeight:1.55}},
+          this.h('div',{style:{fontWeight:700,marginBottom:'5px'}},'You’re invited to cervical screening'),
+          this.h('div',null,'Dear Aalayiah, our records show you’re due for a Pap smear. You’re eligible for a free screening - book at a clinic near you.'),
+          this.h('div',{style:{marginTop:'8px',fontSize:'11px',color:'#8a8f99'}},'- Trevor Hollett, NLHS Cervical Screening')))
+    ],[ this.ghost('Restart',()=>this.reset()) ]);
+  }
+  row(l,v){ return this.h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',border:'1px solid #e7eaef',borderRadius:'8px',padding:'10px 13px'}},
+    this.h('span',{style:{fontSize:'12px',color:'#8a8f99'}},l), this.h('span',{style:{fontSize:'13px',fontWeight:600}},v)); }
+  stat(n,l,c){ return this.h('div',{style:{flex:1,border:'1px solid #e7eaef',borderRadius:'10px',padding:'12px 13px'}},
+    this.h('div',{style:{fontSize:'19px',fontWeight:800,color:c}},n), this.h('div',{style:{fontSize:'10.5px',color:'#8a8f99',marginTop:'2px'}},l)); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; padding: 0;
+      background: #2C29A0;
+      overflow-x: hidden;
+    }
+
+    /* Fixed parallax background */
+    .bg-fixed {
+      position: fixed;
+      inset: 0;
+      background-image: url('assets/backBackground.jpg');
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .bg-fixed::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(28, 22, 110, 0.72);
+    }
+
+    /* All content scrolls above */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Glass card base */
+    .glass {
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 24px;
+    }
+    .glass-dark {
+      background: rgba(10,8,60,0.45);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+    }
+    .glass-yellow {
+      background: rgba(245,196,42,0.1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(245,196,42,0.28);
+      border-radius: 24px;
+    }
+
+    @font-face {
+      font-family: 'BestieSeventy';
+      src: url('assets/bestie-seventy.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @keyframes floatA {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-18px) rotate(6deg); }
+    }
+    @keyframes floatB {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(14px) rotate(-5deg); }
+    }
+    @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.06); }
+    }
+
+    .pill-tag {
+      display: inline-block;
+      font-family: 'Nunito', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: #F5C42A;
+      background: rgba(245,196,42,0.12);
+      border: 1px solid rgba(245,196,42,0.3);
+      border-radius: 50px;
+      padding: 5px 14px;
+      margin-bottom: 18px;
+    }
+
+    .accent-bar {
+      width: 44px; height: 4px;
+      background: linear-gradient(90deg, #F5C42A, #F4742A);
+      border-radius: 2px;
+      margin: 0 0 28px;
+    }
+    .accent-bar.center { margin: 0 auto 32px; }
+
+    .btn-player {
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 14px 28px;
+      border-radius: 50px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .btn-player:hover { transform: translateY(-4px); }
+    .btn-player:active { transform: translateY(1px); }
+  </style>
+</helmet>
+
+<!-- ── NAV ── -->
+<nav style="position:fixed; top:0; left:0; right:0; z-index:100; padding:18px 40px; display:flex; align-items:center; pointer-events:none;">
+  <a href="#" target="_blank" rel="noopener" style="pointer-events:all; text-decoration:none; font-family:'BestieSeventy','Fredoka',cursive; font-size:32px; color:#fff; letter-spacing:1px; text-shadow:0 2px 20px rgba(0,0,0,0.4); transition:opacity 0.2s; opacity:0.95;" style-hover="opacity:1;">Koli</a>
+</nav>
+
+<!-- Fixed background -->
+<div class="bg-fixed"></div>
+
+<!-- Floating deco orbs (fixed position, behind content) -->
+<img src="assets/blue.png" style="position:fixed; top:8%; right:3%; width:90px; z-index:1; animation:floatA 5s ease-in-out infinite; pointer-events:none; opacity:0.18;">
+<img src="assets/green.png" style="position:fixed; bottom:12%; left:2%; width:70px; z-index:1; animation:floatB 7s ease-in-out infinite 1s; pointer-events:none; opacity:0.16;">
+
+<div class="page-wrap">
+
+  <!-- ── HERO ── -->
+  <section style="min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 7%; text-align:center; position:relative; overflow:hidden;">
+
+    <!-- floating dinos -->
+    <img src="assets/blue.png" style="position:absolute; top:10%; left:5%; width:110px; animation:floatA 5.5s ease-in-out infinite; pointer-events:none; opacity:0.7; filter:drop-shadow(0 8px 24px rgba(0,0,0,0.3));">
+    <img src="assets/green.png" style="position:absolute; bottom:14%; right:6%; width:96px; animation:floatB 6.5s ease-in-out infinite 1s; pointer-events:none; opacity:0.7; filter:drop-shadow(0 8px 24px rgba(0,0,0,0.3));">
+    <img src="assets/blue.png" style="position:absolute; top:18%; right:8%; width:64px; animation:floatB 7s ease-in-out infinite 2s; pointer-events:none; opacity:0.35; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));">
+    <img src="assets/green.png" style="position:absolute; bottom:22%; left:8%; width:52px; animation:floatA 8s ease-in-out infinite 0.5s; pointer-events:none; opacity:0.3; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));">
+
+    <div style="position:relative; z-index:2; max-width:820px;">
+      <span class="pill-tag" style="margin-bottom:28px;">OCAD University · Digital Futures · 2020</span>
+
+      <h1 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:clamp(56px,10vw,130px); margin:0; line-height:1; font-weight:700; letter-spacing:-1px; text-shadow:0 4px 40px rgba(0,0,0,0.3);">
+        Virus<br>
+        <span style="color:#F5C42A;">v/s</span><br>
+        Vaccines
+      </h1>
+
+      <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.7); font-size:clamp(16px,2.2vw,22px); margin:28px 0 48px; font-weight:700; letter-spacing:0.5px;">A 4-player multiplayer racing game built in p5.js</p>
+
+      <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+        <a href="#play" style="font-family:'Nunito',sans-serif; background:#F5C42A; color:#1A1678; font-size:16px; font-weight:900; padding:16px 34px; border-radius:50px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 8px 32px rgba(245,196,42,0.4); transition:transform 0.15s, box-shadow 0.15s;" style-hover="transform:translateY(-4px);box-shadow:0 14px 40px rgba(245,196,42,0.5);">💉 Play the Game</a>
+        <a href="#video" style="font-family:'Nunito',sans-serif; background:rgba(255,255,255,0.1); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); color:#fff; font-size:16px; font-weight:800; padding:16px 34px; border-radius:50px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.2); transition:transform 0.15s;" style-hover="transform:translateY(-4px);">▶ Watch Video</a>
+      </div>
+    </div>
+
+    <!-- scroll hint -->
+    <div style="position:absolute; bottom:36px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; opacity:0.4;">
+      <span style="font-family:'Nunito',sans-serif; color:#fff; font-size:10px; font-weight:800; letter-spacing:3px; text-transform:uppercase;">scroll</span>
+      <div style="width:1px; height:36px; background:linear-gradient(#fff, transparent);"></div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ── -->
+  <section style="padding:88px 7% 80px; position:relative;">
+    <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 260px; gap:64px; align-items:center;">
+      <div data-animate="1">
+        <span class="pill-tag">OCAD University · Digital Futures · 2020</span>
+        <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:clamp(30px,4vw,52px); margin:0 0 20px; line-height:1.1; font-weight:700;">About The Project</h2>
+        <div class="accent-bar"></div>
+        <div class="glass-dark" style="padding:28px 32px; margin-bottom:0;">
+          <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.88); font-size:16px; line-height:1.9; margin:0 0 16px;">Part of the <strong style="color:#F5C42A;">Creation and Computation Course</strong>, guided by Prof. Kate Hartman and Prof. Nick Puckett.</p>
+          <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.88); font-size:16px; line-height:1.9; margin:0 0 16px;">Built in <strong style="color:#fff;">November 2020</strong>, when COVID vaccines were being developed at lightning speed. As humanity anxiously waited for the golden elixir, this game brought fun and frolic to those in isolation.</p>
+          <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.88); font-size:16px; line-height:1.9; margin:0;">Four players race to load vaccines into syringes. Click your syringe to fill it the first to complete theirs wins the vaccine race! 🏆</p>
+        </div>
+      </div>
+      <div data-animate="1">
+        <div style="transform:rotate(-2.5deg); box-shadow:0 32px 80px rgba(0,0,0,0.5);">
+          <img src="assets/about.png" alt="Illustrated crowd wearing masks" style="width:100%; display:block; border-radius:18px;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PLAY NOW ── -->
+  <section id="play" style="padding:0 7% 88px;">
+    <div style="max-width:820px; margin:0 auto;" data-animate="1">
+      <div class="glass-yellow" style="padding:40px 36px; text-align:center; box-shadow:0 20px 60px rgba(245,196,42,0.08);">
+        <h3 style="font-family:'Fredoka',sans-serif; color:#F5C42A; font-size:clamp(20px,2.6vw,30px); margin:0 0 10px; font-weight:700;">Play It Live</h3>
+        <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.65); font-size:15px; margin:0 0 32px; line-height:1.65;">Open all four links with friends simultaneously and race to fill your syringe first!</p>
+        <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+          <a href="https://preview.p5js.org/Cyberpunk_1W1/present/IfrZiJKfO" target="_blank" rel="noopener" class="btn-player" style="background:rgba(244,116,42,0.85); color:#fff; box-shadow:0 6px 24px rgba(244,116,42,0.45); border:1px solid rgba(255,255,255,0.2);">🟠 Player 1</a>
+          <a href="https://editor.p5js.org/Cyberpunk_1W1/present/eSGRKjrkd" target="_blank" rel="noopener" class="btn-player" style="background:rgba(42,136,212,0.85); color:#fff; box-shadow:0 6px 24px rgba(42,136,212,0.45); border:1px solid rgba(255,255,255,0.2);">🔵 Player 2</a>
+          <a href="https://editor.p5js.org/Cyberpunk_1W1/present/0MucXIuzK" target="_blank" rel="noopener" class="btn-player" style="background:rgba(217,64,128,0.85); color:#fff; box-shadow:0 6px 24px rgba(217,64,128,0.45); border:1px solid rgba(255,255,255,0.2);">🩷 Player 3</a>
+          <a href="https://editor.p5js.org/Cyberpunk_1W1/present/ENDLG4uyC" target="_blank" rel="noopener" class="btn-player" style="background:rgba(59,173,94,0.85); color:#fff; box-shadow:0 6px 24px rgba(59,173,94,0.45); border:1px solid rgba(255,255,255,0.2);">🟢 Player 4</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GAMEPLAY ── -->
+  <section style="padding:80px 7% 88px; position:relative;">
+    <div style="max-width:980px; margin:0 auto;" data-animate="1">
+      <div style="text-align:center; margin-bottom:52px;">
+        <span class="pill-tag">HOW TO PLAY</span>
+        <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:clamp(26px,3.6vw,46px); margin:8px 0 0; font-weight:700;">The Rules of the Race</h2>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start;">
+        <div style="overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+          <img src="assets/gameplay.png" alt="Gameplay diagram" style="width:100%; display:block; border-radius:18px;">
+        </div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="glass" style="padding:26px 28px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+              <span style="font-size:30px; animation:pulse 3s ease-in-out infinite;">💉</span>
+              <h3 style="font-family:'Fredoka',sans-serif; color:#F5C42A; font-size:18px; margin:0; font-weight:700;">Click to Load</h3>
+            </div>
+            <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.78; margin:0;">Select your player and click your syringe to fill it with vaccine fluid 10 clicks to complete!</p>
+          </div>
+          <div class="glass" style="padding:26px 28px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+              <span style="font-size:30px; animation:pulse 3s ease-in-out infinite 1s;">🏁</span>
+              <h3 style="font-family:'Fredoka',sans-serif; color:#F5C42A; font-size:18px; margin:0; font-weight:700;">Race to Win</h3>
+            </div>
+            <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.78; margin:0;">First player to fill their syringe wins the vaccine race and gets a congratulatory message!</p>
+          </div>
+          <div class="glass" style="padding:26px 28px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+              <span style="font-size:30px; animation:pulse 3s ease-in-out infinite 2s;">🦠</span>
+              <h3 style="font-family:'Fredoka',sans-serif; color:#F5C42A; font-size:18px; margin:0; font-weight:700;">Dodge the Chaos</h3>
+            </div>
+            <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.78; margin:0;">New viruses invade the screen with every click, mirroring the real-world race against an evolving pandemic.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DESIGN & DEV ── -->
+  <section style="padding:80px 7% 88px;">
+    <div style="max-width:1100px; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:52px;" data-animate="1">
+        <span class="pill-tag">BEHIND THE SCENES</span>
+        <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:clamp(26px,3.6vw,46px); margin:8px 0 0; font-weight:700;">Design &amp; Development</h2>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;" data-animate="1">
+        <div class="glass-dark" style="padding:34px 28px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-18px; right:-18px; width:80px; height:80px; background:rgba(245,196,42,0.06); border-radius:50%;"></div>
+          <div style="font-size:38px; margin-bottom:16px;">🦕</div>
+          <h3 style="font-family:'Fredoka',sans-serif; color:#F5C42A; font-size:20px; margin:0 0 12px; font-weight:700;">Characters</h3>
+          <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.82; margin:0 0 20px;">Cute dino healthcare workers a tribute to frontline staff worldwide. Each character's colour matches their vaccine fluid for easy visual association.</p>
+          <span style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.3); font-size:10.5px; font-weight:800; letter-spacing:2px; text-transform:uppercase;">Adobe Illustrator · After Effects</span>
+        </div>
+        <div class="glass-dark" style="padding:34px 28px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-18px; right:-18px; width:80px; height:80px; background:rgba(42,136,212,0.08); border-radius:50%;"></div>
+          <div style="font-size:38px; margin-bottom:16px;">⌨️</div>
+          <h3 style="font-family:'Fredoka',sans-serif; color:#F5C42A; font-size:20px; margin:0 0 12px; font-weight:700;">p5.js Library</h3>
+          <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.82; margin:0 0 20px;">Built on p5's web editor using <strong style="color:#fff;">keyPressed and if/else functions</strong>. Each click loads vaccine and spawns more viruses, escalating the chaos as the race heats up.</p>
+          <span style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.3); font-size:10.5px; font-weight:800; letter-spacing:2px; text-transform:uppercase;">p5.js · JavaScript</span>
+        </div>
+        <div class="glass-dark" style="padding:34px 28px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-18px; right:-18px; width:80px; height:80px; background:rgba(59,173,94,0.08); border-radius:50%;"></div>
+          <div style="font-size:38px; margin-bottom:16px;">🌐</div>
+          <h3 style="font-family:'Fredoka',sans-serif; color:#F5C42A; font-size:20px; margin:0 0 12px; font-weight:700;">PubNub API</h3>
+          <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.82; margin:0 0 20px;">Publish/Subscribe model powers all multiplayer sync in real time. Player 1 holds pub &amp; sub keys collecting clicks from all four players and broadcasting everyone's progress live.</p>
+          <span style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.3); font-size:10.5px; font-weight:800; letter-spacing:2px; text-transform:uppercase;">PubNub · WebSockets · Real-time</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BUGS ── -->
+  <section style="padding:80px 7% 88px;">
+    <div style="max-width:980px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;" data-animate="1">
+      <div>
+        <span class="pill-tag">IT'S NOT A BUG, IT'S A FEATURE</span>
+        <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:clamp(26px,3.6vw,46px); margin:8px 0 20px; font-weight:700; line-height:1.1;">Known Quirks</h2>
+        <div class="accent-bar"></div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="glass" style="padding:20px 24px; display:flex; gap:14px; align-items:flex-start;">
+            <span style="font-size:22px; flex-shrink:0; margin-top:1px;">👆</span>
+            <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.75; margin:0;"><strong style="color:#fff;">Click outside the canvas</strong> during preload clicking inside during the loading gif can add unwanted points.</p>
+          </div>
+          <div class="glass" style="padding:20px 24px; display:flex; gap:14px; align-items:flex-start;">
+            <span style="font-size:22px; flex-shrink:0; margin-top:1px;">⌨️</span>
+            <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.75; margin:0;"><strong style="color:#fff;">Open together with friends</strong> every player must press a key individually; there's no shared start trigger.</p>
+          </div>
+          <div class="glass" style="padding:20px 24px; display:flex; gap:14px; align-items:flex-start;">
+            <span style="font-size:22px; flex-shrink:0; margin-top:1px;">🔄</span>
+            <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.82); font-size:14.5px; line-height:1.75; margin:0;"><strong style="color:#fff;">Reset only restarts positions</strong> the virus count on screen doesn't reset, only the game state and virus positions do.</p>
+          </div>
+        </div>
+      </div>
+      <div style="box-shadow:0 24px 64px rgba(0,0,0,0.5); transform:rotate(1.5deg);">
+        <img src="assets/quirks.png" alt="Beware of Bugs documentation" style="width:100%; display:block; border-radius:18px;">
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTEXT ── -->
+  <section style="padding:80px 7% 88px;">
+    <div style="max-width:740px; margin:0 auto; text-align:center;" data-animate="1">
+      <span class="pill-tag">THE BIGGER PICTURE</span>
+      <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:clamp(24px,3.4vw,44px); margin:8px 0 24px; font-weight:700;">A Race Against Time.</h2>
+      <div class="accent-bar center"></div>
+      <div class="glass-dark" style="padding:38px 40px; text-align:left;">
+        <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.85); font-size:16px; line-height:1.92; margin:0 0 18px;">Multiplayer games proved extremely effective at connecting people during lockdown building a shared digital space for those spending time in isolation.</p>
+        <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.85); font-size:16px; line-height:1.92; margin:0 0 18px;">Inspired by a PubNub voting example, the team transformed colour accumulation into a vaccine-loading race. Every click fills the syringe and unleashes more viruses, mirroring the real race against time.</p>
+        <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.85); font-size:16px; line-height:1.92; margin:0;">The winner is greeted with a congratulatory message, while everyone else is thanked for participating because in a global health crisis, every effort counts. 💙</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VIDEO ── -->
+  <section id="video" style="padding:80px 7%;">
+    <div style="max-width:820px; margin:0 auto; text-align:center;" data-animate="1">
+      <span class="pill-tag">EXPERIENCE THE GAME</span>
+      <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:clamp(26px,3.6vw,46px); margin:0 0 40px; font-weight:700;">Watch It In Action</h2>
+      <div style="padding:8px; box-shadow:0 32px 80px rgba(0,0,0,0.55);">
+        <div style="position:relative; width:100%; padding-bottom:56.25%; border-radius:18px; overflow:hidden;">
+          <iframe src="https://player.vimeo.com/video/481719841?badge=0&autopause=0&player_id=0&app_id=58479" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Virus vs Vaccines Gameplay Video"></iframe>
+        </div>
+      </div>
+      <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.35); font-size:11px; margin:18px 0 0; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;">p5.js · PubNub API · November 2020</p>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer style="padding:64px 7% 72px; text-align:center; position:relative;">
+    <div class="glass-dark" style="max-width:600px; margin:0 auto; padding:44px 40px; box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+      <img src="assets/blue.png" style="width:48px; margin-bottom:20px; animation:floatA 5s ease-in-out infinite; display:inline-block;">
+      <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.45); font-size:13.5px; margin:0 0 22px; letter-spacing:1px;">A p5.js Multiplayer Game · OCAD University · Digital Futures · 2020</p>
+      <div style="width:40px; height:3px; background:rgba(245,196,42,0.4); border-radius:2px; margin:0 auto 22px;"></div>
+      <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.4); font-size:13.5px; margin:0 0 6px;">Krishnokoli RC · Achal Shah · Jamie Yuan · Simran Duggal</p>
+      <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.3); font-size:12.5px; margin:0 0 18px;">Guided by Prof. Kate Hartman &amp; Prof. Nick Puckett</p>
+      <p style="font-family:'Nunito',sans-serif; color:rgba(255,255,255,0.2); font-size:12px; margin:0;">Made with 💜 during the pandemic</p>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    const els = document.querySelectorAll('[data-animate]');
+    els.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(28px)';
+      el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+    setTimeout(() => {
+      els.forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    }, 900);
+
+    els.forEach(el => observer.observe(el));
+  }
+}
+</script>
+</body>
+</html>

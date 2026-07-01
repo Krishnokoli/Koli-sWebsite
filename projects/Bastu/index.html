@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Hanken+Grotesk:wght@300;400;500&family=Fredoka:wght@600;700&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; background: #0b0a10; }
+    * { box-sizing: border-box; }
+    ::selection { background: #a85c41; color: #efe4c6; }
+    @keyframes grainShift {
+      0% { transform: translate(0,0); } 20% { transform: translate(-3%,2%); }
+      40% { transform: translate(2%,-4%); } 60% { transform: translate(-2%,3%); }
+      80% { transform: translate(3%,1%); } 100% { transform: translate(0,0); }
+    }
+    @keyframes breathe { 0%,100% { opacity: 0.4; } 50% { opacity: 0.85; } }
+    /* onboarding cursor cue: a hand that drifts (hover) then taps (click),
+       sending out sound rings on each tap */
+    @keyframes coachDrift {
+      0%   { transform: translate(-26px, -18px); }
+      28%  { transform: translate(14px, 10px); }
+      40%  { transform: translate(14px, 10px) scale(0.88); }
+      52%  { transform: translate(14px, 10px) scale(1); }
+      78%  { transform: translate(-20px, 14px); }
+      100% { transform: translate(-26px, -18px); }
+    }
+    @keyframes coachRing {
+      0%   { transform: scale(0.2); opacity: 0; }
+      8%   { opacity: 0.85; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+    @keyframes coachTapFlash {
+      0%,32%,52%,100% { opacity: 0; transform: scale(0.4); }
+      40% { opacity: 0.9; transform: scale(1); }
+    }
+    @font-face {
+      font-family: 'BestieSeventy';
+      src: url('assets/bestie-seventy.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+</helmet>
+
+<!-- dusk base (always visible; the documentary fades back to reveal it) -->
+<div style="position: fixed; inset: 0; z-index: 0; background:
+      radial-gradient(140% 80% at 80% -10%, rgba(168,92,65,0.18) 0%, rgba(168,92,65,0) 52%),
+      radial-gradient(120% 90% at 10% 6%, rgba(194,147,79,0.10) 0%, rgba(194,147,79,0) 48%),
+      linear-gradient(178deg, #14121b 0%, #100e15 46%, #0b0a10 100%);"></div>
+
+<!-- documentary layer -->
+<div id="doc-bg" style="position: fixed; inset: 0; z-index: 1; overflow: hidden;">
+  <iframe id="bastu-frame" src="documentary/index.html" title="Bastu, interactive documentary" scrolling="no" allow="autoplay" width="725" height="1000" style="position: absolute; top: 50%; left: 50%; width: 725px; height: 1000px; border: 0; transform: translate(-50%,-50%) scale(1.32); transform-origin: center center; filter: blur(6px) saturate(0.8) brightness(0.72); pointer-events: none; will-change: transform, filter; background: #0e0d13;"></iframe>
+  <div id="doc-frame" style="position: absolute; top: 50%; left: 50%; width: 460px; height: 634px; transform: translate(-50%,-50%); border: 1px solid rgba(194,147,79,0.4); border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 50px 120px -30px rgba(0,0,0,0.92), 0 0 100px -18px rgba(168,92,65,0.32); opacity: 0; pointer-events: none;"></div>
+  <div id="doc-veil" style="position: absolute; inset: 0; pointer-events: none; opacity: 0.5; background:
+        linear-gradient(180deg, rgba(10,9,14,0.5) 0%, rgba(8,7,11,0.55) 55%, rgba(7,6,10,0.7) 100%),
+        radial-gradient(120% 95% at 50% 40%, rgba(0,0,0,0) 32%, rgba(6,5,9,0.55) 100%);"></div>
+</div>
+
+<!-- onboarding cursor cue: appears when the house first becomes interactive,
+     demonstrates hover + tap, and retires the moment the visitor engages -->
+<div id="coach" style="position: fixed; inset: 0; z-index: 7; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.7s ease;">
+  <div style="position: absolute; inset: 0; backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); background: radial-gradient(34% 30% at 50% 47%, rgba(6,5,9,0) 0%, rgba(6,5,9,0.46) 64%, rgba(6,5,9,0.74) 100%);"></div>
+  <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 30px;">
+    <div style="position: relative; width: 140px; height: 140px;">
+      <span style="position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 999px; border: 1px solid rgba(230,169,78,0.8); animation: coachRing 1.9s ease-out infinite;"></span>
+      <span style="position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 999px; border: 1px solid rgba(230,169,78,0.55); animation: coachRing 1.9s ease-out 0.95s infinite;"></span>
+      <div style="position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; animation: coachDrift 3.6s cubic-bezier(.45,.05,.3,1) infinite;">
+        <span style="position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 999px; background: rgba(247,236,205,0.55); box-shadow: 0 0 22px rgba(230,169,78,0.7); animation: coachTapFlash 3.6s ease-out infinite;"></span>
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="position: absolute; left: 50%; top: 50%; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.85));">
+          <path d="M5 3.5 L5 17 L8.4 13.8 L10.9 19.4 L13.4 18.3 L10.9 12.8 L15.6 12.6 Z" fill="#f7eccd" stroke="#0b0a10" stroke-width="1.1" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+    </div>
+    <div style="font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: #e6a94e; text-shadow: 0 1px 16px rgba(0,0,0,0.95);">hover · click · listen</div>
+  </div>
+</div>
+
+<!-- grain + vignette -->
+<div style="position: fixed; inset: -50%; width: 200%; height: 200%; pointer-events: none; z-index: 4; opacity: 0.05; mix-blend-mode: screen; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;); animation: grainShift 5s steps(4) infinite;"></div>
+<div style="position: fixed; inset: 0; pointer-events: none; z-index: 5; background: radial-gradient(120% 90% at 50% 32%, rgba(0,0,0,0) 46%, rgba(8,7,11,0.42) 82%, rgba(6,5,9,0.82) 100%);"></div>
+
+<!-- breadcrumb -->
+<div style="position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: flex; justify-content: space-between; align-items: baseline; padding: 24px clamp(22px, 5vw, 64px); pointer-events: none;">
+  <a href="../index.html" style="pointer-events: auto; font-family: 'BestieSeventy', serif; font-size: 22px; color: #ffffff; text-decoration: none; text-shadow: 0 1px 14px rgba(0,0,0,0.85);" style-hover="color: #f7eccd;">Koli</a>
+  <span style="font-family: ui-monospace, 'SFMono-Regular', monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #6a6452; text-shadow: 0 1px 14px rgba(0,0,0,0.85);">Play</span>
+</div>
+
+<!-- scrolling content -->
+<div id="content" style="position: relative; z-index: 10; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #e6dabb; pointer-events: none;">
+
+  <!-- hero (pointer-events none so the documentary beneath stays clickable) -->
+  <section style="position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 14vh clamp(20px, 6vw, 80px) 12vh; pointer-events: none;">
+    <div data-copy style="display: flex; flex-direction: column; align-items: center;">
+      <div style="font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.42em; text-transform: uppercase; color: #c9bd9d; margin-bottom: 30px; text-shadow: 0 1px 16px rgba(0,0,0,0.95), 0 0 30px rgba(0,0,0,0.7);">Kolkata · a spatial memory</div>
+      <h1 style="font-family: 'Noto Serif Bengali', serif; font-weight: 500; font-size: clamp(5.5rem, 17vw, 15rem); line-height: 0.82; margin: 0; color: #f7eccd; text-shadow: 0 0 70px rgba(168,92,65,0.4), 0 14px 60px rgba(0,0,0,0.85);">বাস্তু</h1>
+      <div style="font-family: 'Spectral', serif; font-weight: 400; font-size: clamp(1.1rem, 2vw, 1.5rem); letter-spacing: 0.5em; text-transform: uppercase; color: #e6a94e; margin-top: 34px; padding-left: 0.5em; text-shadow: 0 1px 16px rgba(0,0,0,0.95), 0 0 30px rgba(0,0,0,0.6);">Bastu</div>
+      <p style="font-family: 'Hanken Grotesk', sans-serif; font-weight: 400; font-size: clamp(1rem, 1.6vw, 1.2rem); color: #ece0bf; margin: 44px 0 0; max-width: 48ch; line-height: 1.75; text-shadow: 0 1px 18px rgba(0,0,0,0.95), 0 0 28px rgba(0,0,0,0.7);">An interactive documentary without dialogue. A spatial memory of my grandmother's house in Kolkata, walked through room by room, guided by a cat.</p>
+      <button id="sound-btn" onClick="{{ toggleSound }}" style="pointer-events: auto; margin: 40px 0 0; display: inline-flex; align-items: center; gap: 11px; padding: 13px 24px; background: rgba(20,18,27,0.5); border: 1px solid rgba(230,169,78,0.45); border-radius: 999px; color: #ece0bf; font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(6px); transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease; box-shadow: 0 8px 30px -10px rgba(0,0,0,0.8);" style-hover="border-color: rgba(230,169,78,0.9); color: #f7eccd;"><span id="sound-icon" style="font-size: 13px; line-height: 1;">♪</span><span id="sound-label">turn on sound</span></button>
+      <p style="font-family: 'Spectral', serif; font-style: italic; font-weight: 300; font-size: clamp(0.95rem, 1.4vw, 1.1rem); color: #b6aa8c; margin: 34px 0 0; max-width: 40ch; line-height: 1.7; text-shadow: 0 1px 16px rgba(0,0,0,0.92);">The house is heavy and takes a moment to gather itself. Pour a cup of tea, look out your window a while — it will be ready when you scroll down.</p>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 48px; animation: breathe 3.4s ease-in-out infinite;">
+        <span style="display: block; width: 1px; height: 54px; background: linear-gradient(#c3b794, transparent);"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- stage hold: long pinned stretch so the documentary stops and stays
+       explorable (click + hover) before the writing takes over -->
+  <section style="height: 165vh; position: relative; pointer-events: none;"></section>
+
+  <!-- Concept -->
+  <section style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16vh clamp(24px, 6vw, 80px);">
+    <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 60% at 50% 50%, rgba(8,7,11,0.6) 0%, rgba(8,7,11,0.22) 60%, rgba(8,7,11,0) 82%);"></div>
+    <div data-copy style="position: relative; width: 100%; max-width: 58ch;">
+      <div style="font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: #c2934f; margin-bottom: 26px; text-shadow: 0 1px 16px rgba(0,0,0,0.9);">Concept</div>
+      <p style="font-family: 'Spectral', serif; font-weight: 300; font-size: clamp(1.12rem, 1.85vw, 1.42rem); line-height: 1.68; color: #e4d9b9; margin: 0; text-wrap: pretty; text-shadow: 0 1px 26px rgba(0,0,0,0.9);">Bastu is an interactive documentary without dialogue. It is a reconstruction of my grandmother's house in Kolkata, a space shaped by tireless women, caste practices, overcrowding, secrecy, and ordinary acts of care. Rather than telling a linear story, the work invites the audience to wander through a series of rooms guided by a cat, listening to fragments of domestic life.</p>
+      <p style="font-family: 'Spectral', serif; font-weight: 300; font-size: clamp(1.02rem, 1.6vw, 1.24rem); line-height: 1.74; color: #c8bd9f; margin: 1.35em 0 0; text-wrap: pretty; text-shadow: 0 1px 24px rgba(0,0,0,0.88);">Utensils scrape against concrete floors. Children hum while pretending to study. The television murmurs in the background. Bugs gather around incense smoke. Trams pass below the balcony. Somewhere, an aunt quietly opens a love letter thrown up from the street.</p>
+      <p style="font-family: 'Spectral', serif; font-weight: 300; font-size: clamp(1.02rem, 1.6vw, 1.24rem); line-height: 1.74; color: #c8bd9f; margin: 1.2em 0 0; text-wrap: pretty; text-shadow: 0 1px 24px rgba(0,0,0,0.88);">The house is both shelter and witness. It remembers everyone who passed through it.</p>
+      <p style="font-family: 'Spectral', serif; font-style: italic; font-weight: 400; font-size: clamp(1.12rem, 1.85vw, 1.42rem); line-height: 1.6; color: #d7a558; margin: 1.45em 0 0; text-wrap: pretty; text-shadow: 0 1px 24px rgba(0,0,0,0.9);">Bastu is an attempt to archive a disappearing architecture of intimacy.</p>
+    </div>
+  </section>
+
+  <!-- Why I made it -->
+  <section style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16vh clamp(24px, 6vw, 80px);">
+    <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 60% at 50% 50%, rgba(8,7,11,0.6) 0%, rgba(8,7,11,0.22) 60%, rgba(8,7,11,0) 82%);"></div>
+    <div data-copy style="position: relative; width: 100%; max-width: 58ch;">
+      <div style="font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: #c2934f; margin-bottom: 26px; text-shadow: 0 1px 16px rgba(0,0,0,0.9);">Why I made it</div>
+      <p style="font-family: 'Spectral', serif; font-weight: 300; font-size: clamp(1.08rem, 1.75vw, 1.34rem); line-height: 1.66; color: #e4d9b9; margin: 0; text-wrap: pretty; text-shadow: 0 1px 26px rgba(0,0,0,0.9);">Bastu started as an experiment for the interactive documentary course I took during my second year of Digital Futures at OCAD, under the guidance of Prof. David Macintosh. The reason behind Bastu, which literally translates to living quarters, was to capture the unspoken narrative of living spaces. I was fascinated by the way homes preserve both personal and political histories. My grandmother's house was shared by two generations: one uprooted from their life and belonging, and another born into refuge and displacement. Home was a place where privacy was almost impossible and everybody lived inside everybody else's routines.</p>
+      <p style="font-family: 'Spectral', serif; font-weight: 300; font-size: clamp(1.02rem, 1.6vw, 1.24rem); line-height: 1.74; color: #c8bd9f; margin: 1.3em 0 0; text-wrap: pretty; text-shadow: 0 1px 24px rgba(0,0,0,0.88);">I wanted to capture the feeling of moving through that space rather than documenting it objectively. The project borrows from memory, family folklore, refugee histories, and the sensory overload of everyday domestic life.</p>
+      <p style="font-family: 'Spectral', serif; font-style: italic; font-weight: 400; font-size: clamp(1.08rem, 1.7vw, 1.3rem); line-height: 1.62; color: #d7a558; margin: 1.3em 0 0; text-wrap: pretty; text-shadow: 0 1px 24px rgba(0,0,0,0.9);">The result is intentionally claustrophobic. Nostalgia here is not comfortable. It is crowded, noisy, and impossible to escape.</p>
+    </div>
+  </section>
+
+  <!-- Future -->
+  <section style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16vh clamp(24px, 6vw, 80px);">
+    <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 60% at 50% 50%, rgba(8,7,11,0.6) 0%, rgba(8,7,11,0.22) 60%, rgba(8,7,11,0) 82%);"></div>
+    <div data-copy style="position: relative; width: 100%; max-width: 58ch;">
+      <div style="font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: #c2934f; margin-bottom: 26px; text-shadow: 0 1px 16px rgba(0,0,0,0.9);">Future</div>
+      <p style="font-family: 'Spectral', serif; font-weight: 300; font-size: clamp(1.12rem, 1.85vw, 1.42rem); line-height: 1.68; color: #e4d9b9; margin: 0; text-wrap: pretty; text-shadow: 0 1px 26px rgba(0,0,0,0.9);">Bastu remains unfinished by design. I want to continue developing it as a longer interactive documentary that expands beyond a single house into a broader exploration of migration, memory, inherited trauma, and domestic space.</p>
+      <p style="font-family: 'Spectral', serif; font-weight: 300; font-size: clamp(1.02rem, 1.6vw, 1.24rem); line-height: 1.74; color: #c8bd9f; margin: 1.35em 0 0; text-wrap: pretty; text-shadow: 0 1px 24px rgba(0,0,0,0.88);">The long-term goal is to develop the project for exhibition.</p>
+      <div style="margin-top: 3.2em; padding-top: 2em; border-top: 1px solid rgba(124,118,105,0.28);">
+        <div style="font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.16em; color: #9a9078; text-transform: uppercase; line-height: 2.1; text-shadow: 0 1px 16px rgba(0,0,0,0.9);">Play&nbsp; · &nbsp;2020&nbsp; · &nbsp;p5.js + p5.sound&nbsp; · &nbsp;Interactive Documentary&nbsp; · &nbsp;<span style="color: #d7a558;">In&nbsp;progress</span></div>
+        <a href="../index.html" style="pointer-events: auto; display: block; margin-top: 36px; padding: 32px 34px; background: linear-gradient(135deg, rgba(20,16,80,0.72) 0%, rgba(44,41,160,0.42) 100%); border: 1px solid rgba(245,196,42,0.22); border-radius: 18px; text-decoration: none; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease; box-shadow: 0 8px 40px rgba(20,16,80,0.45);" style-hover="transform: translateY(-4px); border-color: rgba(245,196,42,0.6); box-shadow: 0 18px 56px rgba(20,16,80,0.65);">
+          <div style="font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: #9a9078; margin-bottom: 16px;">View next project</div>
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1; color: #ffffff; letter-spacing: -0.5px;">Virus <span style="color: #F5C42A;">v/s</span> Vaccines</div>
+          <div style="margin-top: 14px; font-family: 'Nunito', sans-serif; font-size: 12.5px; font-weight: 800; letter-spacing: 0.08em; color: rgba(255,255,255,0.32); text-transform: uppercase;">4-player multiplayer · p5.js · 2020</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    this.frame = document.getElementById('bastu-frame');
+    this.docBg = document.getElementById('doc-bg');
+    this.docFrame = document.getElementById('doc-frame');
+    this.veil = document.getElementById('doc-veil');
+    this.coach = document.getElementById('coach');
+    this.coachDismissed = false;
+
+    const onScroll = () => this.update();
+    this._onScroll = onScroll;
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    // Forward any user gesture on the page into the (same-origin) documentary
+    // so its AudioContext unlocks even if the click didn't land on the iframe.
+    const unlock = () => {
+      try {
+        const w = this.frame && this.frame.contentWindow;
+        if (w && typeof w.__bastuUnlock === 'function') w.__bastuUnlock();
+      } catch (e) {}
+    };
+    this._unlock = () => { unlock(); this.dismissCoach(); };
+    ['pointerdown', 'mousedown', 'touchstart', 'keydown'].forEach((ev) =>
+      window.addEventListener(ev, this._unlock, { passive: true }));
+
+    // Retire the cursor cue the moment the visitor engages the house itself
+    // (a hover or click inside the same-origin documentary sets __interacted).
+    this._coachPoll = setInterval(() => {
+      if (this.coachDismissed) return;
+      try {
+        const w = this.frame && this.frame.contentWindow;
+        if (w && w.__interacted) this.dismissCoach();
+      } catch (e) {}
+    }, 350);
+
+    this.soundOn = false;
+    this.updateSoundBtn();
+
+    this.update();
+    this._boot = setTimeout(() => this.update(), 450);
+  }
+
+  toggleSound() {
+    const w = this.frame && this.frame.contentWindow;
+    this.soundOn = !this.soundOn;
+    try {
+      if (this.soundOn) {
+        if (w && typeof w.__bastuUnlock === 'function') w.__bastuUnlock();
+        if (w && typeof w.getAudioContext === 'function') w.getAudioContext().resume();
+      } else if (w && typeof w.getAudioContext === 'function') {
+        w.getAudioContext().suspend();   // mute without freezing the visuals
+      }
+    } catch (e) {}
+    this.updateSoundBtn();
+  }
+
+  updateSoundBtn() {
+    const btn = document.getElementById('sound-btn');
+    const icon = document.getElementById('sound-icon');
+    const label = document.getElementById('sound-label');
+    if (!btn) return;
+    if (this.soundOn) {
+      btn.style.background = 'rgba(168,92,65,0.24)';
+      btn.style.borderColor = 'rgba(230,169,78,0.92)';
+      btn.style.color = '#f7eccd';
+      if (icon) icon.textContent = '♫';
+      if (label) label.textContent = 'sound on';
+    } else {
+      btn.style.background = 'rgba(20,18,27,0.5)';
+      btn.style.borderColor = 'rgba(230,169,78,0.45)';
+      btn.style.color = '#ece0bf';
+      if (icon) icon.textContent = '♪';
+      if (label) label.textContent = 'turn on sound';
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('resize', this._onScroll);
+    if (this._unlock) ['pointerdown', 'mousedown', 'touchstart', 'keydown'].forEach((ev) =>
+      window.removeEventListener(ev, this._unlock));
+    clearTimeout(this._boot);
+    clearInterval(this._coachPoll);
+  }
+
+  dismissCoach() {
+    if (this.coachDismissed) return;
+    this.coachDismissed = true;
+    if (this.coach) this.coach.style.opacity = '0';
+  }
+
+  update() {
+    const vh = window.innerHeight, vw = window.innerWidth;
+    const sy = window.scrollY || window.pageYOffset || 0;
+    const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+    const lerp = (a, b, k) => a + (b - a) * k;
+    const easeIO = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+
+    const cover = Math.max(vw / 725, vh / 1000) * 1.04;
+    // size the live frame to comfortably fit the viewport
+    const frameS = Math.min((vw * 0.62) / 725, (vh * 0.84) / 1000);
+
+    const formEnd = vh;          // hero -> frame fully formed (first viewport)
+    const holdLen = vh * 1.35;   // PINNED HOLD: frame stops here, stays interactive
+    const holdEnd = formEnd + holdLen;
+    const recedeLen = vh * 0.9;  // then it recedes behind the writing
+
+    const t = clamp(sy / formEnd, 0, 1);              // hero -> frame
+    const te = easeIO(t);
+    const u = clamp((sy - holdEnd) / recedeLen, 0, 1); // frame -> gone (after the hold)
+
+    const scale = lerp(cover, frameS, te) * (1 - 0.08 * u);
+    // sharp during the live stage, then blurs up FAST as it recedes behind the writing
+    const blur = lerp(6, 0, t) + Math.min(1, u * 2.4) * 26;
+    const bright = lerp(0.72, 1, te);
+    const sat = lerp(0.8, 1, te);
+    const frameVis = Math.max(0, te - u);   // 0 hero, 1 stage, 0 after fade
+    const docOpacity = 1 - u;
+    const veilOp = lerp(0.5, 0.1, te);
+    const interactive = te > 0.6 && u < 0.05;
+
+    if (this.frame) {
+      this.frame.style.transform = 'translate(-50%,-50%) scale(' + scale.toFixed(4) + ')';
+      this.frame.style.filter = 'blur(' + blur.toFixed(2) + 'px) saturate(' + sat.toFixed(2) + ') brightness(' + bright.toFixed(3) + ')';
+      this.frame.style.pointerEvents = interactive ? 'auto' : 'none';
+    }
+    if (this.docBg) this.docBg.style.opacity = docOpacity.toFixed(3);
+    if (this.veil) this.veil.style.opacity = veilOp.toFixed(3);
+    if (this.docFrame) {
+      this.docFrame.style.width = (725 * scale).toFixed(1) + 'px';
+      this.docFrame.style.height = (1000 * scale).toFixed(1) + 'px';
+      this.docFrame.style.opacity = frameVis.toFixed(3);
+    }
+    // show the onboarding cursor cue only while the house is the live,
+    // interactive frame — and only until the visitor first engages
+    if (this.coach && !this.coachDismissed) {
+      const show = interactive ? Math.max(0, frameVis * docOpacity) : 0;
+      this.coach.style.opacity = show.toFixed(3);
+    }
+
+    const copies = document.querySelectorAll('[data-copy]');
+    for (let i = 0; i < copies.length; i++) {
+      const el = copies[i];
+      const r = el.getBoundingClientRect();
+      const c = r.top + r.height / 2;
+      const d = Math.abs(c - vh / 2) / vh;
+      const o = clamp(1 - d * 1.2, 0, 1);
+      el.style.opacity = (0.05 + 0.95 * o).toFixed(3);
+      el.style.transform = 'translateY(' + ((c - vh / 2) * 0.05).toFixed(1) + 'px)';
+    }
+  }
+
+  renderVals() { return { toggleSound: () => this.toggleSound() }; }
+}
+</script>
+</body>
+</html>
