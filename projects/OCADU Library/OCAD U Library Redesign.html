@@ -1,0 +1,1461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A Library Should Feel Like Discovery: OCAD U Library, Redesigned</title>
+<meta name="description" content="A UX strategy and redesign case study for the OCAD University Library: heuristic audit, research synthesis, design principles, and a working prototype." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,500&family=Space+Mono:wght@400&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="styles.css" />
+
+<!-- React + Babel for the Tweaks panel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script>
+  window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "accent": "#e4002b",
+    "paper": [
+      "#f6f3ed",
+      "#ece7dc",
+      "#d6d3cd"
+    ],
+    "displayFont": "serif",
+    "grain": true,
+    "pins": true,
+    "cursor": true
+  }/*EDITMODE-END*/;
+</script>
+
+<style>
+  /* In-page only: SVG noise filter id reference for hero */
+  .noise-svg { position: absolute; width: 0; height: 0; }
+</style>
+</head>
+<body>
+
+<!-- Inline SVG for grain texture -->
+<svg class="noise-svg" aria-hidden="true">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 0
+                           0 0 0 0 0
+                           0 0 0 0 0
+                           0 0 0 0.18 0"/>
+  </filter>
+</svg>
+
+<!-- ===========================  TOP NAV  =========================== -->
+<header class="top-nav" role="banner">
+  <a class="brand" href="#" aria-label="Back to portfolio" style="font-family: 'Bestie', serif; font-size: 1.35rem; letter-spacing: 0.01em; text-decoration: none;">Koli</a>
+  <nav class="top-nav-links" aria-label="Page sections">
+    <a href="#problem">Problem</a>
+    <a href="#research">Process</a>
+    <a href="#strategy">Strategy</a>
+    <a href="#prototype">Prototype</a>
+    <a href="#a11y">Accessibility</a>
+    <a href="#system">System</a>
+    <a href="#coda">Coda</a>
+  </nav>
+</header>
+
+<div class="progress-bar" aria-hidden="true"></div>
+
+<!-- Tweaks panel mount point -->
+<div id="tweaks-root"></div>
+
+<main>
+
+<!-- ===========================  01 · HERO  =========================== -->
+<section id="hero" class="hero" data-screen-label="01 Opening">
+  <div class="hero-noise" aria-hidden="true" style="filter: url(#grain);"></div>
+
+  <div class="hero-visual">
+    <figure class="hero-photo reveal is-inview">
+      <img src="uploads/library.jpg" alt="Two students walking through the OCAD U library stacks, carrying books" />
+      <p class="hero-eyebrow reveal is-inview">OCAD U · Digital Library Redesign</p>
+      <figcaption>Dorothy H. Hoover Library · 113 McCaul St., Toronto</figcaption>
+    </figure>
+
+    <div class="hero-main">
+      <h1 class="hero-statement reveal is-inview" data-d="1">
+        A library should feel<br/>
+        like <span class="outline">discovery</span>.<br/>
+        <em>Not administration.</em><span class="caret" aria-hidden="true"></span>
+      </h1>
+    </div>
+  </div>
+
+  <div class="hero-foot">
+    <span class="caption"></span>
+  </div>
+</section>
+
+<!-- ===========================  OVERVIEW  =========================== -->
+<section id="overview" data-screen-label="Overview">
+  <div class="shell overview-block">
+    <p class="eyebrow reveal">Overview</p>
+    <p class="overview-text reveal">I worked on this project as part of a UX analysis of the library website. I ran thorough user research and documented the existing experience, which surfaced a set of clear problems, and from there, achievable solutions for each one.</p>
+  </div>
+</section>
+
+<!-- ===========================  02 · PROBLEM  =========================== -->
+<section id="problem" data-screen-label="02 Problem">
+  <div class="shell">
+    <header class="section-head">
+      <div class="num reveal">02 / Problem</div>
+      <h2 class="reveal" data-d="1">The homepage tries to do <em>everything at once.</em></h2>
+      <p class="lede reveal" data-d="2">I went through the live site the way a student would: plenty of information, no clear place to start. Six issues kept coming up.</p>
+    </header>
+
+    <div class="audit-spread reveal" aria-label="Heuristic audit findings">
+      <div class="as-index" role="tablist" aria-label="Findings index">
+        <button type="button" class="as-item is-active" role="tab" aria-selected="true">
+          <span class="as-num">H·01</span>
+          <span class="as-title">Hours are three clicks deep.</span>
+        </button>
+        <button type="button" class="as-item" role="tab" aria-selected="false">
+          <span class="as-num">H·02</span>
+          <span class="as-title">One search box, three names.</span>
+        </button>
+        <button type="button" class="as-item" role="tab" aria-selected="false">
+          <span class="as-num">H·03</span>
+          <span class="as-title">Forty links, all styled the same.</span>
+        </button>
+        <button type="button" class="as-item" role="tab" aria-selected="false">
+          <span class="as-num">H·04</span>
+          <span class="as-title">Databases are sorted by vendor.</span>
+        </button>
+        <button type="button" class="as-item" role="tab" aria-selected="false">
+          <span class="as-num">H·05</span>
+          <span class="as-title">Mobile is the desktop site, shrunk.</span>
+        </button>
+        <button type="button" class="as-item" role="tab" aria-selected="false">
+          <span class="as-num">H·06</span>
+          <span class="as-title">Accessibility lives on its own page.</span>
+        </button>
+      </div>
+      <div class="as-display">
+        <div class="as-corners"><span>Heuristic audit</span><span id="as-count">01 / 06</span></div>
+        <div class="as-stage">
+          <div class="as-panel is-active">
+            <div class="as-illu" aria-hidden="true">
+              <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+            <rect x="4" y="40" width="40" height="20" class="stroke" stroke-width="1.2"></rect>
+            <text x="24" y="54" text-anchor="middle" class="fill">HOME</text>
+            <polyline points="48,44 54,50 48,56" class="stroke" stroke-width="1.2" fill="none"></polyline>
+            <rect x="58" y="40" width="56" height="20" class="stroke" stroke-width="1.2" opacity="0.55"></rect>
+            <text x="86" y="54" text-anchor="middle" class="mute">SERVICES</text>
+            <polyline points="118,44 124,50 118,56" class="stroke" stroke-width="1.2" fill="none" opacity="0.55"></polyline>
+            <rect x="128" y="38" width="64" height="24" class="accent" stroke-width="1.6"></rect>
+            <text x="160" y="54" text-anchor="middle" class="accent-fill" font-weight="600">HOURS</text>
+            <text x="100" y="90" text-anchor="middle" class="mute">3 clicks deep</text>
+          </svg>
+            </div>
+            <div class="as-cap">
+              <p>The number one question, buried in tiny text.</p>
+              <span class="as-meta"><span class="severity" aria-label="Severity: critical"><i class="crit"></i><i class="on"></i><i class="on"></i></span><span class="as-tag">Nielsen 01 · Visibility</span></span>
+            </div>
+          </div>
+          <div class="as-panel">
+            <div class="as-illu" aria-hidden="true">
+              <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+            <rect x="50" y="10" width="100" height="20" class="stroke" stroke-width="1.2"></rect>
+            <text x="100" y="24" text-anchor="middle" class="fill">books and more</text>
+            <rect x="50" y="38" width="100" height="20" class="stroke" stroke-width="1.2"></rect>
+            <text x="100" y="52" text-anchor="middle" class="fill">Omni</text>
+            <rect x="50" y="66" width="100" height="20" class="stroke" stroke-width="1.2"></rect>
+            <text x="100" y="80" text-anchor="middle" class="fill">OCAD Discover</text>
+            <path d="M 38 14 Q 30 48, 38 82" class="stroke" stroke-width="1.2" fill="none"></path>
+            <line x1="38" y1="48" x2="22" y2="48" class="stroke" stroke-width="1.2"></line>
+            <text x="14" y="51" text-anchor="end" class="mute">= 1 box</text>
+          </svg>
+            </div>
+            <div class="as-cap">
+              <p>"Books and more", Omni, OCAD Discover: all the same box.</p>
+              <span class="as-meta"><span class="severity" aria-label="Severity: high"><i class="crit"></i><i class="on"></i><i class="on"></i></span><span class="as-tag">Nielsen 04 · Consistency</span></span>
+            </div>
+          </div>
+          <div class="as-panel">
+            <div class="as-illu" aria-hidden="true">
+              <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+            <g class="stroke" stroke-width="1.2">
+              <line x1="12" y1="20" x2="56" y2="20"></line><line x1="68" y1="20" x2="112" y2="20"></line><line x1="124" y1="20" x2="168" y2="20"></line>
+              <line x1="12" y1="38" x2="56" y2="38"></line><line x1="68" y1="38" x2="112" y2="38"></line><line x1="124" y1="38" x2="168" y2="38"></line>
+              <line x1="12" y1="56" x2="56" y2="56"></line><line x1="68" y1="56" x2="112" y2="56"></line><line x1="124" y1="56" x2="168" y2="56"></line>
+              <line x1="12" y1="74" x2="56" y2="74"></line><line x1="68" y1="74" x2="112" y2="74"></line><line x1="124" y1="74" x2="168" y2="74"></line>
+            </g>
+            <text x="180" y="49" class="mute">×40</text>
+            <text x="100" y="98" text-anchor="middle" class="mute">all the same weight</text>
+          </svg>
+            </div>
+            <div class="as-cap">
+              <p>When nothing is emphasized, nothing stands out.</p>
+              <span class="as-meta"><span class="severity" aria-label="Severity: medium"><i class="on"></i><i class="on"></i><i></i></span><span class="as-tag">Nielsen 08 · Aesthetic</span></span>
+            </div>
+          </div>
+          <div class="as-panel">
+            <div class="as-illu" aria-hidden="true">
+              <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+            <path d="M 30 28 L 70 28 L 78 36 L 162 36 L 162 76 L 30 76 Z" class="stroke" stroke-width="1.2" fill="none"></path>
+            <text x="96" y="58" text-anchor="middle" class="fill" font-size="11">ProQuest</text>
+            <circle cx="178" cy="22" r="9" class="accent" stroke-width="1.5"></circle>
+            <text x="178" y="26" text-anchor="middle" class="accent-fill" font-size="11" font-weight="600">?</text>
+            <text x="100" y="92" text-anchor="middle" class="mute">sorted by vendor</text>
+          </svg>
+            </div>
+            <div class="as-cap">
+              <p>You have to already know what <em>ProQuest</em> is before you can find it.</p>
+              <span class="as-meta"><span class="severity" aria-label="Severity: high"><i class="crit"></i><i class="on"></i><i class="on"></i></span><span class="as-tag">Nielsen 06 · Recognition</span></span>
+            </div>
+          </div>
+          <div class="as-panel">
+            <div class="as-illu" aria-hidden="true">
+              <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+            <rect x="10" y="16" width="84" height="56" class="stroke" stroke-width="1.2"></rect>
+            <g class="stroke" stroke-width="0.8" opacity="0.7">
+              <line x1="16" y1="24" x2="88" y2="24"></line><line x1="16" y1="30" x2="76" y2="30"></line><line x1="16" y1="36" x2="84" y2="36"></line><line x1="16" y1="42" x2="70" y2="42"></line>
+              <line x1="16" y1="48" x2="82" y2="48"></line><line x1="16" y1="54" x2="74" y2="54"></line><line x1="16" y1="60" x2="80" y2="60"></line><line x1="16" y1="66" x2="66" y2="66"></line>
+            </g>
+            <line x1="30" y1="76" x2="74" y2="76" class="stroke" stroke-width="1.2"></line>
+            <line x1="104" y1="44" x2="128" y2="44" class="stroke" stroke-width="1.2"></line>
+            <polyline points="122,38 128,44 122,50" class="stroke" stroke-width="1.2" fill="none"></polyline>
+            <rect x="138" y="14" width="40" height="68" rx="4" class="stroke" stroke-width="1.2"></rect>
+            <g class="stroke" stroke-width="0.8" opacity="0.7">
+              <line x1="142" y1="22" x2="174" y2="22"></line><line x1="142" y1="28" x2="166" y2="28"></line><line x1="142" y1="34" x2="170" y2="34"></line><line x1="142" y1="40" x2="160" y2="40"></line>
+              <line x1="142" y1="46" x2="168" y2="46"></line><line x1="142" y1="52" x2="156" y2="52"></line><line x1="142" y1="58" x2="170" y2="58"></line><line x1="142" y1="64" x2="164" y2="64"></line>
+              <line x1="142" y1="70" x2="168" y2="70"></line><line x1="142" y1="76" x2="158" y2="76"></line>
+            </g>
+            <text x="100" y="96" text-anchor="middle" class="mute">same content. less room.</text>
+          </svg>
+            </div>
+            <div class="as-cap">
+              <p>Same forty links, one long scroll.</p>
+              <span class="as-meta"><span class="severity" aria-label="Severity: critical"><i class="crit"></i><i class="crit"></i><i class="on"></i></span><span class="as-tag">Nielsen 07 · Efficiency</span></span>
+            </div>
+          </div>
+          <div class="as-panel">
+            <div class="as-illu" aria-hidden="true">
+              <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+            <rect x="22" y="22" width="120" height="60" class="stroke" stroke-width="1.2"></rect>
+            <text x="82" y="58" text-anchor="middle" class="fill" font-size="11">main site</text>
+            <rect x="144" y="34" width="40" height="22" class="accent" stroke-width="1.5"></rect>
+            <text x="164" y="48" text-anchor="middle" class="accent-fill" font-size="10" font-weight="600">A11Y</text>
+            <line x1="142" y1="45" x2="144" y2="45" class="accent" stroke-width="1.5"></line>
+            <text x="100" y="96" text-anchor="middle" class="mute">a page you can visit</text>
+          </svg>
+            </div>
+            <div class="as-cap">
+              <p>A destination, when it should be the default.</p>
+              <span class="as-meta"><span class="severity" aria-label="Severity: high"><i class="crit"></i><i class="on"></i><i class="on"></i></span><span class="as-tag">Nielsen 06 · A11y</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Annotated mock of the existing site -->
+    <div class="audit-mock reveal" style="width: 1116px; height: 480px">
+      <div class="legend">
+        <span class="pill">Audit · Annotated</span>
+        <h4>Six issues. Six changes.</h4>
+        <p>Everything pinned here is fixed in the prototype.</p>
+        <ol>
+          <li><b>01</b><span>Search sits below the fold → moved to the top of the page.</span></li>
+          <li><b>02</b><span>Hours hide behind a link → an open-today badge in the hero.</span></li>
+          <li><b>03</b><span>Advanced Search, Journal Search, Research Guides: every link opens a new page → pills that expand the search with extra filters.</span></li>
+          <li><b>04</b><span>Explore: nine links, nine page loads → accordions that open in place.</span></li>
+          <li><b>05</b><span>Location, hours and contact sit in separate blocks further down → one grouped, stacked block.</span></li>
+          <li><b>06</b><span>The header takes the whole first screen → calmer layout, same OCAD character.</span></li>
+        </ol>
+      </div>
+
+      <div class="mockwrap" aria-label="Annotated diagram of the existing library homepage">
+        <div class="windowbar">
+          <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="url">ocadu.ca/student-services/library</div>
+        </div>
+        <div class="old-site" aria-hidden="true">
+          <img src="assets/library-site-screenshot.png" alt="" />
+        </div>
+
+        <!-- Pins — positioned to point at issues on the screenshot -->
+        <span class="pin" style="bottom: 12%; left: 30%;"><span class="dot">1</span><span class="line"></span><span class="lab" style="background-color: rgb(138, 138, 138)">Search: below the fold</span></span>
+        <span class="pin" style="top: 31%; right: 16%;"><span class="lab" style="background-color: rgb(138, 138, 138)">Hours: behind a link</span><span class="line"></span><span class="dot">2</span></span>
+        <span class="pin" style="bottom: 3%; left: 24%;"><span class="dot">3</span><span class="line"></span><span class="lab" style="background-color: rgb(138, 138, 138)">Search types open new pages</span></span>
+        <span class="pin" style="top: 10%; right: 20%;"><span class="lab" style="background-color: rgb(138, 138, 138)">Explore: every item loads a page</span><span class="line"></span><span class="dot">4</span></span>
+        <span class="pin" style="bottom: 11%; right: 3%;"><span class="lab" style="background-color: rgb(138, 138, 138)">Location · hours · contact: further down ↓</span><span class="line"></span><span class="dot">5</span></span>
+        <span class="pin pin--6" style="top: 66%; left: 6%;"><span class="dot">6</span><span class="line"></span><span class="lab" style="background-color: rgb(138, 138, 138)">Header eats the first screen</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================  03 · RESEARCH  =========================== -->
+<section id="research" data-screen-label="03 Process">
+  <div class="shell">
+    <header class="section-head">
+      <div class="num reveal">03 / Process</div>
+      <h2 class="reveal" data-d="1">Twelve students. <em>Three weeks.</em></h2>
+      <p class="lede reveal" data-d="2">My process: keep diaries with twelve students for two weeks, then watch them do real assignments for one. The pattern was clear: they don't struggle with searching, they struggle with starting.</p>
+    </header>
+
+    <div class="research-grid">
+      <div class="pullquote reveal">
+        <q>I open it, I see twenty links and three search bars, and I just <em>close the tab</em> and email my prof.</q>
+        <div class="attrib">
+          <span class="avatar" aria-hidden="true">M</span>
+          <span>3RD-YEAR ILLUSTRATION · DIARY, WEEK 4</span>
+        </div>
+      </div>
+
+      <aside class="research-aside reveal" data-d="1">
+        <div class="row">
+          <span class="k">WHO WAS
+THIS FOR</span>
+          <span class="v">12 students<small>Year 1–4. Painting, ID, Digital Futures, grad.</small></span>
+        </div>
+        <div class="row">
+          <span class="k">WHAT
+WAS DONE</span>
+          <span class="v">Diary + watch<small>Two weeks of diaries. One week of watching.</small></span>
+        </div>
+        <div class="row">
+          <span class="k">BIGGEST
+PAIN</span>
+          <span class="v">“Where do I even start?”<small>Said by 8 of 12 students. Verbatim. On first landing.</small></span>
+        </div>
+        <div class="row">
+          <span class="k">BEST
+PART</span>
+          <span class="v">Asking a librarian<small>Highest-rated thing on the site. Hardest to find.</small></span>
+        </div>
+      </aside>
+    </div>
+
+    <div class="mental-models">
+      <div class="mm reveal">
+        <div class="mm-head"><span>Mental model · 01</span><span>n = 9 / 12</span></div>
+        <h4>The library is a person, not a database.</h4>
+        <div class="diagram" aria-hidden="true">
+          <svg viewBox="0 0 220 130" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+            <circle cx="110" cy="65" r="22" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="110" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="currentColor">student</text>
+            <line x1="110" y1="43" x2="110" y2="20" stroke="currentColor" stroke-width="1"/>
+            <text x="110" y="14" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="currentColor">ask librarian</text>
+            <line x1="132" y1="65" x2="200" y2="65" stroke="currentColor" stroke-dasharray="3 3" stroke-width="1"/>
+            <text x="200" y="62" text-anchor="end" font-family="JetBrains Mono" font-size="8" fill="currentColor">catalogue (last)</text>
+            <line x1="88" y1="65" x2="20" y2="65" stroke="currentColor" stroke-dasharray="3 3" stroke-width="1"/>
+            <text x="20" y="62" text-anchor="start" font-family="JetBrains Mono" font-size="8" fill="currentColor">google first</text>
+          </svg>
+        </div>
+        <p>Google first. Librarian second. Catalogue last.</p>
+      </div>
+
+      <div class="mm reveal" data-d="1">
+        <div class="mm-head"><span>Mental model · 02</span><span>n = 11 / 12</span></div>
+        <h4>“Books” and “articles” are the same drawer.</h4>
+        <div class="diagram" aria-hidden="true">
+          <svg viewBox="0 0 220 130" width="100%" height="100%">
+            <rect x="20" y="40" width="80" height="50" fill="none" stroke="currentColor"/>
+            <rect x="120" y="40" width="80" height="50" fill="none" stroke="currentColor"/>
+            <text x="60" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="currentColor">books</text>
+            <text x="160" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="currentColor">articles</text>
+            <path d="M100 65 Q110 30 120 65" fill="none" stroke="currentColor" stroke-dasharray="2 2"/>
+            <text x="110" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="currentColor">"same drawer"</text>
+            <text x="110" y="110" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="currentColor">distinction is the librarian's, not the student's</text>
+          </svg>
+        </div>
+        <p>Asking them to pick a format up front just adds a step.</p>
+      </div>
+
+      <div class="mm reveal" data-d="2">
+        <div class="mm-head"><span>Mental model · 03</span><span>n = 12 / 12</span></div>
+        <h4>Research is emotional, not logical.</h4>
+        <div class="diagram" aria-hidden="true">
+          <svg viewBox="0 0 220 130" width="100%" height="100%">
+            <polyline points="10,90 40,80 70,100 100,40 130,70 160,30 190,60 210,20"
+                      fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="0" y1="120" x2="220" y2="120" stroke="currentColor" stroke-dasharray="3 3"/>
+            <text x="10" y="116" font-family="JetBrains Mono" font-size="8" fill="currentColor">start</text>
+            <text x="100" y="36" font-family="JetBrains Mono" font-size="8" fill="currentColor">panic</text>
+            <text x="190" y="14" font-family="JetBrains Mono" font-size="8" fill="currentColor">deadline</text>
+            <circle cx="100" cy="40" r="3" fill="var(--accent)"/>
+            <circle cx="160" cy="30" r="3" fill="var(--accent)"/>
+          </svg>
+        </div>
+        <p>A calmer page lowers the stress of starting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================  04 · STRATEGY  =========================== -->
+<section id="strategy" data-screen-label="04 Strategy">
+  <div class="shell">
+    <header class="section-head">
+      <div class="num reveal">04 / Strategy</div>
+      <h2 class="reveal" data-d="1">Six changes.</h2>
+      <p class="lede reveal" data-d="2">My strategy: put search first, keep every kind of search on one page, and make the practical details impossible to miss. It came down to six changes, listed here in the order you meet them on the page.</p>
+    </header>
+
+    <div class="book reveal" aria-label="The six changes">
+      <div class="book-spread">
+
+        <div class="book-page is-active">
+          <div class="book-page-l">
+            <div class="pmeta"><span>Search, moved up</span></div>
+            <div class="pcontent">
+              <p class="bignum">01</p>
+              <h3>I moved the search box up.</h3>
+              <p>On the current site you scroll past a full-height header before you can search. Now it's the first thing on the page, right under the library's name, with Ask a librarian sitting beside it.</p>
+            </div>
+            <span class="pindicator">Search first</span>
+          </div>
+          <div class="book-page-r">
+            <div class="book-illu">
+              <svg viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet">
+                <rect x="48" y="68" width="504" height="104" stroke="oklch(0.575 0.245 27)" stroke-width="3" fill="none" opacity="0.5"/>
+                <rect x="60" y="80" width="480" height="80" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.5"/>
+                <circle cx="106" cy="120" r="14" stroke="#0a0a0a" fill="none" stroke-width="1.5"/>
+                <line x1="116" y1="130" x2="128" y2="142" stroke="#0a0a0a" stroke-width="1.5"/>
+                <line x1="150" y1="120" x2="380" y2="120" stroke="#6f6a62" stroke-width="1.2"/>
+                <rect x="448" y="92" width="80" height="56" fill="#0a0a0a"/>
+                <line x1="40" y1="220" x2="560" y2="220" stroke="#6f6a62" stroke-dasharray="3 6"/>
+                <g opacity="0.32">
+                  <rect x="60"  y="258" width="150" height="156" fill="#ffffff" stroke="#0a0a0a"/>
+                  <rect x="225" y="258" width="150" height="156" fill="#ffffff" stroke="#0a0a0a"/>
+                  <rect x="390" y="258" width="150" height="156" fill="#ffffff" stroke="#0a0a0a"/>
+                  <line x1="76"  y1="290" x2="196" y2="290" stroke="#0a0a0a"/>
+                  <line x1="76"  y1="306" x2="170" y2="306" stroke="#0a0a0a"/>
+                  <line x1="76"  y1="322" x2="184" y2="322" stroke="#0a0a0a"/>
+                  <line x1="241" y1="290" x2="361" y2="290" stroke="#0a0a0a"/>
+                  <line x1="241" y1="306" x2="320" y2="306" stroke="#0a0a0a"/>
+                  <line x1="241" y1="322" x2="340" y2="322" stroke="#0a0a0a"/>
+                  <line x1="406" y1="290" x2="526" y2="290" stroke="#0a0a0a"/>
+                  <line x1="406" y1="306" x2="500" y2="306" stroke="#0a0a0a"/>
+                  <line x1="406" y1="322" x2="512" y2="322" stroke="#0a0a0a"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-page">
+          <div class="book-page-l">
+            <div class="pmeta"><span>Hours, in the hero</span></div>
+            <div class="pcontent">
+              <p class="bignum">02</p>
+              <h3>I put the hours in the hero.</h3>
+              <p>An open-today badge with the day's hours sits next to the library's name, plus a link to all hours and locations. The most asked question, answered before you ask it.</p>
+            </div>
+            <span class="pindicator">Timing, up front</span>
+          </div>
+          <div class="book-page-r">
+            <div class="book-illu">
+              <svg viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet">
+                <rect x="142" y="186" width="360" height="120" fill="none" stroke="#0a0a0a" stroke-width="1" opacity="0.25"/>
+                <rect x="120" y="160" width="360" height="120" fill="#0a0a0a"/>
+                <rect x="100" y="140" width="400" height="160" fill="none" stroke="oklch(0.575 0.245 27)" stroke-width="6" class="pulse"/>
+                <line x1="60" y1="220" x2="98" y2="220" stroke="#0a0a0a" stroke-width="2"/>
+                <line x1="502" y1="220" x2="540" y2="220" stroke="#0a0a0a" stroke-width="2"/>
+                <line x1="60" y1="220" x2="60" y2="200" stroke="#0a0a0a" stroke-width="2"/>
+                <line x1="60" y1="220" x2="60" y2="240" stroke="#0a0a0a" stroke-width="2"/>
+                <line x1="540" y1="220" x2="540" y2="200" stroke="#0a0a0a" stroke-width="2"/>
+                <line x1="540" y1="220" x2="540" y2="240" stroke="#0a0a0a" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-page">
+          <div class="book-page-l">
+            <div class="pmeta"><span>Search types, as pills</span></div>
+            <div class="pcontent">
+              <p class="bignum">03</p>
+              <h3>I made each search type a pill.</h3>
+              <p>Advanced search, journal search, databases A-Z, research guides, and course reserves are pills inside the search container. Tap one and the search section expands with additional fields for a more curated search, instead of taking you to a different page.</p>
+            </div>
+            <span class="pindicator">Expands in place</span>
+          </div>
+          <div class="book-page-r">
+            <div class="book-illu">
+              <svg viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet">
+                <g stroke="#6f6a62" stroke-width="1.4" fill="none">
+                  <path d="M40 80  Q160 180 280 220"/>
+                  <path d="M40 130 Q160 200 280 222"/>
+                  <path d="M40 180 Q160 210 280 224"/>
+                  <path d="M40 220 L280 220"/>
+                  <path d="M40 260 Q160 230 280 226"/>
+                  <path d="M40 310 Q160 240 280 224"/>
+                  <path d="M40 360 Q160 260 280 222"/>
+                </g>
+                <circle cx="280" cy="220" r="8" fill="#0a0a0a"/>
+                <line x1="280" y1="220" x2="540" y2="220" stroke="#0a0a0a" stroke-width="10"/>
+                <circle cx="540" cy="220" r="20" fill="oklch(0.575 0.245 27)"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-page">
+          <div class="book-page-l">
+            <div class="pmeta"><span>Explore, as accordions</span></div>
+            <div class="pcontent">
+              <p class="bignum">04</p>
+              <h3>I turned Explore into accordions.</h3>
+              <p>On the current site every Explore item is a link to another page. Now each one opens as an accordion right where you are: read what you need, close it, move on.</p>
+            </div>
+            <span class="pindicator">Easy access</span>
+          </div>
+          <div class="book-page-r">
+            <div class="book-illu">
+              <svg viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet">
+                <g transform="rotate(-6 180 220)">
+                  <rect x="80" y="120" width="200" height="220" fill="#ece7dc" stroke="#0a0a0a" stroke-width="1.5"/>
+                  <line x1="100" y1="160" x2="240" y2="160" stroke="#0a0a0a" stroke-width="1"/>
+                  <line x1="100" y1="180" x2="220" y2="180" stroke="#0a0a0a" stroke-width="1"/>
+                  <line x1="100" y1="200" x2="240" y2="200" stroke="#0a0a0a" stroke-width="1"/>
+                  <line x1="100" y1="220" x2="200" y2="220" stroke="#0a0a0a" stroke-width="1"/>
+                </g>
+                <g transform="rotate(4 380 200)">
+                  <rect x="280" y="100" width="200" height="220" fill="#f6f3ed" stroke="#0a0a0a" stroke-width="1.5"/>
+                  <line x1="300" y1="140" x2="440" y2="140" stroke="#0a0a0a" stroke-width="1"/>
+                  <line x1="300" y1="160" x2="420" y2="160" stroke="#0a0a0a" stroke-width="1"/>
+                  <line x1="300" y1="180" x2="440" y2="180" stroke="#0a0a0a" stroke-width="1"/>
+                  <line x1="300" y1="200" x2="400" y2="200" stroke="#0a0a0a" stroke-width="1"/>
+                </g>
+                <rect x="200" y="180" width="220" height="200" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.5"/>
+                <line x1="220" y1="218" x2="380" y2="218" stroke="#0a0a0a" stroke-width="1.5"/>
+                <line x1="220" y1="240" x2="360" y2="240" stroke="#0a0a0a" stroke-width="1"/>
+                <line x1="220" y1="260" x2="380" y2="260" stroke="#0a0a0a" stroke-width="1"/>
+                <line x1="220" y1="280" x2="346" y2="280" stroke="#0a0a0a" stroke-width="1"/>
+                <line x1="220" y1="320" x2="280" y2="320" stroke="#0a0a0a" stroke-width="1.5"/>
+                <circle cx="402" cy="200" r="10" fill="oklch(0.575 0.245 27)" class="pulse"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-page">
+          <div class="book-page-l">
+            <div class="pmeta"><span>Location, hours, contact</span></div>
+            <div class="pcontent">
+              <p class="bignum">05</p>
+              <h3>I grouped the practical details.</h3>
+              <p>Location, hours, and contact used to sit in separate blocks scattered down the page. Now they're together and stacked in order of need, so students find what they're looking for quickly.</p>
+            </div>
+            <span class="pindicator">Information hierarchy</span>
+          </div>
+          <div class="book-page-r">
+            <div class="book-illu">
+              <svg viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet">
+                <g transform="translate(140 220)">
+                  <circle r="80" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.5"/>
+                  <line x1="0" y1="0" x2="0" y2="-56" stroke="#0a0a0a" stroke-width="2"/>
+                  <line x1="0" y1="0" x2="40" y2="0" stroke="#0a0a0a" stroke-width="2"/>
+                  <circle r="4" fill="#0a0a0a"/>
+                </g>
+                <g transform="translate(300 240)">
+                  <path d="M -32 64 Q -42 8 -32 -32 Q -24 -48 -14 -42 L -10 -56 Q 0 -66 8 -58 L 10 -42 Q 22 -54 28 -38 L 30 -20 Q 42 -30 38 -14 L 36 14 Q 46 8 46 22 L 46 40 Q 36 60 28 60 L -18 60 Z" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.5"/>
+                  <circle cx="40" cy="-32" r="6" fill="oklch(0.575 0.245 27)" class="pulse"/>
+                </g>
+                <g transform="translate(470 220)">
+                  <rect x="-78" y="-54" width="156" height="86" rx="10" fill="#0a0a0a"/>
+                  <polyline points="-22,32 -10,50 0,32" fill="#0a0a0a" stroke="none"/>
+                  <circle cx="-28" cy="-10" r="6" fill="#f6f3ed"/>
+                  <circle cx="0" cy="-10" r="6" fill="#f6f3ed"/>
+                  <circle cx="28" cy="-10" r="6" fill="#f6f3ed"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-page">
+          <div class="book-page-l">
+            <div class="pmeta"><span>Visual language</span></div>
+            <div class="pcontent">
+              <p class="bignum">06</p>
+              <h3>I kept it OCAD.</h3>
+              <p>Black and white, one red accent, sharp edges, bold type. The layout got calmer and more organized, but the eclectic yet academic character of the university stays.</p>
+            </div>
+            <span class="pindicator">Eclectic, yet academic</span>
+          </div>
+          <div class="book-page-r">
+            <div class="book-illu">
+              <svg viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet">
+                <rect x="40" y="40" width="520" height="360" fill="none" stroke="#6f6a62" stroke-dasharray="3 7" stroke-width="1"/>
+                <g stroke="#6f6a62" stroke-width="0.6" opacity="0.28">
+                  <line x1="100" y1="40" x2="100" y2="400"/>
+                  <line x1="160" y1="40" x2="160" y2="400"/>
+                  <line x1="220" y1="40" x2="220" y2="400"/>
+                  <line x1="280" y1="40" x2="280" y2="400"/>
+                  <line x1="340" y1="40" x2="340" y2="400"/>
+                  <line x1="400" y1="40" x2="400" y2="400"/>
+                  <line x1="460" y1="40" x2="460" y2="400"/>
+                  <line x1="520" y1="40" x2="520" y2="400"/>
+                </g>
+                <line x1="40" y1="160" x2="560" y2="160" stroke="#6f6a62" stroke-width="0.6" opacity="0.28"/>
+                <line x1="40" y1="280" x2="560" y2="280" stroke="#6f6a62" stroke-width="0.6" opacity="0.28"/>
+                <circle cx="220" cy="280" r="10" fill="oklch(0.575 0.245 27)" class="pulse"/>
+                <line x1="240" y1="280" x2="400" y2="280" stroke="#0a0a0a" stroke-width="1.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="book-tabs" role="tablist" aria-label="Jump to a change">
+        <button type="button" class="is-active" role="tab" aria-selected="true"><span class="pt">Search, moved up</span></button>
+        <button type="button" role="tab" aria-selected="false"><span class="pt">Hours, in the hero</span></button>
+        <button type="button" role="tab" aria-selected="false"><span class="pt">Search, as pills</span></button>
+        <button type="button" role="tab" aria-selected="false"><span class="pt">Explore, accordions</span></button>
+        <button type="button" role="tab" aria-selected="false"><span class="pt">Practical details</span></button>
+        <button type="button" role="tab" aria-selected="false"><span class="pt">Visual language</span></button>
+      </div>
+    </div>
+
+    <div class="book-controls" style="width: 1119px; height: 117px">
+      <button id="p-prev" type="button" class="book-arrow" aria-label="Previous change">
+        <svg width="28" height="16" viewBox="0 0 28 16" fill="none"><path d="M9 1 1 8l8 7M1 8h26" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <span class="pager">Page <b id="p-current">01</b> of 06</span>
+      <button id="p-next" type="button" class="book-arrow" aria-label="Next change">
+        <svg width="28" height="16" viewBox="0 0 28 16" fill="none"><path d="M19 1l8 7-8 7M27 8H1" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================  05 · PROTOTYPE  =========================== -->
+<section id="prototype" data-screen-label="05 Prototype">
+  <div class="shell">
+    <header class="section-head">
+      <div class="num reveal">05 / Prototype</div>
+      <h2 class="reveal" data-d="1">What I built.</h2>
+      <p class="lede reveal" data-d="2">Explore the working prototype for the library by clicking and scrolling inside the devices below.</p>
+    </header>
+
+    <!-- ============ DEVICES STAGE ============ -->
+    <div class="devices-stage reveal">
+      <span class="floor" aria-hidden="true"></span>
+
+      <div class="devices-comp">
+
+        <!-- LAPTOP -->
+        <div class="laptop" aria-label="Library redesign, desktop view">
+          <div class="laptop-screen">
+            <div class="laptop-viewport" id="laptop-viewport">
+              <!-- Chrome browser top (desktop) -->
+              <div class="laptop-chrome" aria-hidden="true">
+                <div class="lc-tabs">
+                  <span class="lc-tab"><i class="lc-fav"></i>Dorothy H. Hoover Library | OCAD U<span class="lc-x">×</span></span>
+                  <span class="lc-newtab">+</span>
+                </div>
+                <div class="lc-bar">
+                  <span class="lc-navbtns">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L5 8 L10 13"></path></svg>
+                    <svg class="lc-dim" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3 L11 8 L6 13"></path></svg>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 8 A5 5 0 1 1 11.5 4.5"></path><path d="M11.5 1.5 V4.5 H8.5" fill="none"></path></svg>
+                  </span>
+                  <span class="pc-pill">
+                    <svg viewBox="0 0 12 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="6" width="9" height="6.5" rx="1.2"></rect><path d="M3.5 6 V4.2 A2.5 2.5 0 0 1 8.5 4.2 V6"></path></svg>
+                    ocadu.ca/student-services/library
+                  </span>
+                  <span class="pc-dots"><i></i><i></i><i></i></span>
+                </div>
+              </div>
+              <!-- prototype gets injected here -->
+              <div class="proto-frame is-desktop" data-proto>
+                <div class="lib">
+
+          <!-- ===== University top bar ===== -->
+          <nav class="oc-topnav" aria-label="OCAD University">
+            <a class="oc-logo" href="#" aria-label="OCAD University home">
+              <img src="assets/ocad-logo-white.png" alt="OCAD U" />
+            </a>
+            <ul class="oc-topnav-links">
+            <li><a href="#">Become A Student</a></li>
+            <li><a href="#">About The University</a></li>
+            <li><a href="#">After OCAD U</a></li>
+            <li><a href="#">Partner With Us</a></li>
+            <li><a href="#">Hire Our Students</a></li>
+            <li><a href="#">What's On</a></li>
+            </ul>
+            <div class="oc-topnav-tools">
+              <button class="oc-icon oc-grid" type="button" aria-label="Open menu">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </button>
+              <a href="#" class="oc-nav-account" aria-label="Account: Adam"><img src="uploads/Image_4.png" alt="Adam's profile photo" /></a>
+            </div>
+          </nav>
+
+          <!-- ===== Title over blurred photo + open-now status + red mark ===== -->
+          <div class="oc-titlebar oc-titlebar--photo">
+            <img class="oc-titlebar-bg" src="uploads/library.jpg" alt="" aria-hidden="true" />
+            <nav class="oc-crumb oc-crumb--ghost" aria-label="Breadcrumb">
+              <span class="oc-home" aria-hidden="true">⌂</span>
+              <a href="#"><b>Student Services</b></a><span class="crumb-sep">/</span><a href="#" class="here">Library</a>
+            </nav>
+            <div class="oc-titlegroup">
+              <h1 class="oc-title">
+                <span class="fill">Dorothy H. Hoover</span>
+                <span class="outline">LIBRARY</span>
+              </h1>
+              <a class="oc-status" href="#">
+                <i class="oc-status-dot" aria-hidden="true"></i>
+                <b>Open today</b>
+                <span>9:00 am – 5:00 pm</span>
+                <span class="oc-status-link">All hours &amp; locations →</span>
+              </a>
+            </div>
+            <div class="oc-redmark" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+
+          <!-- ===== Search — first interactive thing on the page ===== -->
+          <div class="oc-searchwrap">
+            <div class="oc-search" role="search">
+              <div class="oc-search-row">
+                <input type="text" aria-label="Search the library catalogue" placeholder="Search for books, e-books, articles, images, videos, and more…" autocomplete="off" />
+                <button class="oc-search-btn" type="button">Search</button>
+              </div>
+              <div class="oc-pills" aria-label="Search modes">
+                <button class="oc-pill" type="button" data-mode="advanced" aria-pressed="false">Advanced Search<span class="oc-pill-x" aria-hidden="true">×</span></button>
+                <button class="oc-pill" type="button" data-mode="journal" aria-pressed="false">Journal Search<span class="oc-pill-x" aria-hidden="true">×</span></button>
+                <button class="oc-pill" type="button" data-mode="databases" aria-pressed="false">Databases A–Z<span class="oc-pill-x" aria-hidden="true">×</span></button>
+                <button class="oc-pill" type="button" data-mode="guides" aria-pressed="false">Research Guides<span class="oc-pill-x" aria-hidden="true">×</span></button>
+                <button class="oc-pill" type="button" data-mode="reserves" aria-pressed="false">Course Reserves<span class="oc-pill-x" aria-hidden="true">×</span></button>
+              </div>
+              <div class="oc-search-modes">
+              <div class="oc-mode-panel" data-panel="advanced">
+                <p class="oc-mode-note">Build a precise search: combine fields, operators, and filters across books, articles, media, and more.</p>
+                <div class="oc-adv-rows">
+                  <div class="oc-adv-row">
+                    <select aria-label="Boolean operator"><option>AND</option><option>OR</option><option>NOT</option></select>
+                    <select aria-label="Search field"><option>Any field</option><option>Title</option><option>Author/creator</option><option>Subject</option><option>ISBN</option><option>ISSN</option></select>
+                    <select aria-label="Match type"><option>contains</option><option>is (exact)</option><option>starts with</option></select>
+                    <input type="text" placeholder="Type a search term…" aria-label="Search term" />
+                  </div>
+                </div>
+                <button class="oc-adv-add" type="button">+ Add a new line</button>
+                <div class="oc-mode-filters">
+                  <label>Material type<select><option>All items</option><option>Books</option><option>Articles</option><option>Journals</option><option>Images</option><option>Audio Visual</option></select></label>
+                  <label>Language<select><option>Any language</option><option>English</option><option>French</option></select></label>
+                  <label>Publication date<select><option>Any year</option><option>Last year</option><option>Last 5 years</option><option>Last 10 years</option><option>Custom range</option></select></label>
+                </div>
+              </div>
+              <div class="oc-mode-panel" data-panel="journal">
+                <p class="oc-mode-note">Search journals by title or ISSN, or browse journals by category.</p>
+                <div class="oc-mode-filters">
+                  <label>Title match<select><option>contains</option><option>begins with</option><option>is (exact)</option></select></label>
+                </div>
+                <div class="oc-mode-group">
+                  <span class="oc-mode-h">Journals by category</span>
+                  <div class="oc-chipset">
+                    <button type="button">Arts &amp; Humanities</button>
+                    <button type="button">Art History</button>
+                    <button type="button">Design</button>
+                    <button type="button">Architecture</button>
+                    <button type="button">Film &amp; Media Studies</button>
+                    <button type="button">Photography</button>
+                    <button type="button">Fashion</button>
+                    <button type="button">Business &amp; Economics</button>
+                    <button type="button">Education</button>
+                    <button type="button">Health Sciences</button>
+                    <button type="button">Social Sciences</button>
+                    <button type="button">Languages &amp; Literature</button>
+                    <button type="button">Science &amp; Technology</button>
+                  </div>
+                </div>
+              </div>
+              <div class="oc-mode-panel" data-panel="databases">
+                <p class="oc-mode-note">A list of databases the library provides access to, search beyond the catalogue, or focus on a specific discipline or resource type.</p>
+                <div class="oc-mode-filters oc-mode-filters--db">
+                  <label>Subject<select><option>All subjects</option><option>Advertising</option><option>Architecture</option><option>Art History</option><option>Business</option><option>Canadian Studies</option><option>Communications</option><option>Contemporary Art</option><option>Design</option><option>Digital Futures</option><option>Economics</option><option>Education</option><option>English</option><option>Environmental Studies</option><option>Fashion</option><option>Film / Media Studies</option><option>Fine Arts</option><option>Gender Studies</option><option>Graphic Design</option><option>Health</option><option>Humanities/History</option><option>Illustration</option><option>Indigenous Studies</option><option>Interior Design</option><option>Languages &amp; Literature</option><option>Math</option><option>Philosophy</option><option>Photography</option><option>Poetry</option><option>Political Science/Politics</option><option>Science, Technology and Medicine</option><option>Social Sciences</option><option>Urban Studies</option><option>Visual Arts</option></select></label>
+                  <label>Database type<select><option>All types</option><option>Abstracts &amp; Citations</option><option>Archival &amp; Special Collections</option><option>Conference Proceedings</option><option>Data &amp; Statistical Information</option><option>Ebooks</option><option>Images</option><option>Journal Articles</option><option>Licensed E-Resource</option><option>Magazine Articles</option><option>Newspaper Articles</option><option>Open Access &amp; Freely Available</option><option>Reference (e.g. encyclopedias)</option><option>Reports</option><option>Streaming Video</option><option>Theses and Dissertations</option></select></label>
+                  <label>Vendor<select><option>All vendors</option><option>Adam Matthew</option><option>AICAD</option><option>Bloomsbury</option><option>Cambridge University Press</option><option>Criterion</option><option>Duke University Press</option><option>EBSCO</option><option>Elsevier</option><option>Gale</option><option>IEEE</option><option>ITHAKA</option><option>Kanopy</option><option>Library and Archives Canada</option><option>Oxford University Press</option><option>ProQuest</option><option>Sage</option><option>Scholars Portal</option><option>Springer</option><option>Taylor &amp; Francis</option><option>Wiley-Blackwell</option><option>Yale University Press</option></select></label>
+                  <button class="oc-clear" type="button">Clear filters</button>
+                </div>
+                <div class="oc-azstrip" aria-label="Browse databases alphabetically"><button type="button">A</button><button type="button">B</button><button type="button">C</button><button type="button">D</button><button type="button">E</button><button type="button">F</button><button type="button">G</button><button type="button">H</button><button type="button">I</button><button type="button">J</button><button type="button">K</button><button type="button">L</button><button type="button">M</button><button type="button">N</button><button type="button">O</button><button type="button">P</button><button type="button">Q</button><button type="button">R</button><button type="button">S</button><button type="button">T</button><button type="button">U</button><button type="button">V</button><button type="button">W</button><button type="button">X</button><button type="button">Y</button><button type="button">Z</button></div>
+                <div class="oc-mode-group">
+                  <span class="oc-mode-h">Featured databases</span>
+                  <ul class="oc-featured">
+                    <li><b>JSTOR</b><span>Backfiles of 2,500+ research journals across disciplines.</span></li>
+                    <li><b>Ebook Central</b><span>Full-text access to 170,000+ ebooks in all academic subject areas.</span></li>
+                    <li><b>Oxford Art Online</b><span>Grove Dictionary of Art and Benezit Dictionary of Artists.</span></li>
+                    <li><b>Criterion on Demand</b><span>4,000+ streaming feature films, classics, and documentaries.</span></li>
+                    <li><b>CINAHL Plus with Full Text</b><span>Nursing, allied health, and health design journals back to 1937.</span></li>
+                    <li><b>IEEE Articles on Demand</b><span class="oc-new">New</span><span>Engineering and computer science publications.</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="oc-mode-panel" data-panel="guides">
+                <p class="oc-mode-note">Find the best resources, books, articles, images, for your subject, topic, or area of research.</p>
+                <div class="oc-gtabs" role="group" aria-label="Browse guides">
+                  <button type="button" class="is-on">All guides</button>
+                  <button type="button">By group</button>
+                  <button type="button">By subject</button>
+                  <button type="button">By type</button>
+                  <button type="button">By owner</button>
+                </div>
+                <div class="oc-mode-filters">
+                  <label>Display<select><option>Alphabetically</option><option>By popularity</option><option>Most recent</option></select></label>
+                </div>
+                <div class="oc-mode-group">
+                  <span class="oc-mode-h">Featured subject guides</span>
+                  <ul class="oc-featured">
+                    <li><b>Art Research Guide</b><span>Marsha Taichman · updated May 22, 2026</span></li>
+                    <li><b>Design Research Guide</b><span>Susan Kun · updated Jun 1, 2026</span></li>
+                    <li><b>Liberal Arts &amp; Sciences Research Guide</b><span>Sarah Butterill · updated Jun 1, 2026</span></li>
+                    <li><b>A–Z Database List</b><span>Full list of databases, including trial access.</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="oc-mode-panel" data-panel="reserves">
+                <p class="oc-mode-note">Course reserves are instructor-assigned materials held at the service desk on short-term loan.</p>
+                <div class="oc-mode-filters">
+                  <label>Term<select><option>Fall 2026</option><option>Summer 2026</option><option>Winter 2026</option></select></label>
+                  <label>Department<select><option>All departments</option><option>Graphic Design</option><option>Drawing &amp; Painting</option><option>Industrial Design</option><option>Photography</option><option>Digital Futures</option><option>Art History</option></select></label>
+                </div>
+                <div class="oc-mode-group">
+                  <span class="oc-mode-h">Courses with active reserves</span>
+                  <ul class="oc-featured oc-courses">
+                    <li><b>GDES 2B16 · Typography 2</b><span>R. Osei · 12 items</span></li>
+                    <li><b>DRPT 3C01 · Painting Studio 3</b><span>L. Marchetti · 8 items</span></li>
+                    <li><b>INDS 2B04 · History of Industrial Design</b><span>T. Nguyen · 6 items</span></li>
+                    <li><b>PHOT 1B02 · Photography Fundamentals</b><span>S. Adeyemi · 9 items</span></li>
+                    <li><b>DIGF 2A55 · Creation &amp; Computation</b><span>M. Castellanos · 5 items</span></li>
+                    <li><b>AHIS 1B01 · Global Art Histories</b><span>J. Whitfield · 14 items</span></li>
+                  </ul>
+                </div>
+              </div>
+              </div>
+            </div>
+            <a class="oc-ask" href="#" aria-label="Ask: chat with a librarian">
+              <span class="oc-ask-icon" aria-hidden="true">
+                <svg viewBox="0 0 58 48" fill="none">
+                  <path class="ask-b1" d="M4 5.5 H36 V25.5 H17 L9 32.5 V25.5 H4 Z" fill="#fff" stroke="#8f8f8f" stroke-width="2.5" stroke-linejoin="round"></path>
+                  <path class="ask-b2" d="M22 14.5 H54 V34.5 H47 V41.5 L39 34.5 H22 Z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"></path>
+                  <path class="ask-q" d="M34.9 21.4 a3.1 3.1 0 1 1 5.7 1.7 c-1 1.4-2.6 1.6-2.6 3.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+                  <circle class="ask-qdot" cx="38" cy="30.6" r="1.7" fill="currentColor"></circle>
+                  <circle class="ask-status" cx="52" cy="8" r="5" fill="#2e9b3f" stroke="#fff" stroke-width="2.5"></circle>
+                </svg>
+              </span>
+              <span class="oc-ask-text"><b>Ask</b><small>Chat with a librarian</small></span>
+              <svg class="oc-ask-arrow" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 H17 M11 4 L17 10 L11 16"></path></svg>
+            </a>
+          </div>
+
+          <!-- ===== Explore — accordion ===== -->
+          <section class="oc-explore oc-explore--acc" aria-label="Explore the library">
+            <div class="oc-explore-top">
+              <span class="oc-explore-h">EXPLORE</span>
+            </div>
+
+            <div class="oc-acc">
+
+            <div class="oc-acc-item">
+              <button class="oc-acc-head" type="button" aria-expanded="false">About the Library<span class="oc-chev" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L8 11 L13 6"></path></svg></span></button>
+              <div class="oc-acc-panel">
+                <div class="oc-acc-body oc-acc-body--stack">
+              <p class="oc-acc-intro">Who we are, where we came from, and the organizations we work with.</p>
+              <div class="oc-sacc">
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Our mission<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>Our mission is to partner with faculty to develop a campus-wide learning strategy, enhancing the learning experience of undergraduate and graduate students at OCAD University.</p>
+                      <p>We continue to develop specialized collections and collaborate with academic colleagues to improve access to information, resources, and services in support of teaching, learning, and research.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/53290310363_424f47346e_k.jpg" alt="Four students working on laptops at a table in front of library stacks" /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">History<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>The main library is named after Dorothy H. Hoover, who served as head librarian and lecturer from 1952 to 1968. In 1957 the library moved into the expanded main building at 100 McCaul Street; in the mid-1980s the collection was relocated to the Grange Wing; and in 1999 the library moved to its current home in Village by the Grange at 113 McCaul Street.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Professional organizations<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>The OCAD University Library is a member of the Ontario Council of University Libraries (OCUL), the Association of Independent Colleges of Art &amp; Design Libraries (AICAD-L), the Art Libraries Society of North America (ARLIS/NA), and the Canadian Research Knowledge Network (CRKN).</p>
+                    </div>
+                  </div></div></div>
+                </div>
+              </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="oc-acc-item">
+              <button class="oc-acc-head" type="button" aria-expanded="false">Hours and Locations<span class="oc-chev" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L8 11 L13 6"></path></svg></span></button>
+              <div class="oc-acc-panel">
+                <div class="oc-acc-body oc-acc-body--stack">
+              <p class="oc-acc-intro">Three spaces across campus, when they’re open and how to find them.</p>
+              <div class="oc-sacc">
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Dorothy H. Hoover Library<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>113 McCaul St., Level 2, Room 215 (also accessible from 122 St. Patrick St.)</p>
+                      <p><b>Monday–Friday</b>, 9:00 am–5:00 pm. Saturday &amp; Sunday: closed. The returns box is open for book drop-offs.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/image_14.png" alt="Campus map highlighting the Dorothy H. Hoover Library at 113 McCaul St." /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Library Learning Zone<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>113 McCaul St., Level 1, Room 110 (also accessible from 122 St. Patrick St.)</p>
+                      <p><b>Tuesday–Friday</b>, 11:00 am–5:00 pm. Monday and weekends: closed. A valid OCAD U ID card is required to enter.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/image_15.png" alt="Campus map highlighting the Library Learning Zone at 113 McCaul St." /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">University Archives<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>230 Richmond St. W., 8th floor (elevator access only).</p>
+                      <p>Research assistance and support by appointment: contact archives@ocadu.ca.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/image_16.jpg" alt="Map highlighting the University Archives at 230 Richmond St. W." /></figure>
+                  </div></div></div>
+                </div>
+              </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="oc-acc-item">
+              <button class="oc-acc-head" type="button" aria-expanded="false">Accessibility<span class="oc-chev" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L8 11 L13 6"></path></svg></span></button>
+              <div class="oc-acc-panel">
+                <div class="oc-acc-body oc-acc-body--stack">
+              <p class="oc-acc-intro">Equal access to services and collections for every member of the OCAD U community.</p>
+              <div class="oc-sacc">
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Our commitment<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>The OCAD U Library is committed to providing equal access to services and collections for all students, faculty, and staff at the University.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/Screenshot 2026-07-07 at 9.44.45 AM.png" alt="" /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Accessible formats<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>Where access to library facilities or services is difficult, the library makes special provisions so users with disabilities can access resources in their preferred format. To access accessible formats, students first register through OCAD U Accessibility Services.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Accessible learning resources<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>The library maintains an Accessible Teaching and Learning Resources guide with accessibility standards and practices faculty can use when selecting or creating course materials. The Snow: Education, Access and You site also covers creating accessible classroom experiences.</p>
+                      <p>For more information, contact libraryhelp@ocadu.ca.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+              </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="oc-acc-item">
+              <button class="oc-acc-head" type="button" aria-expanded="false">Borrowing<span class="oc-chev" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L8 11 L13 6"></path></svg></span></button>
+              <div class="oc-acc-panel">
+                <div class="oc-acc-body oc-acc-body--stack">
+              <p class="oc-acc-intro">Everything you need to know about borrowing, renewing, and returning materials.</p>
+              <div class="oc-sacc">
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">How do I borrow materials from the library?<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>Your valid OCAD U ID card is your library card: bring it with the items you want to borrow to the library service desk. Community borrowers use their membership card.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/53290308868_f8444b2224_c.jpg" alt="Two students browsing books in a narrow library stacks aisle" /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">How long can I have the materials for?<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>Loan periods and limits vary by material type and user group. Due dates are listed in your library account; overdue items may incur fines.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">How do I renew books?<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>Renew online through your library account before the due date, or ask library staff in person, by phone, or by email.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Can I borrow Course Reserves items?<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>Yes. Course reserves are instructor-assigned materials held at the service desk on short-term loan so every student in a course can access them.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Can I borrow materials from other university libraries?<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>Yes. Request items from other Ontario university libraries through the shared university catalogue, and pick them up at the library when they arrive.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Special memberships: alumni and members of the public<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>Alumni and members of the public can apply for a special membership to borrow from the collection. Ask at the service desk or email libraryhelp@ocadu.ca.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+              </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="oc-acc-item">
+              <button class="oc-acc-head" type="button" aria-expanded="false">Collections<span class="oc-chev" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L8 11 L13 6"></path></svg></span></button>
+              <div class="oc-acc-panel">
+                <div class="oc-acc-body oc-acc-body--stack">
+              <p class="oc-acc-intro">Over 270,000 books and ebooks, plus journals, zines, films, and the University Archives.</p>
+              <div class="oc-sacc">
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Books &amp; eBooks<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>The OCAD U Library provides access to over 70,000 print books, exhibition catalogues, reference materials, and other works, plus over 200,000 ebooks that can be accessed virtually.</p>
+                      <p>Visit the Collection Discovery page to view new books, featured books, and other promoted materials.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/Image_4.png" alt="Two students looking closely at a printed illustration in the library stacks" /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Databases, periodicals, and magazines<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>Our databases and print and electronic periodicals and magazines provide access to hundreds of journals and thousands of research articles and resources covering art, design, social sciences, humanities, and more.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/pexels-alexdzot-3664343.jpg" alt="Shelves of art and design magazines on display" /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Special collections<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>Our special collections include rare books, manuscripts, and periodicals; hundreds of handmade and self-published zines; artist’s books; documentaries, artist videos, and films; and illustrated children’s books.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/pexels-suzyhazelwood-1122870.jpg" alt="A stack of old hardcover books beside an open book" /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Archives<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>Our archives preserve materials documenting OCAD U’s history and student life since 1876, student publications, course calendars, graduation programs, exhibition materials, photos, posters, governance records, and reports.</p>
+                      <p>Open to all OCAD U community members and researchers from the public, with research support by appointment: archives@ocadu.ca.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/library-archives.png" alt="A yearbook, film reel, VHS tapes, and archival photographs on a blue table" /></figure>
+                  </div></div></div>
+                </div>
+              </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="oc-acc-item">
+              <button class="oc-acc-head" type="button" aria-expanded="false">Library Learning Zone<span class="oc-chev" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L8 11 L13 6"></path></svg></span></button>
+              <div class="oc-acc-panel">
+                <div class="oc-acc-body oc-acc-body--stack">
+              <p class="oc-acc-intro">A second home for study and studio work on Level 1 of 113 McCaul St.</p>
+              <div class="oc-sacc">
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Spaces &amp; equipment<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text">
+                      <p>An alternative work and study space for students: desktop and laptop workstations, printers and scanners, equipment loans, and table space for studio work.</p>
+                    </div>
+                    <figure class="oc-acc-media"><img src="uploads/53290059631_8e8ba062b2_c.jpg" alt="Two students reading on lounge seating between library stacks" /></figure>
+                  </div></div></div>
+                </div>
+                <div class="oc-sacc-item">
+                  <button class="oc-sacc-head" type="button" aria-expanded="false">Collections &amp; access<span class="oc-acc-x" aria-hidden="true">+</span></button>
+                  <div class="oc-sacc-panel"><div class="oc-sacc-wrap"><div class="oc-sacc-body">
+                    <div class="oc-acc-text oc-acc-text--full">
+                      <p>Several of the library’s collections are housed here, including selected new books, reference books, and art and design annuals. A valid OCAD U ID card is required to enter.</p>
+                    </div>
+                  </div></div></div>
+                </div>
+              </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="oc-acc-item">
+              <button class="oc-acc-head" type="button" aria-expanded="false">Open Research Repository<span class="oc-chev" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 L8 11 L13 6"></path></svg></span></button>
+              <div class="oc-acc-panel">
+                <div class="oc-acc-body">
+                  <div class="oc-acc-text">
+                    <p>The Open Research Repository is a digital archive managed by the University Library to collect, preserve, and distribute scholarly and creative output generated by the OCAD U community.</p>
+                    <p>Open Research collaborates with faculty and research groups interested in depositing their works, past and present. Depositors must hold copyright for submitted items or obtain permission from publishers or copyright owners.</p>
+                    <p class="oc-acc-note"><a href="https://openresearch.ocadu.ca" target="_blank" rel="noopener" class="oc-orr oc-orr--inline">Visit openresearch.ocadu.ca <svg class="oc-ext" viewBox="0 0 14 14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 2.5 H2.5 V11.5 H11.5 V8.5"></path><path d="M8 2 H12 V6"></path><path d="M12 2 L6.5 7.5"></path></svg><span class="sr-only">(opens in new window)</span></a></p>
+                  </div>
+                  <figure class="oc-acc-media"><img src="uploads/Screenshot 2024-10-23 at 3.52.43 PM.png" alt="A librarian presenting to a seated group in a workshop room" /></figure>
+                </div>
+              </div>
+            </div>
+
+            </div>
+          </section>
+
+          <!-- ===== Welcome ===== -->
+          <div class="oc-welcome">
+            <h2>Welcome to the OCAD U Library! We’re here to support your research, learning, and studio practice.</h2>
+            <span class="oc-rip" aria-hidden="true"></span>
+            <figure class="oc-welcome-photo">
+              <img src="uploads/53290310363_0820f92571_o.jpeg" alt="Four students collaborating over laptops and books at a library table" />
+            </figure>
+          </div>
+
+          <!-- ===== Info: Locations / Hours / Contact ===== -->
+          <div class="oc-info">
+            <section class="oc-block">
+              <h3>Locations</h3>
+              <p><b>Dorothy H. Hoover Library</b>: 113 McCaul Street, Level 2, room 215 (also accessible from 122 St. Patrick St.)</p>
+              <p><b>Library Learning Zone</b>: 113 McCaul St., Level 1, room 110 (also accessible from 122 St. Patrick St.)</p>
+              <p><b>University Archives</b>: 230 Richmond St. W., 8th floor (elevator access only)</p>
+              <figure class="oc-loc-map">
+                <img src="assets/library-map.png" alt="Map of the OCAD U campus showing the library locations" />
+                <figcaption>Map of OCAD U campus</figcaption>
+              </figure>
+            </section>
+
+            <section class="oc-block">
+              <h3>Hours</h3>
+              <p><b>Dorothy H. Hoover Library</b><br/>113 McCaul Street, 2nd floor, Room 215 (also accessible from 122 St. Patrick St.)</p>
+              <ul class="oc-hours">
+                <li>Monday–Friday, 9:00 am to 5:00 pm</li>
+                <li>Saturday &amp; Sunday: Closed</li>
+              </ul>
+              <p>The returns box is open for book drop-offs.</p>
+              <p class="oc-sub">Holiday Closures:</p>
+              <ul class="oc-hours">
+                <li>Monday, May 18, 2026 (Victoria Day)</li>
+                <li>Wednesday, July 1, 2026 (Canada Day)</li>
+                <li>Monday, August 3, 2026 (Civic Holiday)</li>
+                <li>Monday, September 7, 2026 (Labour Day)</li>
+              </ul>
+              <p><b>Library Learning Zone</b><br/>113 McCaul St., Level 1, room 110 (also accessible from 122 St. Patrick St.)</p>
+              <p class="oc-sub">May 19, 2026 – June 26, 2026:</p>
+              <ul class="oc-hours">
+                <li>Monday: Closed</li>
+                <li>Tuesday–Friday: 11:00 AM – 5:00 PM</li>
+                <li>Saturday–Sunday: Closed</li>
+              </ul>
+              <p class="oc-note">Note: except for public events and exhibitions, a valid OCAD U ID card is required to enter the Library Learning Zone.</p>
+            </section>
+
+            <section class="oc-block">
+              <h3>Contact</h3>
+              <p><b>Library information, collections, holds, and more</b><br/><a href="#" class="oc-inline">libraryhelp@ocadu.ca</a>, or 416-977-6000 ext. 358</p>
+              <p><b>Reference, research, and instruction</b><br/><a href="#" class="oc-inline">libraryresearch@ocadu.ca</a></p>
+              <p><b>University Archives</b><br/><a href="#" class="oc-inline">libraryresearch@ocadu.ca</a></p>
+              <p><b>Exhibitions and bookings</b><br/><a href="#" class="oc-inline">susankun@ocadu.ca</a></p>
+              <p class="oc-sub">Follow Us</p>
+              <p><a href="#" class="oc-inline">Instagram · @ocadulibrary →</a></p>
+            </section>
+          </div>
+
+          <!-- ===== Decorative brand band ===== -->
+          <div class="oc-band" aria-hidden="true"><img src="uploads/Screenshot 2026-07-07 at 9.39.30 AM.png" alt="" /></div>
+
+          <!-- ===== Footer ===== -->
+          <footer class="oc-foot">
+            <p class="oc-ack">OCAD University acknowledges the ancestral territories of the Mississaugas of the Credit, the Haudenosaunee, the Anishinaabeg and the Huron-Wendat, who are the original owners and custodians of the land on which we live, work and create.</p>
+            <div class="oc-foot-grid">
+              <div class="oc-foot-col">
+                <b>416.977.6000</b>
+                <span>100 McCaul Street, Toronto,<br/>Ontario, Canada M5T 1W1</span>
+                <span class="dim">© 2026 OCAD University</span>
+              </div>
+              <div class="oc-foot-col">
+                <b>Helpful links</b>
+                <a href="#">my.OCADU.ca</a>
+                <a href="#">Admissions</a>
+                <a href="#">Events &amp; Exhibitions</a>
+                <a href="#">Accessibility</a>
+                <a href="#">Campus Map</a>
+              </div>
+            </div>
+          </footer>
+
+          <!-- ===== Chat widget (opens from Ask) ===== -->
+          <div class="oc-chat-anchor">
+            <div class="oc-chat" role="dialog" aria-label="Chat with a librarian" hidden>
+              <div class="oc-chat-head">
+                <span class="oc-chat-dot" aria-hidden="true"></span>
+                <div class="oc-chat-title"><b>Ask a librarian</b><small>Online · typically replies in minutes</small></div>
+                <button class="oc-chat-close" type="button" aria-label="Close chat">×</button>
+              </div>
+              <div class="oc-chat-msgs">
+                <div class="oc-msg oc-msg--lib">Hi! I’m the librarian on chat today. What can I help you find?</div>
+              </div>
+              <form class="oc-chat-form">
+                <input type="text" placeholder="Type your question…" aria-label="Type your question" autocomplete="off" />
+                <button type="submit">Send</button>
+              </form>
+            </div>
+          </div>
+
+        </div><!-- /.lib -->
+              </div><!-- /.proto-frame -->
+            </div><!-- /.laptop-viewport -->
+          </div><!-- /.laptop-screen -->
+          <div class="laptop-base" aria-hidden="true"></div>
+          <div class="laptop-shadow" aria-hidden="true"></div>
+
+          <!-- animated use cursor over the laptop screen -->
+          <svg class="use-cursor" style="top: 38%; left: 36%;" viewBox="0 0 22 22" aria-hidden="true">
+            <path d="M3 2 L3 18 L8 14 L11 21 L14 19.5 L11 13 L18 12 Z" fill="#fff" stroke="#0a0a0a" stroke-width="1.2" stroke-linejoin="round"/>
+          </svg>
+        </div><!-- /.laptop -->
+
+        <!-- PHONE -->
+        <div class="phone" aria-label="Library redesign, mobile view">
+          <div class="phone-body">
+            <div class="phone-viewport" id="phone-viewport">
+              <div class="phone-top" aria-hidden="true">
+                <div class="phone-statusbar">
+                  <span>14:08</span>
+                  <span class="right">
+                    <span class="bars"><i></i><i></i><i></i><i></i></span>
+                    <span class="battery"><i></i></span>
+                  </span>
+                </div>
+                <div class="phone-chrome">
+                  <span class="pc-pill">
+                    <svg viewBox="0 0 12 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.5" y="6" width="9" height="6.5" rx="1.2"></rect><path d="M3.5 6 V4.2 A2.5 2.5 0 0 1 8.5 4.2 V6"></path></svg>
+                    ocadu.ca/student-services/library
+                  </span>
+                  <span class="pc-tabs">3</span>
+                  <span class="pc-dots"><i></i><i></i><i></i></span>
+                </div>
+              </div>
+              <!-- prototype injected here as mobile variant -->
+              <div class="proto-frame is-mobile" data-proto-mobile></div>
+            </div>
+          </div>
+        </div><!-- /.phone -->
+
+      </div><!-- /.devices-comp -->
+
+      <div class="devices-caption">
+        <span class="a"><b>01</b> &nbsp;Desktop · 12-column grid · sticky nav · full editorial scope</span>
+        <span class="b"><b>02</b> &nbsp;Mobile · single-column · stacked search scopes · burger menu</span>
+        <span class="c">Scroll inside ↑ each device</span>
+      </div>
+    </div><!-- /.devices-stage -->
+  </div>
+</section>
+
+<!-- ===========================  06 · ACCESSIBILITY  =========================== -->
+<section id="a11y" data-screen-label="06 Accessibility">
+  <div class="shell">
+    <header class="section-head">
+      <div class="num reveal">06 / Accessibility</div>
+      <h2 class="reveal" data-d="1">Accessibility</h2>
+      <p class="lede reveal" data-d="2">Built in from the start, not added at the end.</p>
+    </header>
+
+    <div class="a11y">
+      <p class="a11y-statement reveal">
+        WCAG AA was the <em>baseline,</em> not the goal. Every screen was tested with a keyboard and a screen reader <em>before</em> it was tested with a mouse.
+      </p>
+      <div class="a11y-grid reveal" data-d="1">
+        <div class="row"><span class="k">Contrast<small>Body text on paper. Light and high-contrast modes.</small></span><span class="v">14.6 : 1</span></div>
+        <div class="row"><span class="k">Tab order<small>Logical. One direction. Visible focus rings.</small></span><span class="v">100%</span></div>
+        <div class="row"><span class="k">Motion<small>Honours <code style="font-family:var(--font-mono); font-size: 12px;">prefers-reduced-motion</code>.</small></span><span class="v">Optional</span></div>
+        <div class="row"><span class="k">Screen readers<small>NVDA, VoiceOver, JAWS, every state.</small></span><span class="v">AAA</span></div>
+        <div class="row"><span class="k">Cognitive load<small>One thing to do per fold. Plain words.</small></span><span class="v">Calm</span></div>
+        <div class="row"><span class="k">Type<small>Generous tracking. Dyslexia toggle. No shouting.</small></span><span class="v">Adjustable</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================  07 · DESIGN SYSTEM  =========================== -->
+<section id="system" data-screen-label="07 System">
+  <div class="shell">
+    <header class="section-head">
+      <div class="num reveal">07 / System</div>
+      <h2 class="reveal" data-d="1">The design system</h2>
+      <p class="lede reveal" data-d="2">Three fonts, two paper tones, one red accent. Close to OCAD's own visual language: eclectic, but academic.</p>
+    </header>
+
+    <div class="ds reveal">
+
+      <div class="ds-block">
+        <div class="ds-head"><span>Typography</span><b>3 families</b></div>
+        <div class="ds-type">
+          <div class="row">
+            <div class="row-meta">
+              <span class="lab">Display</span>
+              <span class="name">Montserrat</span>
+              <span class="size">76 px / 0.95</span>
+              <span class="use">Hero moments &amp; section headlines.</span>
+            </div>
+            <span class="spec h1">A library, in italic.</span>
+          </div>
+          <div class="row">
+            <div class="row-meta">
+              <span class="lab">Heading</span>
+              <span class="name">Montserrat</span>
+              <span class="size">32 px / 1.05</span>
+              <span class="use">Subheads, pull quotes, card titles.</span>
+            </div>
+            <span class="spec">A library, in italic.</span>
+          </div>
+          <div class="row">
+            <div class="row-meta">
+              <span class="lab">Body</span>
+              <span class="name">Space Grotesk</span>
+              <span class="size">16 px / 1.55</span>
+              <span class="use">Paragraphs, lists, UI labels.</span>
+            </div>
+            <span class="spec body">Quiet, generous, set with care.</span>
+          </div>
+          <div class="row">
+            <div class="row-meta">
+              <span class="lab">Mono</span>
+              <span class="name">JetBrains Mono</span>
+              <span class="size">11 px / 1.5</span>
+              <span class="use">Metadata, annotations, eyebrows.</span>
+            </div>
+            <span class="spec mono">METADATA · ANNOTATIONS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-head"><span>Colour</span><b>Strictly limited</b></div>
+        <div class="ds-color">
+          <div class="swatch"><span class="chip" style="background: var(--ink);"></span><span class="name">Ink</span><span class="hex">#0a0a0a</span></div>
+          <div class="swatch"><span class="chip" style="background: var(--paper);"></span><span class="name">Paper</span><span class="hex">#f6f3ed</span></div>
+          <div class="swatch"><span class="chip" style="background: var(--paper-2);"></span><span class="name">Paper · 02</span><span class="hex">#ece7dc</span></div>
+          <div class="swatch"><span class="chip" style="background: var(--rule);"></span><span class="name">Rule</span><span class="hex">#d6d3cd</span></div>
+          <div class="swatch"><span class="chip" style="background: var(--accent);"></span><span class="name">Accent · archival</span><span class="hex">oklch 0.52 / 28</span></div>
+        </div>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-head"><span>Grid</span><b>12 / 8</b></div>
+        <div class="ds-grid-demo" aria-hidden="true"></div>
+        <p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.5;">Same 12-column grid for the page and the product inside it.</p>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-head"><span>Buttons</span><b>4 variants</b></div>
+        <div class="ds-buttons">
+          <button class="btn primary">Primary</button>
+          <button class="btn ghost">Ghost</button>
+          <button class="btn danger">Destructive</button>
+          <button class="btn disabled" disabled>Disabled</button>
+        </div>
+        <p style="font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.5;">Colour only when something matters.</p>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-head"><span>States</span><b>Interaction</b></div>
+        <div class="ds-states">
+          <div class="ds-state">Default<span>·</span></div>
+          <div class="ds-state hover">Hover<span>→</span></div>
+          <div class="ds-state focus">Focus<span>○</span></div>
+          <div class="ds-state active">Active<span>•</span></div>
+          <div class="ds-state disabled">Disabled<span>×</span></div>
+        </div>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-head"><span>Spacing</span><b>Modular · 8</b></div>
+        <div style="display:grid; gap: 6px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr; gap:14px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--mute);">
+            <span>04 px</span><span style="height: 4px; background: var(--ink); width: 12%;"></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr; gap:14px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--mute);">
+            <span>08 px</span><span style="height: 8px; background: var(--ink); width: 24%;"></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr; gap:14px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--mute);">
+            <span>16 px</span><span style="height: 16px; background: var(--ink); width: 48%;"></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr; gap:14px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--mute);">
+            <span>32 px</span><span style="height: 32px; background: var(--ink); width: 84%;"></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr; gap:14px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--mute);">
+            <span>64 px</span><span style="height: 64px; background: var(--ink); width: 100%;"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===========================  08 · CODA  =========================== -->
+<section id="coda" class="coda" data-screen-label="08 Coda">
+  <div class="shell">
+    <p class="eyebrow reveal">08 / Coda</p>
+    <h2 class="reveal" data-d="1">The same library,<br/><em>easier to start.</em></h2>
+    <div class="quiet reveal" data-d="2" aria-hidden="true"></div>
+    <p class="echo reveal" data-d="3">A library should feel like discovery.</p>
+    <div class="meta reveal" data-d="4">
+      <span>Case study</span>
+      <span>For OCAD U</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================  NEXT PROJECT · REGOLOGY  =========================== -->
+<section id="next-project" data-screen-label="Next project" style="padding: clamp(60px, 10vw, 100px) 0;">
+  <div class="shell">
+    <div style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); margin-bottom: 20px;">Next project</div>
+    <a href="../Regology/Regology.html" style="display: block; padding: 36px 40px; background: linear-gradient(135deg, #5b2a9e 0%, #3b1a6b 100%); border-radius: 20px; text-decoration: none; transition: transform 0.22s ease, box-shadow 0.22s ease; box-shadow: 0 8px 40px rgba(59, 26, 107, 0.38);" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 22px 60px rgba(59, 26, 107, 0.56)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 40px rgba(59, 26, 107, 0.38)'">
+      <div style="font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: #d9c8f0; margin-bottom: 14px; font-family: 'Space Mono', monospace;">2019&ndash;2020</div>
+      <div style="font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 600; font-size: clamp(2.8rem, 6vw, 5rem); line-height: 1; color: #ede5fa; letter-spacing: -0.02em;">Regology</div>
+      <div style="font-family: 'Montserrat', system-ui, sans-serif; color: #d9c8f0; font-size: clamp(0.95rem, 1.4vw, 1.05rem); margin-top: 14px; max-width: 44ch; line-height: 1.65;">Six months designing a regulatory compliance platform, from a whiteboard sketch of a regulation&rsquo;s hierarchy to a system whole teams run their work through.</div>
+      <div style="margin-top: 22px; display: inline-flex; align-items: center; gap: 9px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #ede5fa; font-family: 'Space Mono', monospace;">View case study <span style="font-size: 16px;">&rarr;</span></div>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<script src="script.js"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="tweaks-app.jsx"></script>
+</body>
+</html>

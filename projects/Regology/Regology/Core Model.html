@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Core Model — Regology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* Regology brand purple */
+    --p:#5b2a9e;        /* primary */
+    --pd:#43206f;       /* deep (hover/active) */
+    --pm:#7c45c2;       /* mid (arrows) */
+    --pl:#d2c2ee;       /* light (dashed rings / ticks) */
+    --pp:#ede5fa;       /* pale (fills) */
+    --ink:#2b2630;      /* label text */
+    --pink:#3b1a6b;     /* purple ink (hub labels) */
+    /* flat icon yellows */
+    --y1:#f6c350;       /* golden yellow */
+    --y2:#efa23e;       /* yellow-orange */
+    --yd:#e08f33;       /* deep orange (depth faces) */
+    --y3:#e76f4e;       /* coral accent (badges) */
+    --blob:#e8e6f0;
+    --speck:#cfccdf;
+    --cf:#fef8e6;        /* light yellow circle fill */
+    --arrow:#c2afec;     /* light purple arrows */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    background:#ffffff;
+    color:var(--ink);
+    overflow:hidden;
+  }
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .canvas{position:relative;width:1274px;height:712px;flex:0 0 auto;transform-origin:center center}
+
+  svg{display:block;width:100%;height:100%;overflow:visible}
+
+  /* nodes */
+  .node{cursor:pointer}
+  .node .ncircle{fill:var(--cf);stroke:var(--p);transition:stroke .2s, filter .25s, fill .2s}
+  .node .nicon{transform-box:fill-box;transform-origin:center;filter:drop-shadow(0 4px 6px rgba(91,42,158,.55))}
+  .node .nicon .y1{fill:var(--y1)}
+  .node .nicon .y2{fill:var(--y2)}
+  .node .nicon .yd{fill:var(--yd)}
+  .node .nicon .y3{fill:var(--y3)}
+  .node .nicon .cut{fill:#fff}
+  .node .nicon .ln{fill:none;stroke:var(--y2);stroke-width:1.7;vector-effect:non-scaling-stroke;stroke-linecap:round}
+  .node .nlabel{fill:var(--ink);font-weight:500;pointer-events:none;transition:fill .2s}
+  .node .hublabel{fill:var(--pink);font-weight:600;pointer-events:none;transition:fill .2s}
+  .node-core{transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+  .node:hover .node-core{transform:translateY(-2px) scale(1.14)}
+  .node:hover .ncircle{stroke:var(--pd);filter:drop-shadow(0 12px 24px rgba(91,42,158,.32))}
+  .node:hover .nlabel,.node:hover .hublabel{fill:var(--pd)}
+
+  /* ---- label overlay (plain HTML, layered over the SVG) ---- */
+  .labels-overlay{position:absolute;inset:0;pointer-events:none;
+    font-family:'Space Grotesk',system-ui,sans-serif}
+  .lblbox{position:absolute;display:flex;flex-direction:column;align-items:center;
+    transform:translateX(-50%)}
+  .lblbox.above{transform:translate(-50%,-100%)}
+  .lbl{pointer-events:auto;background:#fff;border:1px solid var(--pl);border-radius:13px;padding:6px 13px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    box-shadow:0 3px 10px rgba(60,40,100,.10);
+    transition:box-shadow .22s ease,border-color .22s ease}
+  .lbl-name{color:var(--ink);font-weight:500;font-size:14px;line-height:1.18;white-space:nowrap}
+  .lbl.hub .lbl-name{color:var(--pink);font-weight:700;font-size:15.5px}
+  .lbl-desc{max-height:0;width:0;opacity:0;overflow:hidden;color:#6f6880;font-weight:400;font-size:12px;line-height:1.42;
+    transition:max-height .28s ease,width .28s ease,opacity .22s ease,margin-top .28s ease}
+  .lblbox.open{z-index:5}
+  .lblbox.open .lbl{border-color:var(--p);box-shadow:0 16px 34px rgba(60,30,110,.24)}
+  .lblbox.open .lbl-desc{max-height:140px;width:188px;opacity:1;margin-top:6px}
+  .card .cardbg{fill:#fff;stroke:var(--pl);stroke-width:1.1;
+    transition:x .22s cubic-bezier(.34,1.15,.64,1),y .22s cubic-bezier(.34,1.15,.64,1),width .22s cubic-bezier(.34,1.15,.64,1),height .22s cubic-bezier(.34,1.15,.64,1),rx .2s ease,stroke .2s,fill .2s,filter .25s;
+    filter:drop-shadow(0 3px 8px rgba(60,40,100,.10))}
+  .card .cardname text{fill:var(--ink);font-weight:600}
+  .card .carddesc{opacity:0;transition:opacity .16s ease}
+  .card .carddesc text{fill:#6f6880;font-weight:400}
+  .card.open .cardbg{stroke:var(--p);filter:drop-shadow(0 16px 32px rgba(60,30,110,.24))}
+  .card.open .cardname text{fill:var(--pd)}
+  .card.open .carddesc{opacity:1;transition-delay:.05s}
+  .card.active .cardbg{fill:var(--pp);stroke:var(--p)}
+  .card.active .cardname text{fill:var(--pd)}
+
+  .hub .ncircle{filter:drop-shadow(0 8px 22px rgba(91,42,158,.16))}
+  .hub-orbit{fill:none;stroke:#ddd0f4;stroke-width:10;opacity:1}
+  .sat .ring{fill:none;stroke:var(--pl);stroke-width:1.4;stroke-dasharray:2.5 4.5;opacity:.95}
+
+  .orbit{transform-box:fill-box;transform-origin:center;animation:spin 14s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .blob{fill:var(--blob);opacity:.85}
+  .speck{fill:var(--speck)}
+  .bspark{fill:var(--pm)}
+
+  /* flow arrows */
+  .flow{fill:none;stroke:var(--arrow);stroke-width:28;stroke-linecap:round;stroke-linejoin:round;opacity:1}
+  .flow-dash{fill:none;stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-dasharray:1 22;opacity:.5;animation:flowmove 1.15s linear infinite}
+  @keyframes flowmove{to{stroke-dashoffset:-23}}
+  .ahead{fill:var(--arrow);opacity:1}
+
+  /* law library ring */
+  .ll-ring{fill:none;stroke:var(--pl);stroke-width:1.5;opacity:.7}
+
+  /* compliance cycle */
+  .tick{stroke:var(--pl);stroke-width:1.4;opacity:.6}
+  .tickspin{transform-box:fill-box;transform-origin:center;animation:spin 24s linear infinite}
+  .tickspin .tick{stroke:var(--pm);opacity:.8}
+  .arrowarc{fill:none;stroke:var(--arrow);stroke-width:18;stroke-linecap:butt;opacity:1}
+  .arc-dash{fill:none;stroke:var(--pl);stroke-width:1.7;stroke-dasharray:3 5;opacity:.9}
+  .cyc-inner{fill:#fff;stroke:var(--p);stroke-width:1.2}
+  .cyc-inner2{fill:var(--pp);opacity:.5}
+  .center-label{fill:var(--ink);font-weight:600;pointer-events:none}
+
+  /* step active state */
+  .step.active .ncircle{stroke:var(--pd);filter:drop-shadow(0 9px 20px rgba(91,42,158,.32))}
+  .step.active .nlabel{fill:var(--pd);font-weight:600}
+  .step.active .node-core{transform:scale(1.08)}
+
+  /* tooltip */
+  .tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transform:translate(-50%,calc(-100% - 14px)) scale(.96);
+    transition:opacity .16s ease, transform .16s ease;background:#3a2b58;color:#fff;border-radius:11px;padding:9px 13px;max-width:230px;
+    box-shadow:0 16px 38px -12px rgba(40,20,80,.55)}
+  .tip.show{opacity:1;transform:translate(-50%,calc(-100% - 14px)) scale(1)}
+  .tip .tt{font-size:12.5px;font-weight:600;margin-bottom:3px}
+  .tip .td{font-size:11.5px;line-height:1.45;color:#e0d7f2;font-weight:400}
+  .tip::after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#3a2b58;border-radius:2px}
+
+  @media (prefers-reduced-motion: reduce){.orbit,.tickspin,.flow-dash{animation:none}.flow-dash{display:none}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="canvas" id="canvas">
+    <svg id="diagram" viewBox="0 0 1274 712" aria-label="The Core Model diagram"></svg>
+    <div class="labels-overlay" id="overlay"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var SVG='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('diagram');
+  function el(n,a){var e=document.createElementNS(SVG,n);if(a)for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function D(r){return (+r).toFixed(2);}
+
+  /* ---------- generators ---------- */
+  function gearPath(teeth,rO,rI,cx,cy){
+    var step=Math.PI*2/teeth,d='';
+    for(var i=0;i<teeth;i++){
+      var a=i*step;
+      var pts=[[a,rI],[a+step*0.16,rI],[a+step*0.27,rO],[a+step*0.46,rO],[a+step*0.57,rI]];
+      pts.forEach(function(q){var x=cx+Math.cos(q[0])*q[1],y=cy+Math.sin(q[0])*q[1];d+=(d===''?'M':'L')+D(x)+' '+D(y);});
+    }
+    return d+'Z';
+  }
+  function cubeFlat(cx,cy,w,h){
+    var p=function(x,y){return D(x)+' '+D(y);};
+    var top='M'+p(cx,cy-h)+'L'+p(cx+w,cy-h/2)+'L'+p(cx,cy)+'L'+p(cx-w,cy-h/2)+'Z';
+    var left='M'+p(cx-w,cy-h/2)+'L'+p(cx,cy)+'L'+p(cx,cy+h)+'L'+p(cx-w,cy+h/2)+'Z';
+    var right='M'+p(cx,cy)+'L'+p(cx+w,cy-h/2)+'L'+p(cx+w,cy+h/2)+'L'+p(cx,cy+h)+'Z';
+    return '<path class="y1" d="'+top+'"/><path class="y2" d="'+left+'"/><path class="yd" d="'+right+'"/>';
+  }
+
+  var GEAR_F=gearPath(9,8,5.9,11,11.4), GEAR_S=gearPath(7,3.6,2.5,17.4,17.4), GEAR_M=gearPath(8,4.2,2.9,12,12.2);
+
+  /* ---------- flat filled icons (centered on 12,12 in a 24-box) ---------- */
+  var IC={
+    bell:'<path class="y1" d="M12 5.1a5.7 5.7 0 0 1 5.7 5.7c0 2.55.5 3.95 1.28 4.95a1.05 1.05 0 0 1-.83 1.7H5.85a1.05 1.05 0 0 1-.83-1.7C5.8 14.75 6.3 13.35 6.3 10.8A5.7 5.7 0 0 1 12 5.1Z"/><rect class="y2" x="10.7" y="3.3" width="2.6" height="2.9" rx="1.3"/><path class="y2" d="M10 17.75h4a2 2 0 0 1-4 0Z"/><circle class="y3" cx="17.8" cy="6" r="2.5"/>',
+    book:'<path class="y2" d="M11.35 7.15C9.35 5.85 6.85 5.65 4.75 6.05V16.95c2.1-.4 4.6-.2 6.6 1.1Z"/><path class="y1" d="M12.65 7.15C14.65 5.85 17.15 5.65 19.25 6.05V16.95c-2.1-.4-4.6-.2-6.6 1.1Z"/>',
+    clipboard:'<rect class="y1" x="5.2" y="4.8" width="13.6" height="15.2" rx="2.4"/><rect class="y2" x="8.5" y="3" width="7" height="3.6" rx="1.3"/><rect class="cut" x="8" y="10" width="8" height="1.7" rx=".85"/><rect class="cut" x="8" y="13.3" width="8" height="1.7" rx=".85"/><rect class="cut" x="8" y="16.6" width="5" height="1.7" rx=".85"/>',
+    gavel:'<rect class="y2" x="4.2" y="18.4" width="15.6" height="3.2" rx="1.6"/><g transform="rotate(-35 12 12)"><rect class="y1" x="5" y="10.6" width="14" height="6.4" rx="3.2"/><rect class="yd" x="5" y="10.6" width="2.6" height="6.4" rx="1.3"/><rect class="yd" x="16.4" y="10.6" width="2.6" height="6.4" rx="1.3"/><rect class="y2" x="10.6" y="2.4" width="2.8" height="8.8" rx="1.4"/><rect class="yd" x="9.6" y="9.9" width="4.8" height="2.1" rx="1"/></g>',
+    boxes:cubeFlat(12,8.2,3.7,3.6)+cubeFlat(8.3,14,3.7,3.6)+cubeFlat(15.7,14,3.7,3.6),
+    tree:'<rect class="y2" x="11.1" y="7.6" width="1.8" height="4.4" rx=".9"/><rect class="y2" x="5.6" y="11.3" width="12.8" height="1.8" rx=".9"/><rect class="y2" x="5.6" y="12.2" width="1.8" height="3" rx=".9"/><rect class="y2" x="16.6" y="12.2" width="1.8" height="3" rx=".9"/><circle class="y1" cx="12" cy="5.4" r="2.8"/><circle class="y1" cx="6.5" cy="16.9" r="2.8"/><circle class="y1" cx="17.5" cy="16.9" r="2.8"/>',
+    people:'<circle class="y2" cx="6.3" cy="9.5" r="2.1"/><path class="y2" d="M2.6 17.2a3.7 3.7 0 0 1 7.4 0Z"/><circle class="y2" cx="17.7" cy="9.5" r="2.1"/><path class="y2" d="M14 17.2a3.7 3.7 0 0 1 7.4 0Z"/><circle class="y1" cx="12" cy="7.9" r="2.9"/><path class="y1" d="M6.5 17.6a5.5 5.5 0 0 1 11 0Z"/>',
+    gears:'<path class="y1" d="'+GEAR_F+'"/><circle class="cut" cx="11" cy="11.4" r="2.3"/><path class="y2" d="'+GEAR_S+'"/><circle class="cut" cx="17.4" cy="17.4" r="1.1"/>',
+    biz:'<path class="y2" d="M9.3 7.6V6.4a1.5 1.5 0 0 1 1.5-1.5h2.4a1.5 1.5 0 0 1 1.5 1.5v1.2h-1.9V6.6h-1.6v1Z"/><rect class="y1" x="4.2" y="7.4" width="15.6" height="11.4" rx="2.2"/><rect class="yd" x="4.2" y="10.7" width="15.6" height="2"/><rect class="cut" x="10.5" y="11.4" width="3" height="2.6" rx=".7"/>',
+    scrollGear:'<rect class="y1" x="6.1" y="4.6" width="11.8" height="14.8" rx="2.6"/><rect class="y2" x="6.1" y="4.6" width="11.8" height="2.7" rx="1.35"/><rect class="y2" x="6.1" y="16.7" width="11.8" height="2.7" rx="1.35"/><path class="y2" d="'+GEAR_M+'"/><circle class="cut" cx="12" cy="12.2" r="1.5"/>',
+    shieldPlus:'<path class="y1" d="M12 3.4 18.4 5.6v5c0 4.3-2.75 7.45-6.4 8.65C8.35 18.05 5.6 14.9 5.6 10.6v-5Z"/><path class="cut" d="M11 8.4h2v2.5h2.5v2H13v2.5h-2v-2.5H8.5v-2H11Z"/>',
+    shieldCheck:'<path class="y1" d="M12 3.4 18.4 5.6v5c0 4.3-2.75 7.45-6.4 8.65C8.35 18.05 5.6 14.9 5.6 10.6v-5Z"/><path class="cut" d="m10.7 14.7-2.5-2.5 1.35-1.35 1.15 1.15 3.55-3.6 1.35 1.35Z"/>',
+    flame:'<path class="y1" d="M12 3c.5 2.8 2.4 3.9 3.6 5.6 1.05 1.45 1.65 2.9 1.65 4.45a5.25 5.25 0 0 1-10.5 0c0-1.35.45-2.45 1.15-3.3.35 1.4 1.25 2 2.05 2.1C8.75 9.7 10.1 5.9 12 3Z"/><path class="y2" d="M12 19.7a2.85 2.85 0 0 0 2.85-2.85c0-1.65-1.45-2.6-2.85-4.2-1.4 1.6-2.85 2.55-2.85 4.2A2.85 2.85 0 0 0 12 19.7Z"/>',
+    library:'<path class="y1" d="M8.8 4.6h4.4l4 4v9.4a1.6 1.6 0 0 1-1.6 1.6H8.8a1.6 1.6 0 0 1-1.6-1.6V6.2A1.6 1.6 0 0 1 8.8 4.6Z"/><path class="y2" d="M13.2 4.6 17.2 8.6h-2.6a1.4 1.4 0 0 1-1.4-1.4Z"/><rect class="cut" x="9.3" y="10.8" width="5.6" height="1.5" rx=".75"/><rect class="cut" x="9.3" y="13.4" width="4" height="1.5" rx=".75"/><circle class="y3" cx="15" cy="15.6" r="3.1"/><path class="cut" d="m13.7 15.65.95.95 1.75-1.95-.85-.78-.95 1.06-.32-.32Z"/>',
+    atom:'<g class="orbit"><ellipse class="ln" cx="12" cy="12" rx="9.3" ry="3.5" transform="rotate(-28 12 12)"/><ellipse class="ln" cx="12" cy="12" rx="9.3" ry="3.5" transform="rotate(28 12 12)"/><circle class="y3" cx="20.6" cy="9.6" r="1.4"/></g><circle class="y1" cx="12" cy="12" r="3"/><path class="y2" d="M19.4 3.7l.62 1.5 1.5.62-1.5.62-.62 1.5-.62-1.5-1.5-.62 1.5-.62Z"/><path class="y2" d="M4.5 16.5l.48 1.12 1.12.48-1.12.48-.48 1.12-.48-1.12-1.12-.48 1.12-.48Z"/>'
+  };
+
+  var LABELS=[];
+
+  function makeNode(o){
+    var g=el('g',{'class':'node '+(o.cls||''),'transform':'translate('+o.x+','+o.y+')'});
+    var core=el('g',{'class':'node-core'});
+    var isHub=o.cls&&o.cls.indexOf('hub')>-1;
+    if(o.cls&&o.cls.indexOf('sat')>-1) core.appendChild(el('circle',{'class':'ring','r':o.r+5}));
+    core.appendChild(el('circle',{'class':'ncircle','r':o.r,'stroke-width':1.2}));
+    var iconY=0;
+    var scale=o.iconScale || (o.r/16);
+    var ig=el('g',{'class':'nicon','data-s':scale,'data-iy':iconY,'transform':'translate('+D(-12*scale)+','+D(iconY-12*scale)+') scale('+scale+')'});
+    ig.innerHTML=IC[o.icon]||'';
+    core.appendChild(ig);
+    g.appendChild(core);
+    if(o.label){
+      g.setAttribute('data-name', o.label.replace(/\n/g,' '));
+      o._isHub=isHub;
+      g._lblopts=o;   /* stash; the HTML label is built once all nodes exist */
+    }
+    return g;
+  }
+
+  /* ---------- background blobs + speckles ---------- */
+  var bg=el('g');
+  function blob(cx,cy,r){bg.appendChild(el('ellipse',{'class':'blob','cx':cx,'cy':cy,'rx':r,'ry':r*0.96}));}
+  blob(250,212,128); blob(247,506,128);
+  function speckle(cx,cy,rmax,n){
+    for(var i=0;i<n;i++){
+      var a=Math.random()*Math.PI*2,rr=Math.sqrt(Math.random())*rmax;
+      bg.appendChild(el('circle',{'class':'speck','cx':D(cx+Math.cos(a)*rr),'cy':D(cy+Math.sin(a)*rr),'r':(Math.random()*1.3+0.5).toFixed(2),'opacity':(Math.random()*0.5+0.25).toFixed(2)}));
+    }
+  }
+  speckle(250,212,124,46); speckle(247,506,124,46);
+  function bspark(cx,cy){bg.appendChild(el('path',{'class':'bspark','d':'M'+cx+' '+(cy-3)+'l.5 2.5 2.5.5-2.5.5-.5 2.5-.5-2.5-2.5-.5 2.5-.5Z','opacity':'.5'}));}
+  [[150,150],[360,250],[160,560],[330,470]].forEach(function(p){bspark(p[0],p[1]);});
+  svg.appendChild(bg);
+
+  /* ---------- dotted orbit rings behind the two left hubs ---------- */
+  var orbits=el('g');
+  orbits.appendChild(el('circle',{'class':'hub-orbit','cx':250,'cy':212,'r':70}));
+  orbits.appendChild(el('circle',{'class':'hub-orbit','cx':247,'cy':506,'r':70}));
+  svg.appendChild(orbits);
+
+  /* ---------- left converging flow (connected to Law Library) ---------- */
+  var LL={x:590,y:354,r:58};
+  var flow=el('g');
+  function flowSeg(d){flow.appendChild(el('path',{'class':'flow','d':d}));flow.appendChild(el('path',{'class':'flow-dash','d':d}));}
+  flowSeg('M250 212 C 340 272, 318 334, 390 353');
+  flowSeg('M247 506 C 340 446, 318 374, 390 353');
+  flowSeg('M388 353 H '+(LL.x-LL.r-32));            // straight run into the circle
+  flow.appendChild(el('path',{'class':'ahead','d':'M'+(LL.x-LL.r-38)+' 330 L '+(LL.x-LL.r)+' 353 L '+(LL.x-LL.r-38)+' 376 Z'}));
+  svg.appendChild(flow);
+
+  /* ---------- left clusters ---------- */
+  svg.appendChild(makeNode({x:250,y:212,r:52,icon:'atom',label:'Universe\nof Laws',cls:'hub',iconScale:3.55,
+    tip:'Every law, everywhere — the full regulatory cosmos Regology tracks.'}));
+  [
+    {x:250,y:96, icon:'bell',     label:'Law Updates',  tip:'Real-time alerts the moment a law changes.'},
+    {x:138,y:168,icon:'book',     label:'Definitions',  tip:'The plain-language meaning behind the legalese.'},
+    {x:353,y:168,icon:'clipboard',label:'Requirements', tip:'The specific obligations each law places on you.'},
+    {x:164,y:290,icon:'gavel',    label:'Penalties',    tip:'What non-compliance actually costs you.'}
+  ].forEach(function(s){s.r=37;s.cls='sat';svg.appendChild(makeNode(s));});
+
+  svg.appendChild(makeNode({x:247,y:506,r:52,icon:'biz',label:'Business',cls:'hub',iconScale:3.5,
+    tip:'Your organisation, modelled — so laws can map onto how you actually operate.'}));
+  [
+    {x:163,y:416,icon:'boxes', label:'Products',  tip:'What you sell — and the rules that follow it.'},
+    {x:138,y:540,icon:'tree',  label:'Entities',  tip:'Your legal entities and how they are structured.'},
+    {x:353,y:535,icon:'people',label:'Roles',     tip:'Who is accountable for each obligation.'},
+    {x:247,y:612,icon:'gears', label:'Functions', tip:'The business functions each rule touches.'}
+  ].forEach(function(s){s.r=37;s.cls='sat';svg.appendChild(makeNode(s));});
+
+  /* ---------- Law Library ---------- */
+  svg.appendChild(el('circle',{'class':'ll-ring','cx':LL.x,'cy':LL.y,'r':LL.r+13}));
+  svg.appendChild(makeNode({x:LL.x,y:LL.y,r:LL.r,icon:'library',label:'Law Library',cls:'hub',iconScale:4.35,
+    tip:'The slice of the universe that actually applies to your business.'}));
+
+  /* ---------- Law Library -> Manage Risks (connected) ---------- */
+  var MR={x:820,y:355,r:38};
+  var rflow=el('g');
+  function rSeg(d){rflow.appendChild(el('path',{'class':'flow','d':d}));rflow.appendChild(el('path',{'class':'flow-dash','d':d}));}
+  rSeg('M'+(LL.x+LL.r+2)+' 354 H '+(MR.x-MR.r-42));
+  rflow.appendChild(el('path',{'class':'ahead','d':'M'+(MR.x-MR.r-48)+' 331 L '+(MR.x-MR.r-12)+' 354 L '+(MR.x-MR.r-48)+' 377 Z'}));
+  svg.appendChild(rflow);
+
+  /* ---------- Regulatory Compliance cycle ---------- */
+  var C={x:997,y:355}, RN=177;
+  function pol(a,r){a=a*Math.PI/180;return [C.x+Math.cos(a)*r, C.y+Math.sin(a)*r];}
+  function arcD(r,a0,a1){var p0=pol(a0,r),p1=pol(a1,r);var lg=Math.abs(a1-a0)>180?1:0;var sw=a1>a0?1:0;
+    return 'M'+D(p0[0])+' '+D(p0[1])+' A'+r+' '+r+' 0 '+lg+' '+sw+' '+D(p1[0])+' '+D(p1[1]);}
+
+  var cyc=el('g');
+  cyc.appendChild(el('circle',{'class':'cyc-inner','cx':C.x,'cy':C.y,'r':112}));
+  cyc.appendChild(el('circle',{'class':'cyc-inner2','cx':C.x,'cy':C.y,'r':104}));
+  var ticks=el('g'), N=132;
+  for(var i=0;i<N;i++){
+    var a=i/N*Math.PI*2, r1=118, r2=148+(i%2?2.5:0);
+    ticks.appendChild(el('line',{'class':'tick','x1':D(C.x+Math.cos(a)*r1),'y1':D(C.y+Math.sin(a)*r1),'x2':D(C.x+Math.cos(a)*r2),'y2':D(C.y+Math.sin(a)*r2)}));
+  }
+  cyc.appendChild(ticks);
+  svg.appendChild(cyc);
+
+  var ang=[180,254,326,395,468];
+  var arrs=el('g');
+  for(i=0;i<5;i++){
+    var a0=ang[i]+15, a1=(i===4?540:ang[(i+1)%5])-25;
+    arrs.appendChild(el('path',{'class':'arrowarc','d':arcD(161,a0,a1)}));
+    var hp=pol(a1,161);
+    arrs.appendChild(el('path',{'class':'ahead','d':'M-15 -17 L19 0 L-15 17 Z','transform':'translate('+D(hp[0])+','+D(hp[1])+') rotate('+(a1+90)+')'}));
+  }
+  svg.appendChild(arrs);
+  var darc=el('g');
+  for(i=0;i<5;i++){
+    var b0=ang[i]+19, b1=(i===4?540:ang[(i+1)%5])-19;
+    darc.appendChild(el('path',{'class':'arc-dash','d':arcD(224,b0,b1)}));
+    var dp=pol(b1,224);
+    darc.appendChild(el('path',{'class':'ahead','d':'M-4 -3.4 L4.5 0 L-4 3.4 Z','opacity':'.7','transform':'translate('+D(dp[0])+','+D(dp[1])+') rotate('+(b1+90)+')'}));
+  }
+  svg.appendChild(darc);
+
+  var t1=el('text',{'class':'center-label','x':C.x,'y':C.y-9,'text-anchor':'middle','font-size':23});t1.textContent='Regulatory';
+  var t2=el('text',{'class':'center-label','x':C.x,'y':C.y+19,'text-anchor':'middle','font-size':23});t2.textContent='Compliance';
+  svg.appendChild(t1);svg.appendChild(t2);
+
+  var steps=[
+    {icon:'flame',      label:'Manage Risks',                  tip:'Spot, score and prioritise what could go wrong.'},
+    {icon:'shieldPlus', label:'Manage Controls',  dir:'above', tip:'Put safeguards in place that keep each risk in check.'},
+    {icon:'biz',        label:'Map to Business',               tip:'Tie every control back to the operations it protects.',iconScale:2.3},
+    {icon:'scrollGear', label:'Link to Policies\n& Procedures',tip:'Connect the rules to how the work actually gets done.'},
+    {icon:'shieldCheck',label:'Review Control\nDesign',        tip:'Test that each control is designed to actually work.'}
+  ];
+  var stepEls=[];
+  steps.forEach(function(s,i){
+    var p=pol(ang[i],RN); s.x=Math.round(p[0]); s.y=Math.round(p[1]); s.r=38; s.cls='sat step';
+    var n=makeNode(s); svg.appendChild(n); stepEls.push(n);
+  });
+
+  /* ---------- raise the hub group-headers above their dense clusters ---------- */
+  svg.querySelectorAll('.node.hub').forEach(function(n){ svg.appendChild(n); });
+
+  /* ---------- true-center every icon on its bounding box ---------- */
+  function centerIcons(){
+    svg.querySelectorAll('.nicon').forEach(function(ig){
+      var s=parseFloat(ig.getAttribute('data-s')), iy=parseFloat(ig.getAttribute('data-iy'))||0;
+      var bb; try{bb=ig.getBBox();}catch(e){return;}
+      var cx=bb.x+bb.width/2, cy=bb.y+bb.height/2;
+      var node=ig.closest('.node'), nm=node?node.getAttribute('data-name'):'';
+      var off=17; /* default: was +20, now 3px left */
+      var yoff=10; /* global: all icons 10px down */
+      if(nm==='Universe of Laws'||nm==='Business'){ off=28; yoff=23; } /* +8px right, +13px down */
+      else if(nm==='Law Library'){ off=46; yoff=32; }    /* +11px right, +12px down */
+      else if(nm==='Penalties'){ off=9; yoff=7; }        /* 8px left, 3px up */
+      ig.setAttribute('transform','translate('+D(-cx*s+off)+','+D(iy-cy*s+yoff)+') scale('+s+')');
+    });
+  }
+  centerIcons();
+
+  /* ---------- build the HTML label overlay (no foreignObject) ---------- */
+  var overlay=document.getElementById('overlay');
+  var L_INSET=16;
+  svg.querySelectorAll('.node').forEach(function(g){
+    var o=g._lblopts; if(!o) return;
+    var dir=o.dir||'below';
+    var box=document.createElement('div');
+    box.className='lblbox '+dir;
+    box.style.left=o.x+'px';
+    box.style.top=(dir==='above' ? (o.y-o.r+L_INSET) : (o.y+o.r-L_INSET))+'px';
+    var pill=document.createElement('div'); pill.className='lbl'+(o._isHub?' hub':'');
+    var nm=document.createElement('div'); nm.className='lbl-name'; nm.innerHTML=o.label.replace(/\n/g,'<br>');
+    pill.appendChild(nm);
+    if(o.tip){ var ds=document.createElement('div'); ds.className='lbl-desc'; ds.textContent=o.tip; pill.appendChild(ds); }
+    box.appendChild(pill); overlay.appendChild(box);
+    var t;
+    function open(){ clearTimeout(t); box.classList.add('open'); svg.appendChild(g); }
+    function close(){ t=setTimeout(function(){ box.classList.remove('open'); },90); }
+    g.addEventListener('mouseenter',open); g.addEventListener('mouseleave',close);
+    box.addEventListener('mouseenter',open); box.addEventListener('mouseleave',close);
+  });
+
+  /* ---------- raise hovered node above its neighbours ---------- */
+  svg.querySelectorAll('.node').forEach(function(n){
+    n.addEventListener('mouseenter',function(){ svg.appendChild(n); });
+  });
+
+  /* ---------- auto-cycle highlight ---------- */
+  var idx=0,timer=null;
+  function light(i){stepEls.forEach(function(s,j){s.classList.toggle('active',j===i);});}
+  function tick2(){idx=(idx+1)%stepEls.length;light(idx);}
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function start(){if(timer)return;timer=setInterval(tick2,1800);}
+  function stop(){clearInterval(timer);timer=null;}
+  stepEls.forEach(function(s,i){
+    s.addEventListener('click',function(){stop();idx=i;light(i);clearTimeout(s._t);s._t=setTimeout(function(){if(!reduce)start();},4500);});
+  });
+  light(0); if(!reduce) start();
+
+  /* ---------- fit ---------- */
+  function fit(){
+    var c=document.getElementById('canvas');
+    var s=Math.min(window.innerWidth/1274, window.innerHeight/712);
+    c.style.transform='scale('+s+')';
+  }
+  window.addEventListener('resize',fit); fit();
+})();
+</script>
+
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="20" fill="#5b2a9e"/><circle cx="32" cy="40" r="13" fill="#fff"/><circle cx="32" cy="40" r="4" fill="#f6c350"/><circle cx="70" cy="58" r="17" fill="#fff"/><path d="M62 58l5 5 9-10" stroke="#f6c350" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</template>
+</body>
+</html>
