@@ -45,44 +45,44 @@
     <div class="sec-num"><span class="ln"></span> 01 · Selected work · 2019–now</div>
 
     <div class="work-list">
-      <article class="work-item">
+      <article class="work-item" data-href="projects/HealthConnect/index.html">
         <div class="wi-text">
           <span class="idx">01</span>
           <h3>Health Connect</h3>
           <p>A large-scale healthcare platform supporting provincial programs across Canada, from vaccine management to cancer screening and patient scheduling.</p>
           <div class="tagline-meta">Healthcare platform · Product design</div>
         </div>
-        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-health" shape="rect" src="assets/HealthConnect_Cover.png" placeholder="Health Connect, drop cover"></image-slot></a>
+        <a class="wi-media" href="projects/HealthConnect/index.html" target="_blank" rel="noopener"><image-slot id="w-health" shape="rect" src="assets/HealthConnect_Cover.png" placeholder="Health Connect, drop cover"></image-slot></a>
       </article>
 
-      <article class="work-item rev">
+      <article class="work-item rev" data-href="projects/LifeLabsMyCareCompass/MyCareCompass.html">
         <div class="wi-text">
           <span class="idx">02</span>
           <h3>LifeLabs My-Care Compass</h3>
           <p>Designed the platform to take ownership of and view your health records through the LifeLabs digital experience.</p>
           <div class="tagline-meta">Health records · End-to-end</div>
         </div>
-        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-lifelabs" shape="rect" src="assets/Lifelabs_Cover.png" placeholder="LifeLabs, drop cover"></image-slot></a>
+        <a class="wi-media" href="projects/LifeLabsMyCareCompass/MyCareCompass.html" target="_blank" rel="noopener"><image-slot id="w-lifelabs" shape="rect" src="assets/Lifelabs_Cover.png" placeholder="LifeLabs, drop cover"></image-slot></a>
       </article>
 
-      <article class="work-item">
+      <article class="work-item" data-href="projects/OCADU%20Library/OCAD%20U%20Library%20Redesign.html">
         <div class="wi-text">
           <span class="idx">03</span>
           <h3>OCADU Library</h3>
           <p>Redesigned OCAD University's online library to improve accessibility, navigation, and discoverability for students and researchers.</p>
           <div class="tagline-meta">Library · Accessibility</div>
         </div>
-        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-ocadu" shape="rect" src="assets/ocadu-cover.png" placeholder="OCADU Library, drop cover"></image-slot></a>
+        <a class="wi-media" href="projects/OCADU%20Library/OCAD%20U%20Library%20Redesign.html" target="_blank" rel="noopener"><image-slot id="w-ocadu" shape="rect" src="assets/ocadu-cover.png" placeholder="OCADU Library, drop cover"></image-slot></a>
       </article>
 
-      <article class="work-item rev">
+      <article class="work-item rev" data-href="projects/Regology/Regology/Regology.html">
         <div class="wi-text">
           <span class="idx">04</span>
           <h3>Regology</h3>
           <p>Worked on regulatory compliance software for global financial systems, designing tools that simplify complex policy and reporting workflows.</p>
           <div class="tagline-meta">Reg-tech · Finance</div>
         </div>
-        <a class="wi-media" href="#" target="_blank" rel="noopener"><image-slot id="w-regology" shape="rect" src="assets/regology-cover.png" placeholder="Regology, drop cover"></image-slot></a>
+        <a class="wi-media" href="projects/Regology/Regology/Regology.html" target="_blank" rel="noopener"><image-slot id="w-regology" shape="rect" src="assets/regology-cover.png" placeholder="Regology, drop cover"></image-slot></a>
       </article>
     </div>
   </section>
@@ -97,7 +97,7 @@
     <div class="sec-num"><span class="ln"></span> 02 · Side quests · experiments</div>
 
     <div class="play-scatter">
-      <article class="pfloat f1" data-speed="0.05" data-rot="0" data-tilt="0" style="--ar:4/5"><div class="pf-inner">
+      <article class="pfloat f1" data-speed="0.05" data-rot="0" data-tilt="0" style="--ar:4/5" data-href="projects/Bastu/index.html"><div class="pf-inner">
         <div class="pf-media"><img src="assets/bastu-cover.png" alt="Bastu" style="width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1);transition:filter .6s cubic-bezier(.2,.7,.2,1);" class="bastu-img" /></div>
         <div class="pf-cap">
           <span class="k">Augmented reality</span><h3>Bastu</h3>
@@ -105,7 +105,7 @@
         </div>
       </div></article>
 
-      <article class="pfloat f2" data-speed="0.13" data-rot="3" data-tilt="-15" style="--ar:4/5"><div class="pf-inner">
+      <article class="pfloat f2" data-speed="0.13" data-rot="3" data-tilt="-15" style="--ar:4/5" data-href="projects/VirusVsVaccines/index.html"><div class="pf-inner">
         <div class="pf-media"><img src="assets/virus-vs-vaccines-cover.png" alt="Virus vs Vaccines" style="width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1);transition:filter .6s cubic-bezier(.2,.7,.2,1);" class="virus-img" /></div>
         <div class="pf-cap">
           <span class="k">Multiplayer game</span><h3>Virus vs Vaccines</h3>
@@ -389,6 +389,16 @@
         link.addEventListener('mouseenter', function(){ youName.dataset.orig = youName.textContent; youName.textContent = 'Book a time ↗'; });
         link.addEventListener('mouseleave', function(){ if(youName.dataset.orig) youName.textContent = youName.dataset.orig; });
       }
+
+      // Make project cards (work items + play floats) open their project page on click.
+      document.querySelectorAll('[data-href]').forEach(function(card){
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function(e){
+          // Let real links inside the card behave normally.
+          if(e.target.closest('a')) return;
+          window.open(card.getAttribute('data-href'), '_blank', 'noopener');
+        });
+      });
     })();
   </script>
 </body>
