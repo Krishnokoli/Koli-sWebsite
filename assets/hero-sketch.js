@@ -37,10 +37,12 @@ function onOrient(e) {
   motionOn   = true;
   lastOrient = millis();
   // gamma = left/right tilt (roll), beta = front/back tilt (pitch).
-  const g = constrain(e.gamma || 0, -30, 30);  // comfortable roll range
-  const b = constrain(e.beta  || 45, 15, 75);  // ~45 when held upright
-  targetX = map(g, -30, 30, 0, SK_W);
-  targetY = map(b, 15, 75, 0, SK_H);
+  // Narrow input ranges = high sensitivity: a small tilt sweeps the eyes
+  // across the whole artwork.
+  const g = constrain(e.gamma || 0, -14, 14);  // ~14° roll reaches the edge
+  const b = constrain(e.beta  || 45, 32, 58);  // ~45 held upright = centre
+  targetX = map(g, -14, 14, 0, SK_W);
+  targetY = map(b, 32, 58, 0, SK_H);
 }
 
 // iOS 13+ requires a user gesture to request motion permission; other
@@ -94,9 +96,9 @@ function updateGaze() {
     targetX = SK_W * (0.5 + 0.30 * Math.sin(ambientT));
     targetY = SK_H * (0.5 + 0.24 * Math.sin(ambientT * 1.6 + 1.1));
   }
-  // Ease toward the target for natural movement.
-  gazeX += (targetX - gazeX) * 0.12;
-  gazeY += (targetY - gazeY) * 0.12;
+  // Ease toward the target — snappy so the eyes react quickly to tilt.
+  gazeX += (targetX - gazeX) * 0.28;
+  gazeY += (targetY - gazeY) * 0.28;
 }
 
 function draw() {
