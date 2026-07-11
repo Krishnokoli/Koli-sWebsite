@@ -97,8 +97,8 @@ function updateGaze() {
     targetY = SK_H * (0.5 + 0.24 * Math.sin(ambientT * 1.6 + 1.1));
   }
   // Ease toward the target — near-instant so the eyes react immediately to tilt.
-  gazeX += (targetX - gazeX) * 0.84;
-  gazeY += (targetY - gazeY) * 0.84;
+  gazeX += (targetX - gazeX) * 0.95;
+  gazeY += (targetY - gazeY) * 0.95;
 }
 
 function draw() {
@@ -120,9 +120,12 @@ function draw() {
   noStroke();
   fill(0);
 
-  const e = (x1, x2, y1, y2, d) => {
-    ellipse(map(gazeX, 0, SK_W, x1, x2, true), map(gazeY, 0, SK_H, y1, y2, true), d);
-  };
+  // Exaggerate pupil travel around each eye's centre so the movement reads
+  // clearly (especially on the big eyes). Higher AMP = more dramatic.
+  const AMP = 2.2;
+  const gx = (a, b) => { const m = (a + b) / 2, h = (b - a) / 2 * AMP; return map(gazeX, 0, SK_W, m - h, m + h, true); };
+  const gy = (a, b) => { const m = (a + b) / 2, h = (b - a) / 2 * AMP; return map(gazeY, 0, SK_H, m - h, m + h, true); };
+  const e = (x1, x2, y1, y2, d) => { ellipse(gx(x1, x2), gy(y1, y2), d); };
 
   // COLUMN 1
   e(200, 223, 100, 110, 34);
@@ -136,46 +139,46 @@ function draw() {
 
   // COLUMN 2
   e(340, 347, 72,  75,  25);
-  ellipse(map(gazeX,0,SK_W,364,384,true), map(gazeY,0,SK_H,425,445,true), 34);
-  ellipse(map(gazeX,0,SK_W,500,520,true), map(gazeY,0,SK_H,435,445,true), 25);
+  ellipse(gx(364,384), gy(425,445), 34);
+  ellipse(gx(500,520), gy(435,445), 25);
   e(500, 520, 55,  62,  29);
   e(660, 677, 50,  65,  17);
-  ellipse(map(gazeX,0,SK_W,510,540,true), map(gazeY,0,SK_H,149,153,true), 24);
-  ellipse(map(gazeX,0,SK_W,650,680,true), map(gazeY,0,SK_H,149,153,true), 24);
-  ellipse(map(gazeX,0,SK_W,495,510,true), map(gazeY,0,SK_H,287,291,true), 17);
-  ellipse(map(gazeX,0,SK_W,570,595,true), map(gazeY,0,SK_H,287,291,true), 17);
+  ellipse(gx(510,540), gy(149,153), 24);
+  ellipse(gx(650,680), gy(149,153), 24);
+  ellipse(gx(495,510), gy(287,291), 17);
+  ellipse(gx(570,595), gy(287,291), 17);
   e(670, 690, 282, 292, 34);
   e(640, 670, 409, 417, 24);
-  ellipse(map(gazeX,0,SK_W,610,626,true), map(gazeY,0,SK_H,515,520,true), 17);
-  ellipse(map(gazeX,0,SK_W,685,704,true), map(gazeY,0,SK_H,515,520,true), 17);
-  ellipse(map(gazeX,0,SK_W,339,358,true), map(gazeY,0,SK_H,605,613,true), 17);
-  ellipse(map(gazeX,0,SK_W,420,435,true), map(gazeY,0,SK_H,610,620,true), 17);
+  ellipse(gx(610,626), gy(515,520), 17);
+  ellipse(gx(685,704), gy(515,520), 17);
+  ellipse(gx(339,358), gy(605,613), 17);
+  ellipse(gx(420,435), gy(610,620), 17);
   e(510, 515, 614, 625, 27);
   e(640, 670, 604, 608, 27);
-  ellipse(map(gazeX,0,SK_W,503,513,true), map(gazeY,0,SK_H,724,733,true), 17);
-  ellipse(map(gazeX,0,SK_W,568,580,true), map(gazeY,0,SK_H,724,733,true), 17);
+  ellipse(gx(503,513), gy(724,733), 17);
+  ellipse(gx(568,580), gy(724,733), 17);
   e(680, 690, 718, 730, 34);
 
   // COLUMN 3
-  ellipse(map(gazeX,0,SK_W,760,772,true),  map(gazeY,0,SK_H,52,60,true),   10);
-  ellipse(map(gazeX,0,SK_W,830,870,true),  map(gazeY,0,SK_H,45,57,true),   17);
+  ellipse(gx(760,772),  gy(52,60),   10);
+  ellipse(gx(830,870),  gy(45,57),   17);
   e(940,  955,  44,  50,  24);
   e(960,  985,  200, 220, 34);
   e(785,  835,  445, 465, 27);
   e(972,  988,  582, 599, 17);
   e(800,  830,  612, 625, 24);
-  ellipse(map(gazeX,0,SK_W,788,830,true),  map(gazeY,0,SK_H,714,725,true), 17);
-  ellipse(map(gazeX,0,SK_W,930,970,true),  map(gazeY,0,SK_H,714,725,true), 17);
-  ellipse(map(gazeX,0,SK_W,1090,1110,true),map(gazeY,0,SK_H,56,66,true),   17);
-  ellipse(map(gazeX,0,SK_W,1170,1190,true),map(gazeY,0,SK_H,56,66,true),   17);
+  ellipse(gx(788,830),  gy(714,725), 17);
+  ellipse(gx(930,970),  gy(714,725), 17);
+  ellipse(gx(1090,1110),gy(56,66),   17);
+  ellipse(gx(1170,1190),gy(56,66),   17);
   e(1145, 1180, 168, 172, 24);
   e(1193, 1223, 285, 295, 24);
   e(1126, 1152, 479, 503, 34);
   e(1305, 1319, 80,  85,  17);
   e(1318, 1329, 302, 313, 24);
   e(1286, 1322, 425, 448, 17);
-  ellipse(map(gazeX,0,SK_W,1238,1251,true),map(gazeY,0,SK_H,617,624,true), 17);
-  ellipse(map(gazeX,0,SK_W,1312,1327,true),map(gazeY,0,SK_H,617,624,true), 17);
+  ellipse(gx(1238,1251),gy(617,624), 17);
+  ellipse(gx(1312,1327),gy(617,624), 17);
   e(1235, 1250, 706, 720, 17);
   e(1318, 1328, 720, 726, 24);
 }
