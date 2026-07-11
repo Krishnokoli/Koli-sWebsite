@@ -122,7 +122,7 @@ function draw() {
 
   // Exaggerate pupil travel around each eye's centre so the movement reads
   // clearly (especially on the big eyes). Higher AMP = more dramatic.
-  const AMP = 2.2;
+  const AMP = 22;
   const gx = (a, b) => { const m = (a + b) / 2, h = (b - a) / 2 * AMP; return map(gazeX, 0, SK_W, m - h, m + h, true); };
   const gy = (a, b) => { const m = (a + b) / 2, h = (b - a) / 2 * AMP; return map(gazeY, 0, SK_H, m - h, m + h, true); };
   const e = (x1, x2, y1, y2, d) => { ellipse(gx(x1, x2), gy(y1, y2), d); };
