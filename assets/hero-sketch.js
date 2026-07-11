@@ -22,7 +22,9 @@ let motionOn    = false;   // deviceorientation is delivering data
 let motionAsked = false;   // permission/listener already requested
 let lastOrient  = 0;       // millis() of last orientation event
 let touching    = false;   // finger currently down
-let ambientT    = 0;       // phase for the idle wander
+let baseGamma = null, baseBeta = null; // neutral tilt captured on first reading
+const RANGE    = 16;       // degrees of tilt from neutral to reach the eye edge
+const DEADZONE = 2.5;      // degrees; below this the phone counts as "still"
 
 // p5 preload runs after the DOM is ready, so the <img> tags exist.
 function preload() {
@@ -36,13 +38,19 @@ function onOrient(e) {
   if (e == null || (e.gamma == null && e.beta == null)) return;
   motionOn   = true;
   lastOrient = millis();
-  // gamma = left/right tilt (roll), beta = front/back tilt (pitch).
-  // Narrow input ranges = high sensitivity: a small tilt sweeps the eyes
-  // across the whole artwork.
-  const g = constrain(e.gamma || 0, -14, 14);  // ~14° roll reaches the edge
-  const b = constrain(e.beta  || 45, 32, 58);  // ~45 held upright = centre
-  targetX = map(g, -14, 14, 0, SK_W);
-  targetY = map(b, 32, 58, 0, SK_H);
+  const g = e.gamma || 0;   // left/right tilt (roll)
+  const b = e.beta  || 0;   // front/back tilt (pitch)
+  // Calibrate to however the phone is being held on the first reading, so
+  // "not tilted" always means eyes centred regardless of the resting angle.
+  if (baseGamma === null) { baseGamma = g; baseBeta = b; }
+  let dg = g - baseGamma;
+  let db = b - baseBeta;
+  // Deadzone: ignore tiny sensor noise so the eyes are still when the phone is.
+  if (Math.abs(dg) < DEADZONE) dg = 0;
+  if (Math.abs(db) < DEADZONE) db = 0;
+  // Map tilt-from-neutral onto the artwork; ~RANGE° reaches the eye edge.
+  targetX = map(constrain(dg, -RANGE, RANGE), -RANGE, RANGE, 0, SK_W);
+  targetY = map(constrain(db, -RANGE, RANGE), -RANGE, RANGE, 0, SK_H);
 }
 
 // iOS 13+ requires a user gesture to request motion permission; other
@@ -72,7 +80,10 @@ function setup() {
   gazeX = targetX = SK_W / 2;
   gazeY = targetY = SK_H / 2;
 
-  cnv.elt.addEventListener("pointerdown",  () => { targetColour = 1; touching = true; enableMotion(); });
+  // Listen on the window, not the canvas: the .hero-scrim / .hero-name overlays
+  // sit on top of the canvas and would otherwise swallow the tap that both
+  // reveals the colour AND requests iOS motion permission.
+  window.addEventListener("pointerdown",   () => { targetColour = 1; touching = true; enableMotion(); });
   window.addEventListener("pointerup",     () => { targetColour = 0; touching = false; });
   window.addEventListener("pointercancel", () => { targetColour = 0; touching = false; });
 }
@@ -85,20 +96,15 @@ function updateGaze() {
     return;
   }
   const now = millis();
-  if (motionOn && now - lastOrient < 2000) {
-    // targetX / targetY already set by onOrient() from device tilt.
-  } else if (touching) {
-    targetX = mouseX;
-    targetY = mouseY;
-  } else {
-    // Ambient wander — eyes stay alive with no input / no motion permission.
-    ambientT += 0.012;
-    targetX = SK_W * (0.5 + 0.30 * Math.sin(ambientT));
-    targetY = SK_H * (0.5 + 0.24 * Math.sin(ambientT * 1.6 + 1.1));
+  if (!(motionOn && now - lastOrient < 2000)) {
+    // No tilt data → rest at centre. The eyes only move when the phone tilts;
+    // they hold still when it's still (no ambient wandering).
+    targetX = SK_W / 2;
+    targetY = SK_H / 2;
   }
-  // Ease toward the target — near-instant so the eyes react immediately to tilt.
-  gazeX += (targetX - gazeX) * 0.95;
-  gazeY += (targetY - gazeY) * 0.95;
+  // Ease toward the target so the movement is smooth but responsive.
+  gazeX += (targetX - gazeX) * 0.85;
+  gazeY += (targetY - gazeY) * 0.85;
 }
 
 function draw() {
@@ -120,9 +126,9 @@ function draw() {
   noStroke();
   fill(0);
 
-  // Exaggerate pupil travel around each eye's centre so the movement reads
-  // clearly (especially on the big eyes). Higher AMP = more dramatic.
-  const AMP = 22;
+  // Pupil travel amplification. 1 = the artwork's calibrated range, which keeps
+  // every pupil inside its eye. Raise cautiously — too high and they escape.
+  const AMP = 1;
   const gx = (a, b) => { const m = (a + b) / 2, h = (b - a) / 2 * AMP; return map(gazeX, 0, SK_W, m - h, m + h, true); };
   const gy = (a, b) => { const m = (a + b) / 2, h = (b - a) / 2 * AMP; return map(gazeY, 0, SK_H, m - h, m + h, true); };
   const e = (x1, x2, y1, y2, d) => { ellipse(gx(x1, x2), gy(y1, y2), d); };
