@@ -11,11 +11,10 @@
 (function () {
   // SHA-256 of the password. Change the password by replacing this hash.
   var EXPECTED = 'a28e87a7bd75ee135d94a36c5eb490cd8cb563b9b22b68e6a38555b914e7abf1';
-  var KEY = 'koli-project-gate'; // shared: unlocking one private project unlocks the others this session
   var HOME = '../../index.html';  // back-to-site target (both gated projects live at projects/<name>/)
 
-  // Already unlocked this session? Then do nothing.
-  try { if (sessionStorage.getItem(KEY) === '1') return; } catch (e) {}
+  // No session persistence: the gate is shown on every visit to a private
+  // project, so landing on Health Connect or LifeLabs always prompts.
 
   var head = document.head || document.documentElement;
 
@@ -156,7 +155,6 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (sha256(input.value) === EXPECTED) {
-      try { sessionStorage.setItem(KEY, '1'); } catch (ex) {}
       document.documentElement.classList.remove('koli-gated'); // remove the blur → page becomes visible
       if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
       if (style.parentNode) style.parentNode.removeChild(style);
