@@ -96,9 +96,9 @@ function updateGaze() {
     targetX = SK_W * (0.5 + 0.30 * Math.sin(ambientT));
     targetY = SK_H * (0.5 + 0.24 * Math.sin(ambientT * 1.6 + 1.1));
   }
-  // Ease toward the target — snappy so the eyes react quickly to tilt.
-  gazeX += (targetX - gazeX) * 0.28;
-  gazeY += (targetY - gazeY) * 0.28;
+  // Ease toward the target — near-instant so the eyes react immediately to tilt.
+  gazeX += (targetX - gazeX) * 0.84;
+  gazeY += (targetY - gazeY) * 0.84;
 }
 
 function draw() {
