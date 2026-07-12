@@ -25,6 +25,9 @@ let touching    = false;   // finger currently down
 let baseGamma = null, baseBeta = null; // neutral tilt captured on first reading
 const RANGE    = 16;       // degrees of tilt from neutral to reach the eye edge
 const DEADZONE = 2.5;      // degrees; below this the phone counts as "still"
+let permState = "idle";    // motion-permission state (debug)
+let lastG = 0, lastB = 0;  // last raw tilt reading (debug)
+let dbg = null;            // debug HUD element (enabled with #debug)
 
 // p5 preload runs after the DOM is ready, so the <img> tags exist.
 function preload() {
@@ -40,6 +43,7 @@ function onOrient(e) {
   lastOrient = millis();
   const g = e.gamma || 0;   // left/right tilt (roll)
   const b = e.beta  || 0;   // front/back tilt (pitch)
+  lastG = g; lastB = b;
   // Calibrate to however the phone is being held on the first reading, so
   // "not tilted" always means eyes centred regardless of the resting angle.
   if (baseGamma === null) { baseGamma = g; baseBeta = b; }
@@ -53,17 +57,22 @@ function onOrient(e) {
   targetY = map(constrain(db, -RANGE, RANGE), -RANGE, RANGE, 0, SK_H);
 }
 
-// iOS 13+ requires a user gesture to request motion permission; other
-// platforms just need the listener attached.
+function attachOrientation() {
+  window.addEventListener("deviceorientation", onOrient, true);
+}
+
+// iOS 13+ requires a user gesture to request motion permission. Android and
+// other platforms don't prompt — their listener is attached immediately in
+// setup(), so this only needs to handle the iOS permission request on a tap.
 function enableMotion() {
-  if (motionAsked || !isTouch) return;
-  motionAsked = true;
+  if (motionAsked) return;
   const DOE = window.DeviceOrientationEvent;
-  const add = () => window.addEventListener("deviceorientation", onOrient, true);
   if (DOE && typeof DOE.requestPermission === "function") {
-    DOE.requestPermission().then((s) => { if (s === "granted") add(); }).catch(() => {});
-  } else if (DOE) {
-    add();
+    motionAsked = true;
+    permState = "requesting…";
+    DOE.requestPermission()
+      .then((s) => { permState = s; if (s === "granted") attachOrientation(); })
+      .catch(() => { permState = "error"; });
   }
 }
 
@@ -80,12 +89,37 @@ function setup() {
   gazeX = targetX = SK_W / 2;
   gazeY = targetY = SK_H / 2;
 
+  // Motion setup. On Android / anything without a permission prompt, attach the
+  // orientation listener right away so tilt works with no tap. On iOS we must
+  // wait for a user gesture (below) to call requestPermission().
+  const DOE = window.DeviceOrientationEvent;
+  if (DOE && typeof DOE.requestPermission === "function") {
+    permState = "needs tap (iOS)";
+  } else if (DOE) {
+    permState = "auto (no prompt)";
+    attachOrientation();
+  } else {
+    permState = "unsupported";
+  }
+
   // Listen on the window, not the canvas: the .hero-scrim / .hero-name overlays
   // sit on top of the canvas and would otherwise swallow the tap that both
-  // reveals the colour AND requests iOS motion permission.
+  // reveals the colour AND requests iOS motion permission. Multiple gesture
+  // types are covered so the iOS prompt reliably fires on first interaction.
   window.addEventListener("pointerdown",   () => { targetColour = 1; touching = true; enableMotion(); });
   window.addEventListener("pointerup",     () => { targetColour = 0; touching = false; });
   window.addEventListener("pointercancel", () => { targetColour = 0; touching = false; });
+  window.addEventListener("touchend", enableMotion, { passive: true });
+  window.addEventListener("click", enableMotion);
+
+  // Optional on-screen diagnostics: add #debug to the URL (e.g. koli.design/#debug).
+  if (location.hash.indexOf("debug") >= 0 || location.search.indexOf("debug") >= 0) {
+    dbg = document.createElement("div");
+    dbg.style.cssText = "position:fixed;top:8px;left:8px;z-index:2147483647;background:rgba(0,0,0,.82);"
+      + "color:#3f6;font:11px/1.45 monospace;padding:8px 10px;border-radius:6px;white-space:pre;"
+      + "pointer-events:none;max-width:72vw;";
+    document.body.appendChild(dbg);
+  }
 }
 
 function updateGaze() {
@@ -105,6 +139,17 @@ function updateGaze() {
   // Ease toward the target so the movement is smooth but responsive.
   gazeX += (targetX - gazeX) * 0.85;
   gazeY += (targetY - gazeY) * 0.85;
+
+  if (dbg) {
+    const hasReq = !!(window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission === "function");
+    dbg.textContent =
+      "isTouch: " + isTouch + "\n" +
+      "iOS-style prompt: " + hasReq + "\n" +
+      "permState: " + permState + "\n" +
+      "motionOn: " + motionOn + "\n" +
+      "gamma/beta: " + lastG.toFixed(1) + " / " + lastB.toFixed(1) + "\n" +
+      "gaze: " + Math.round(gazeX) + " / " + Math.round(gazeY);
+  }
 }
 
 function draw() {
