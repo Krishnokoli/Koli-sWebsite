@@ -153,7 +153,6 @@ img{display:block;}
   font-size:clamp(1.8rem,3.4vw,3rem); line-height:.98; letter-spacing:-.03em;
   transition:color .3s;
 }
-.work-item:hover .wi-text h3{ color:var(--accent); }
 .wi-text p{
   margin:0; font-family:var(--font-body); font-weight:300;
   font-size:clamp(.95rem,1.2vw,1.08rem); line-height:1.55; color:var(--ink-2);
@@ -168,8 +167,18 @@ img{display:block;}
   width:100%; height:100%;
   transition:transform .8s cubic-bezier(.2,.7,.2,1), filter .6s ease;
   filter:grayscale(1) contrast(1.02); }
-.work-item:hover .wi-media image-slot,
-.work-item:hover .wi-media img{ transform:scale(1.04); filter:grayscale(0); }
+
+/* Colour comes from hover on pointer devices, and from .is-lit (set by main.js
+   when the card owns the screen while scrolling) on touch. Touch never gets
+   :hover, so a tap can't leave a card stuck in colour. */
+@media (hover:hover){
+  .work-item:hover .wi-text h3{ color:var(--accent); }
+  .work-item:hover .wi-media image-slot,
+  .work-item:hover .wi-media img{ transform:scale(1.04); filter:grayscale(0); }
+}
+.work-item.is-lit .wi-text h3{ color:var(--accent); }
+.work-item.is-lit .wi-media image-slot,
+.work-item.is-lit .wi-media img{ transform:scale(1.04); filter:grayscale(0); }
 
 /* =========================================================
    PLAY  (scattered editorial gallery · parallax)
@@ -216,8 +225,12 @@ img{display:block;}
 .pf-media image-slot{ width:100%; height:100%;
   transition:transform 1.1s cubic-bezier(.2,.7,.2,1), filter .6s ease;
   filter:grayscale(1) contrast(1.02); }
-.pf-inner:hover .pf-media image-slot{ transform:scale(1.05); filter:grayscale(0); }
-.pf-inner:hover .pf-media{ box-shadow:inset 0 0 0 1px var(--ink); }
+@media (hover:hover){
+  .pf-inner:hover .pf-media image-slot{ transform:scale(1.05); filter:grayscale(0); }
+  .pf-inner:hover .pf-media{ box-shadow:inset 0 0 0 1px var(--ink); }
+}
+.pf-inner.is-lit .pf-media image-slot{ transform:scale(1.05); filter:grayscale(0); }
+.pf-inner.is-lit .pf-media{ box-shadow:inset 0 0 0 1px var(--ink); }
 
 /* caption sits BELOW the image, editorial */
 /* position:relative so the reveal-on-hover description can be taken out of
@@ -234,13 +247,15 @@ img{display:block;}
 .pf-cap h3{ margin:0; font-family:var(--font-head); font-weight:700;
   font-size:clamp(.95rem,1.25vw,1.15rem); line-height:1.05; letter-spacing:-.02em;
   transition:color .3s; }
-.pf-inner:hover .pf-cap h3{ color:var(--accent); }
+@media (hover:hover){ .pf-inner:hover .pf-cap h3{ color:var(--accent); } }
+.pf-inner.is-lit .pf-cap h3{ color:var(--accent); }
 .pf-cap p{ position:absolute; left:0; right:0; top:100%; margin:.5rem 0 0;
   font-family:var(--font-body); font-weight:300;
   font-size:.74rem; line-height:1.55; color:var(--ink-2); max-width:100%;
   max-height:0; opacity:0; overflow:hidden;
   transition:max-height .55s cubic-bezier(.2,.7,.2,1), opacity .4s; }
-.pf-inner:hover .pf-cap p{ max-height:7em; opacity:1; }
+@media (hover:hover){ .pf-inner:hover .pf-cap p{ max-height:7em; opacity:1; } }
+.pf-inner.is-lit .pf-cap p{ max-height:7em; opacity:1; }
 
 .tag-cooking{
   position:absolute; top:9px; left:9px; z-index:3;
@@ -531,7 +546,7 @@ img{display:block;}
 .contact .lede{ margin:1.8rem 0 2.2rem; font-family:var(--font-body); font-weight:300;
   font-size:clamp(1rem,1.3vw,1.12rem); line-height:1.7; max-width:46ch; color:var(--ink-2); }
 .contact .lede strong{ font-weight:500; color:var(--ink); }
-.email-row{ width:min(100%,440px); margin:1.6rem auto 0; display:flex; justify-content:flex-end; }
+.email-row{ width:var(--env-w,min(100%,440px)); margin:1.6rem auto 0; display:flex; justify-content:flex-end; }
 .contact .email-big{ display:inline-flex; align-items:center; font-family:var(--font-head); font-weight:600;
   font-size:clamp(.95rem,1.5vw,1.2rem); letter-spacing:-.01em; color:var(--ink);
   padding:.62em 1.15em; border-radius:999px;
@@ -682,7 +697,7 @@ img{display:block;}
 .contact .contact-head .script{ font-family:var(--font-name); font-weight:400; color:var(--accent);
   font-size:1.22em; line-height:.7; }
 
-.env-scene{ position:relative; width:min(100%,440px); margin-inline:auto;
+.env-scene{ position:relative; width:var(--env-w); margin-inline:auto;
   padding:38px 0 12px; perspective:1200px; }
 
 /* soft colourful glow so the glass has something to refract */
@@ -814,9 +829,12 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
 /* white halo when Koli's K rides over a dark section (hero / timeline) */
 .fcursor.koli.on-dark svg{
   filter:drop-shadow(0 0 1px rgba(255,255,255,.95)) drop-shadow(0 0 8px rgba(255,255,255,.55)); }
-.pfloat:hover .petal-img{ filter:grayscale(0) !important; }
-.pfloat:hover .bastu-img{ filter:grayscale(0) !important; }
-.pfloat:hover .virus-img{ filter:grayscale(0) !important; }
+/* the play covers carry their greyscale inline, so they need !important to
+   drop it — hover on pointer devices, .is-lit while scrolling on touch */
+@media (hover:hover){
+  .pfloat:hover .pf-media img{ filter:grayscale(0) !important; }
+}
+.pf-inner.is-lit .pf-media img{ filter:grayscale(0) !important; }
 .fcursor.koli.fc-press .fc-disc{ transform:scale(.78); }
 .fcursor.koli.on-dark .fc-disc{
   box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 4px 14px rgba(0,0,0,.5); }
@@ -848,10 +866,19 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
 @media (max-width:900px){
   .work-item{ grid-template-columns:1fr; gap:18px; }
   .work-item.rev .wi-media{ order:0; }
-  .play-scatter{ display:flex; flex-direction:column; gap:clamp(34px,7vw,60px); max-width:480px; }
+  /* Play on mobile: cover on the left, caption beside it, each card tilted and
+     pushed to alternating edges so the column reads as a scatter, not a stack */
+  .play-scatter{ display:flex; flex-direction:column; align-items:stretch;
+    gap:clamp(26px,6vw,46px); max-width:520px; margin-inline:auto; }
   .pfloat,.pfloat.f1,.pfloat.f2,.pfloat.f3,.pfloat.f4,.pfloat.f5{
-    grid-column:auto; margin:0 !important; transform:none !important; }
-  .pf-inner{ animation:none; }
+    grid-column:auto; margin:0 !important;
+    width:calc(100% - clamp(16px,6vw,44px)); }
+  .pfloat:nth-of-type(odd){ align-self:flex-start; transform:rotate(-2.2deg) !important; }
+  .pfloat:nth-of-type(even){ align-self:flex-end;  transform:rotate(2.4deg) !important; }
+  .pf-inner{ animation:none; width:100%; max-width:none;
+    display:flex; align-items:center; gap:clamp(14px,4vw,24px); }
+  .pf-media{ flex:0 0 clamp(112px,33vw,155px); }
+  .pf-cap{ flex:1 1 auto; min-width:0; margin-top:0; }
   .pf-cap p,.pfloat.f1 .pf-cap p{ position:static; max-height:7em; opacity:.9; }
   .pfloat.f4 .pf-inner,.pfloat.f3 .pf-inner,
   .pfloat.f2 .pf-inner,.pfloat.f5 .pf-inner{ margin:0; }
@@ -880,9 +907,16 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
 /* =========================================================
    CONTACT · calendar booking widget
    ========================================================= */
-.contact-left{ position:relative; }
+/* the envelope width is the unit everything in this column is measured in, so
+   the calendar keeps its ratio to the envelope at every screen size instead of
+   drifting on a separate vw track */
+.contact-left{
+  position:relative;
+  --env-w: min(100%, 440px);
+  --cal-w: calc(var(--env-w) * .86);
+}
 
-.cal-row{ width:min(100%,440px); margin:.7rem auto 0; display:flex; justify-content:flex-end; }
+.cal-row{ width:var(--env-w); margin:.7rem auto 0; display:flex; justify-content:flex-end; }
 .cal-pill .cal-arr{
   font-family:var(--font-body); font-weight:300;
   transition:transform .35s cubic-bezier(.2,.7,.2,1);
@@ -890,10 +924,17 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
 .cal-pill:hover .cal-arr{ transform:translate(3px,-3px); }
 .cal-link{
   position:absolute;
-  left: calc(-1 * clamp(70px, 8vw, 110px));
+  /* anchored to the envelope's left edge, not the column's: it hangs off the
+     envelope by a fixed share of its width, then the vw term walks it back to
+     the right as the screen narrows so it never crowds the left margin */
+  left: calc(
+    (100% - var(--env-w)) / 2
+    - var(--cal-w) * .55
+    + clamp(0px, 260px - 18vw, 130px)
+  );
   bottom: clamp(40px, 7vh, 80px);
   top: auto;
-  width: clamp(260px, 30vw, 380px);
+  width: var(--cal-w);
   display:block;
   transform: rotate(-8deg);
   transform-origin: bottom right;
@@ -919,5 +960,28 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
 @keyframes calFloat{
   0%,100%{ transform:translateY(0); }
   50%{ transform:translateY(-11px); }
+}
+
+/* Single-column contact: there is no kettle column left of the envelope for the
+   calendar to hang into, so it drops below the envelope with a slight overlap,
+   still tilted, and stays inside the section's side margins. */
+@media (max-width:900px){
+  .contact{ padding-inline: clamp(24px,6vw,60px); }
+  .contact-left{
+    display:flex; flex-direction:column;
+    --cal-w: calc(var(--env-w) * .74);
+  }
+  .env-scene{ order:1; }
+  .cal-link{
+    order:2;
+    position:relative; left:auto; right:auto; top:auto; bottom:auto;
+    width:var(--cal-w);
+    margin:calc(-1 * var(--env-w) * .13) auto 0;
+    transform:rotate(-7deg);
+    transform-origin:center;
+  }
+  .cal-link:hover{ transform:rotate(-10deg) scale(1.04); }
+  .email-row{ order:3; }
+  .cal-row{ order:4; }
 }
 

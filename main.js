@@ -258,6 +258,75 @@
     }
   }
 
+  /* ---------- Touch: light the card that owns the screen ----------
+     Pointer devices colour a card on hover. Touch devices have no hover, so a
+     tap used to light the card and leave it lit. Instead, while scrolling, the
+     card filling most of the screen turns colour and the rest stay greyscale. */
+  (function litOnScroll() {
+    const cards = [...document.querySelectorAll(".work-item, .pf-inner")];
+    if (!cards.length) return;
+
+    const canHover = window.matchMedia("(hover:hover)");
+    let ticking = false;
+    let lit = null;
+
+    // how much of the screen a card can claim: its visible area over the
+    // smaller of the card and the viewport, so a tall work card that fills the
+    // screen and a small play card fully in view both score near 1
+    const claim = (el) => {
+      const r = el.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const w = Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0));
+      const h = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
+      const most = Math.min(r.width * r.height, vw * vh);
+      return most ? (w * h) / most : 0;
+    };
+
+    const update = () => {
+      ticking = false;
+      if (canHover.matches) return;
+
+      const vmid = window.innerHeight / 2;
+      let best = null;
+      let bestScore = 0.6; // must own most of what it could occupy
+      let bestOffset = Infinity;
+
+      for (const el of cards) {
+        const score = claim(el);
+        if (score < bestScore) continue;
+        const r = el.getBoundingClientRect();
+        const offset = Math.abs((r.top + r.bottom) / 2 - vmid);
+        if (score > bestScore || offset < bestOffset) {
+          best = el;
+          bestScore = score;
+          bestOffset = offset;
+        }
+      }
+
+      if (best === lit) return;
+      if (lit) lit.classList.remove("is-lit");
+      if (best) best.classList.add("is-lit");
+      lit = best;
+    };
+
+    const queue = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    const clear = () => {
+      if (lit) lit.classList.remove("is-lit");
+      lit = null;
+    };
+
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    canHover.addEventListener("change", (e) => (e.matches ? clear() : queue()));
+    queue();
+  })();
+
   /* ---------- Contact form -> mailto ---------- */
   const form = document.querySelector("#tea-form");
   if (form) {
