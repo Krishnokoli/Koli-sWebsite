@@ -102,6 +102,17 @@ function closeTiltGate() {
   document.body.style.overflow = "";
 }
 
+// The greeting is for someone arriving at the artwork for the first time. A
+// reload (or a back/forward restore) drops the visitor back where they left
+// off, often deep in the page, where a full-screen overlay is only in the way —
+// so greet on a fresh visit that starts at the hero, and stay quiet otherwise.
+function isFreshArrival() {
+  const nav = performance.getEntriesByType("navigation")[0];
+  const type = nav ? nav.type : (performance.navigation && performance.navigation.type === 1 ? "reload" : "navigate");
+  if (type === "reload" || type === "back_forward") return false;
+  return window.scrollY < 40;
+}
+
 // Desktop needs no permission, so it just gets a brief nudge over the blurred
 // artwork. No buttons: it fades itself out after a few seconds, or as soon as
 // the visitor starts scrolling.
@@ -245,17 +256,21 @@ function setup() {
 
   hideLoader();   // images are decoded by the time setup() runs
 
+  const greet = isFreshArrival();
+
   if (isTouch) {
     // On Android / anything without a permission prompt, attach the orientation
     // listener right away so tilt works with no tap. On iOS we must wait for a
-    // user gesture, so show the tappable intro gate instead.
+    // user gesture, so show the tappable intro gate instead — and when we skip
+    // the gate on a reload, the pointerdown/touchend handlers below still call
+    // enableMotion(), so the eyes come alive on the first tap anyway.
     const DOE = window.DeviceOrientationEvent;
     if (DOE && typeof DOE.requestPermission === "function") {
-      showTiltGate();
+      if (greet) showTiltGate();
     } else if (DOE) {
       attachOrientation();
     }
-  } else {
+  } else if (greet) {
     showDesktopIntro();   // no permission needed, so just a brief nudge
   }
 
