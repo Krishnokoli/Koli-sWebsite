@@ -28,6 +28,7 @@ const DEADZONE = 2.5;      // degrees; below this the phone counts as "still"
 let permState = "idle";    // motion-permission state (debug)
 let lastG = 0, lastB = 0;  // last raw tilt reading (debug)
 let dbg = null;            // debug HUD element (enabled with #debug)
+let tiltBtn = null;        // iOS "Enable tilt" button (iOS needs an explicit gesture)
 
 // p5 preload runs after the DOM is ready, so the <img> tags exist.
 function preload() {
@@ -61,6 +62,32 @@ function attachOrientation() {
   window.addEventListener("deviceorientation", onOrient, true);
 }
 
+// iOS will only surface its permission dialog from a real user gesture, so give
+// people an explicit thing to tap rather than hoping a stray tap triggers it.
+function showTiltButton() {
+  tiltBtn = document.createElement("button");
+  tiltBtn.textContent = "Enable tilt";
+  tiltBtn.style.cssText =
+    "position:fixed;left:50%;bottom:11vh;transform:translateX(-50%);z-index:2147483646;" +
+    "appearance:none;border:none;cursor:pointer;background:#E85F2A;color:#ECECEA;" +
+    "font-family:'Space Grotesk',system-ui,sans-serif;font-weight:500;font-size:.72rem;" +
+    "letter-spacing:.14em;text-transform:uppercase;padding:.95em 1.6em;border-radius:999px;" +
+    "box-shadow:0 12px 30px -10px rgba(0,0,0,.6);";
+  tiltBtn.addEventListener("click", (ev) => { ev.stopPropagation(); enableMotion(); });
+  document.body.appendChild(tiltBtn);
+}
+
+function setTiltButton(state) {
+  if (!tiltBtn) return;
+  if (state === "granted") {
+    tiltBtn.remove();
+    tiltBtn = null;
+  } else if (state === "denied") {
+    tiltBtn.textContent = "Motion blocked — enable in Settings";
+    tiltBtn.style.background = "#14130F";
+  }
+}
+
 // iOS 13+ requires a user gesture to request motion permission. Android and
 // other platforms don't prompt — their listener is attached immediately in
 // setup(), so this only needs to handle the iOS permission request on a tap.
@@ -71,8 +98,16 @@ function enableMotion() {
     motionAsked = true;
     permState = "requesting…";
     DOE.requestPermission()
-      .then((s) => { permState = s; if (s === "granted") attachOrientation(); })
-      .catch(() => { permState = "error"; });
+      .then((s) => {
+        permState = s;
+        if (s === "granted") attachOrientation();
+        setTiltButton(s);
+      })
+      .catch(() => {
+        permState = "error";
+        // Let them try again rather than dead-ending on a transient failure.
+        motionAsked = false;
+      });
   }
 }
 
@@ -95,6 +130,7 @@ function setup() {
   const DOE = window.DeviceOrientationEvent;
   if (DOE && typeof DOE.requestPermission === "function") {
     permState = "needs tap (iOS)";
+    showTiltButton();   // explicit, tappable trigger for the iOS permission dialog
   } else if (DOE) {
     permState = "auto (no prompt)";
     attachOrientation();
