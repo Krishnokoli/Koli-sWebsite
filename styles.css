@@ -853,7 +853,14 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
   .contact-kettle{ order:-1; }
   .about-grid{ grid-template-columns:1fr; }
   .about-side{ flex-direction:column; }
-  .about-portrait{ max-width:380px; }
+  /* Portrait is absolutely positioned (bottom-right) on desktop, which makes it
+     land on top of the copy once the grid collapses. On mobile, drop it back
+     into normal flow below the text and scale it down so it never overlaps. */
+  .about-portrait{
+    position:static; right:auto; bottom:auto; transform:none;
+    width:min(60vw,240px); max-width:none;
+    margin:clamp(20px,4vh,36px) auto 0;
+  }
   .koli{ font-size:clamp(5rem,32vw,10rem); }
 }
 
