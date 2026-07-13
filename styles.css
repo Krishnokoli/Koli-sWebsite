@@ -351,6 +351,12 @@ img{display:block;}
 .about-portrait img{
   width:100%; height:auto; display:block;
 }
+/* The portrait is absolutely positioned at the section's bottom-right, so as the
+   viewport narrows the About columns close in on it and it starts sitting on top
+   of the copy. Drop it as soon as that crowding begins. Full-size on wide screens. */
+@media (max-width:1200px){
+  .about-portrait{ display:none !important; }
+}
 
 /* =========================================================
    PATH · horizontal scroll timeline (pinned · editorial · dark)
@@ -853,14 +859,6 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
   .contact-kettle{ order:-1; }
   .about-grid{ grid-template-columns:1fr; }
   .about-side{ flex-direction:column; }
-  /* Portrait is absolutely positioned (bottom-right) on desktop, which makes it
-     land on top of the copy once the grid collapses. On mobile, drop it back
-     into normal flow below the text and scale it down so it never overlaps. */
-  .about-portrait{
-    position:static; right:auto; bottom:auto; transform:none;
-    width:min(60vw,240px); max-width:none;
-    margin:clamp(20px,4vh,36px) auto 0;
-  }
   .koli{ font-size:clamp(5rem,32vw,10rem); }
 }
 
