@@ -26,6 +26,7 @@ let baseGamma = null, baseBeta = null; // neutral tilt captured on first reading
 const RANGE    = 16;       // degrees of tilt from neutral to reach the eye edge
 const DEADZONE = 2.5;      // degrees; below this the phone counts as "still"
 let tiltGate = null;       // iOS "Enable tilt" intro overlay (iOS needs an explicit gesture)
+let introEl  = null;       // desktop intro overlay (auto-dismisses)
 
 // p5 preload runs after the DOM is ready, so the <img> tags exist.
 function preload() {
@@ -61,6 +62,43 @@ function attachOrientation() {
 function closeTiltGate() {
   if (tiltGate) { tiltGate.remove(); tiltGate = null; }
   document.body.style.overflow = "";
+}
+
+// Desktop needs no permission, so it just gets a brief nudge over the blurred
+// artwork. No buttons: it fades itself out after a few seconds, or as soon as
+// the visitor starts scrolling.
+function showDesktopIntro() {
+  const BODY = "font-family:'Space Grotesk',system-ui,sans-serif;";
+
+  introEl = document.createElement("div");
+  introEl.style.cssText =
+    "position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;" +
+    "padding:26px;background:rgba(10,10,10,.5);" +
+    "backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);" +
+    "opacity:0;transition:opacity .55s ease;pointer-events:none;";
+  introEl.innerHTML =
+    '<div style="width:min(440px,90vw);text-align:center;">'
+    + '<h2 style="font-family:\'Syne\',system-ui,sans-serif;font-weight:700;font-size:1.6rem;'
+      + 'color:#F2F0EC;margin:0 0 12px;letter-spacing:-.01em;">They’re watching you 👀</h2>'
+    + '<p style="' + BODY + 'font-weight:400;font-size:.98rem;line-height:1.6;'
+      + 'color:#F2F0EC;margin:0;">Move your cursor around and the eyes will follow you. '
+      + 'Play with it, enjoy the artwork, then scroll on 🎨✨</p>'
+    + '</div>';
+  document.body.appendChild(introEl);
+  requestAnimationFrame(() => { if (introEl) introEl.style.opacity = "1"; });
+
+  const hide = () => {
+    if (!introEl) return;
+    const el = introEl;
+    introEl = null;
+    el.style.opacity = "0";
+    setTimeout(() => el.remove(), 700);
+    window.removeEventListener("wheel", hide);
+    window.removeEventListener("scroll", hide);
+  };
+  setTimeout(hide, 2800);
+  window.addEventListener("wheel", hide, { passive: true });
+  window.addEventListener("scroll", hide, { passive: true });
 }
 
 // iOS will only surface its permission dialog from a real user gesture, so give
@@ -167,14 +205,18 @@ function setup() {
   gazeX = targetX = SK_W / 2;
   gazeY = targetY = SK_H / 2;
 
-  // Motion setup. On Android / anything without a permission prompt, attach the
-  // orientation listener right away so tilt works with no tap. On iOS we must
-  // wait for a user gesture (below) to call requestPermission().
-  const DOE = window.DeviceOrientationEvent;
-  if (DOE && typeof DOE.requestPermission === "function") {
-    showTiltGate();   // explicit, tappable trigger for the iOS permission dialog
-  } else if (DOE) {
-    attachOrientation();
+  if (isTouch) {
+    // On Android / anything without a permission prompt, attach the orientation
+    // listener right away so tilt works with no tap. On iOS we must wait for a
+    // user gesture, so show the tappable intro gate instead.
+    const DOE = window.DeviceOrientationEvent;
+    if (DOE && typeof DOE.requestPermission === "function") {
+      showTiltGate();
+    } else if (DOE) {
+      attachOrientation();
+    }
+  } else {
+    showDesktopIntro();   // no permission needed, so just a brief nudge
   }
 
   // Listen on the window, not the canvas: the .hero-scrim / .hero-name overlays
