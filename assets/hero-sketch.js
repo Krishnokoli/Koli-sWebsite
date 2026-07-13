@@ -28,7 +28,7 @@ const DEADZONE = 2.5;      // degrees; below this the phone counts as "still"
 let permState = "idle";    // motion-permission state (debug)
 let lastG = 0, lastB = 0;  // last raw tilt reading (debug)
 let dbg = null;            // debug HUD element (enabled with #debug)
-let tiltBtn = null;        // iOS "Enable tilt" button (iOS needs an explicit gesture)
+let tiltGate = null;       // iOS "Enable tilt" intro overlay (iOS needs an explicit gesture)
 
 // p5 preload runs after the DOM is ready, so the <img> tags exist.
 function preload() {
@@ -62,29 +62,79 @@ function attachOrientation() {
   window.addEventListener("deviceorientation", onOrient, true);
 }
 
-// iOS will only surface its permission dialog from a real user gesture, so give
-// people an explicit thing to tap rather than hoping a stray tap triggers it.
-function showTiltButton() {
-  tiltBtn = document.createElement("button");
-  tiltBtn.textContent = "Enable tilt";
-  tiltBtn.style.cssText =
-    "position:fixed;left:50%;bottom:11vh;transform:translateX(-50%);z-index:2147483646;" +
-    "appearance:none;border:none;cursor:pointer;background:#E85F2A;color:#ECECEA;" +
-    "font-family:'Space Grotesk',system-ui,sans-serif;font-weight:500;font-size:.72rem;" +
-    "letter-spacing:.14em;text-transform:uppercase;padding:.95em 1.6em;border-radius:999px;" +
-    "box-shadow:0 12px 30px -10px rgba(0,0,0,.6);";
-  tiltBtn.addEventListener("click", (ev) => { ev.stopPropagation(); enableMotion(); });
-  document.body.appendChild(tiltBtn);
+function closeTiltGate() {
+  if (tiltGate) { tiltGate.remove(); tiltGate = null; }
+  document.body.style.overflow = "";
 }
 
-function setTiltButton(state) {
-  if (!tiltBtn) return;
+// iOS will only surface its permission dialog from a real user gesture, so give
+// people an explicit thing to tap. Presented as a centred overlay that blurs the
+// hero behind it, so tilting happens before they scroll on.
+function showTiltGate() {
+  const BODY = "font-family:'Space Grotesk',system-ui,sans-serif;";
+
+  tiltGate = document.createElement("div");
+  tiltGate.id = "tilt-gate";
+  tiltGate.style.cssText =
+    "position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;" +
+    "padding:26px;background:rgba(10,10,10,.55);" +
+    "backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);";
+
+  tiltGate.innerHTML =
+    '<div id="tg-card" style="width:min(360px,90vw);text-align:center;">'
+    + '<h2 style="font-family:\'Syne\',system-ui,sans-serif;font-weight:700;font-size:1.5rem;'
+      + 'color:#F2F0EC;margin:0 0 12px;letter-spacing:-.01em;">Tilt to look around</h2>'
+    + '<p style="' + BODY + 'font-weight:300;font-size:.92rem;line-height:1.6;'
+      + 'color:rgba(242,240,236,.72);margin:0 0 14px;">The eyes follow your phone as you tilt it. '
+      + 'This only reads your phone’s motion sensor — it does not affect your privacy, '
+      + 'and nothing is collected, stored, or shared.</p>'
+    + '<p style="' + BODY + 'font-weight:400;font-size:.92rem;line-height:1.6;'
+      + 'color:#F2F0EC;margin:0 0 26px;">Tilt your phone before you scroll, to see my website.</p>'
+    + '<button id="tg-btn" style="appearance:none;border:none;cursor:pointer;width:100%;'
+      + 'background:#E85F2A;color:#fff;' + BODY + 'font-weight:500;font-size:.74rem;'
+      + 'letter-spacing:.14em;text-transform:uppercase;padding:1em 1.6em;border-radius:999px;'
+      + 'box-shadow:0 14px 34px -12px rgba(232,95,42,.7);">Enable tilt</button>'
+    + '<button id="tg-skip" style="appearance:none;border:none;background:transparent;cursor:pointer;'
+      + 'margin-top:16px;' + BODY + 'font-weight:400;font-size:.7rem;letter-spacing:.1em;'
+      + 'text-transform:uppercase;color:rgba(242,240,236,.5);">Maybe later</button>'
+    + '</div>';
+
+  document.body.appendChild(tiltGate);
+  document.body.style.overflow = "hidden"; // encourage tilting before scrolling on
+
+  tiltGate.querySelector("#tg-btn").addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    enableMotion();
+  });
+  const skip = tiltGate.querySelector("#tg-skip");
+  // Stop pointerdown too, or the window-level listener would fire the iOS
+  // permission request even though they chose to skip.
+  skip.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+  skip.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    closeTiltGate();
+  });
+}
+
+function setTiltState(state) {
+  if (!tiltGate) return;
   if (state === "granted") {
-    tiltBtn.remove();
-    tiltBtn = null;
+    closeTiltGate();
   } else if (state === "denied") {
-    tiltBtn.textContent = "Motion blocked — enable in Settings";
-    tiltBtn.style.background = "#14130F";
+    // iOS won't re-prompt once denied (or if the OS switch is off) — explain how to fix.
+    const card = tiltGate.querySelector("#tg-card");
+    card.innerHTML =
+      '<h2 style="font-family:\'Syne\',system-ui,sans-serif;font-weight:700;font-size:1.35rem;'
+        + 'color:#F2F0EC;margin:0 0 12px;">Motion access is blocked</h2>'
+      + '<p style="font-family:\'Space Grotesk\',system-ui,sans-serif;font-weight:300;font-size:.9rem;'
+        + 'line-height:1.6;color:rgba(242,240,236,.72);margin:0 0 22px;">Turn on '
+        + '<b style="color:#F2F0EC;font-weight:500;">Settings → Safari → Motion &amp; '
+        + 'Orientation Access</b>, then reload this page.</p>'
+      + '<button id="tg-skip2" style="appearance:none;border:none;cursor:pointer;width:100%;'
+        + 'background:#E85F2A;color:#fff;font-family:\'Space Grotesk\',system-ui,sans-serif;'
+        + 'font-weight:500;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;'
+        + 'padding:1em 1.6em;border-radius:999px;">Continue to site</button>';
+    card.querySelector("#tg-skip2").addEventListener("click", closeTiltGate);
   }
 }
 
@@ -101,7 +151,7 @@ function enableMotion() {
       .then((s) => {
         permState = s;
         if (s === "granted") attachOrientation();
-        setTiltButton(s);
+        setTiltState(s);
       })
       .catch(() => {
         permState = "error";
@@ -130,7 +180,7 @@ function setup() {
   const DOE = window.DeviceOrientationEvent;
   if (DOE && typeof DOE.requestPermission === "function") {
     permState = "needs tap (iOS)";
-    showTiltButton();   // explicit, tappable trigger for the iOS permission dialog
+    showTiltGate();   // explicit, tappable trigger for the iOS permission dialog
   } else if (DOE) {
     permState = "auto (no prompt)";
     attachOrientation();
