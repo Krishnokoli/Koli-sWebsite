@@ -97,6 +97,19 @@ function attachOrientation() {
   window.addEventListener("deviceorientation", onOrient, true);
 }
 
+// Remember that motion access was granted, so a return visit is not asked again.
+// Storage can throw in private mode, so every touch of it is guarded.
+const TILT_KEY = "koli.tilt.granted";
+function tiltRemembered() {
+  try { return localStorage.getItem(TILT_KEY) === "1"; } catch (e) { return false; }
+}
+function rememberTilt(granted) {
+  try {
+    if (granted) localStorage.setItem(TILT_KEY, "1");
+    else localStorage.removeItem(TILT_KEY);
+  } catch (e) { /* private mode: just ask again next time */ }
+}
+
 function closeTiltGate() {
   if (tiltGate) { tiltGate.remove(); tiltGate = null; }
   document.body.style.overflow = "";
@@ -232,6 +245,7 @@ function enableMotion() {
     DOE.requestPermission()
       .then((s) => {
         if (s === "granted") attachOrientation();
+        rememberTilt(s === "granted");
         setTiltState(s);
       })
       .catch(() => {
@@ -266,7 +280,14 @@ function setup() {
     // enableMotion(), so the eyes come alive on the first tap anyway.
     const DOE = window.DeviceOrientationEvent;
     if (DOE && typeof DOE.requestPermission === "function") {
-      if (greet) showTiltGate();
+      if (tiltRemembered()) {
+        // They have already said yes on this device. Ask iOS again quietly —
+        // once granted it resolves without a prompt — and if it insists on a
+        // fresh gesture, the tap handlers below still call enableMotion().
+        enableMotion();
+      } else if (greet) {
+        showTiltGate();
+      }
     } else if (DOE) {
       attachOrientation();
     }
