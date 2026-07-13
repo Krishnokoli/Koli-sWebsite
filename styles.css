@@ -80,21 +80,29 @@ img{display:block;}
   opacity:var(--scrim-op,0); pointer-events:none;
 }
 .hero-name{
+  --koli-fs:clamp(6rem,30vw,28rem);
   position:absolute; inset:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; pointer-events:none;
   opacity:var(--name-op,0); transform:translateY(var(--name-y,34px));
 }
+/* the stack is exactly as wide as the word, so the role can be hung off the K's
+   left edge instead of being centred under the whole word — centred, it drifts
+   left of the K once the word gets narrower than the role's tracked-out caps.
+   The padding stands in for the absolutely-positioned role, keeping the pair
+   optically centred in the hero. */
+.name-stack{ position:relative; width:max-content; padding-bottom:calc(1.6rem + 1.2rem); }
 .koli{
   margin:0; font-family:var(--font-name); font-weight:400;
-  font-size:clamp(6rem,30vw,28rem); line-height:.8; color:#F2F0EC;
+  font-size:var(--koli-fs); line-height:.8; color:#F2F0EC;
   text-shadow:0 6px 70px rgba(0,0,0,.5);
 }
 .role{
-  margin:1.6rem 0 0; font-family:var(--font-body); font-weight:300;
+  position:absolute; bottom:0; left:calc(var(--koli-fs) * .454);
+  margin:0; white-space:nowrap;
+  font-family:var(--font-body); font-weight:300;
   font-size:clamp(.7rem,1.4vw,1rem); letter-spacing:.6em;
   text-transform:uppercase; text-indent:.6em; color:rgba(242,240,236,.9);
-  transform:translateX(.5em);
 }
 .hero-hint{
   position:absolute; left:50%; bottom:3.4vh; transform:translateX(-50%);
@@ -886,7 +894,12 @@ html.figcursor, html.figcursor *{ cursor:none !important; }
   .contact-kettle{ order:-1; }
   .about-grid{ grid-template-columns:1fr; }
   .about-side{ flex-direction:column; }
-  .koli{ font-size:clamp(5rem,32vw,10rem); }
+  /* set the variable, not .koli's font-size: the role's offset from the K is
+     measured in it, so the two must stay in step */
+  .hero-name{ --koli-fs:clamp(5rem,32vw,10rem); }
+  /* tracked-out caps get wide fast; tighten them so the role still clears the
+     right margin once it is anchored to the K rather than centred */
+  .role{ font-size:.62rem; letter-spacing:.34em; }
 }
 
 /* Hero artwork on mobile: keep the artwork the same height as the viewport
