@@ -27,6 +27,44 @@ const RANGE    = 16;       // degrees of tilt from neutral to reach the eye edge
 const DEADZONE = 2.5;      // degrees; below this the phone counts as "still"
 let tiltGate = null;       // iOS "Enable tilt" intro overlay (iOS needs an explicit gesture)
 let introEl  = null;       // desktop intro overlay (auto-dismisses)
+let loaderEl = null;       // "loading the artwork" overlay
+let loaderTimer = null;    // delays the loader so fast/cached loads never flash it
+
+// The hero art is a few MB, so on a slow connection p5 sits in preload() with a
+// black screen. Show a loader if that wait is long enough to notice. setup()
+// only runs once the images are decoded, so that is where it gets torn down.
+function showLoader() {
+  const st = document.createElement("style");
+  st.textContent = "@keyframes koliPulse{0%,100%{opacity:.25;transform:scale(.8)}"
+    + "50%{opacity:1;transform:scale(1.15)}}";
+  document.head.appendChild(st);
+
+  loaderEl = document.createElement("div");
+  loaderEl.style.cssText =
+    "position:fixed;inset:0;z-index:2147483645;display:flex;align-items:center;justify-content:center;"
+    + "background:#0a0a0a;transition:opacity .5s ease;";
+  loaderEl.innerHTML =
+    '<div style="display:flex;align-items:center;gap:11px;">'
+    + '<span style="width:7px;height:7px;border-radius:50%;background:#E85F2A;'
+      + 'animation:koliPulse 1.4s ease-in-out infinite;"></span>'
+    + '<span style="font-family:\'Space Grotesk\',system-ui,sans-serif;font-size:.7rem;'
+      + 'letter-spacing:.3em;text-transform:uppercase;color:rgba(242,240,236,.6);">'
+      + 'Loading the artwork</span>'
+    + '</div>';
+  document.body.appendChild(loaderEl);
+}
+
+function hideLoader() {
+  clearTimeout(loaderTimer);
+  if (!loaderEl) return;
+  const el = loaderEl;
+  loaderEl = null;
+  el.style.opacity = "0";
+  setTimeout(() => el.remove(), 550);
+}
+
+// Only surface the loader if the art is actually slow to arrive.
+loaderTimer = setTimeout(showLoader, 250);
 
 // p5 preload runs after the DOM is ready, so the <img> tags exist.
 function preload() {
@@ -96,7 +134,7 @@ function showDesktopIntro() {
     window.removeEventListener("wheel", hide);
     window.removeEventListener("scroll", hide);
   };
-  setTimeout(hide, 2800);
+  setTimeout(hide, 5000);
   window.addEventListener("wheel", hide, { passive: true });
   window.addEventListener("scroll", hide, { passive: true });
 }
@@ -204,6 +242,8 @@ function setup() {
 
   gazeX = targetX = SK_W / 2;
   gazeY = targetY = SK_H / 2;
+
+  hideLoader();   // images are decoded by the time setup() runs
 
   if (isTouch) {
     // On Android / anything without a permission prompt, attach the orientation
