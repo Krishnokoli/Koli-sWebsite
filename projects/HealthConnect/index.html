@@ -153,9 +153,104 @@
     </div>
   </section>
 
+  <section id="impact" data-screen-label="Impact" style="padding:clamp(72px,10vw,120px) 0;">
+    <div style="max-width:1080px;margin:0 auto;padding:0 clamp(20px,5vw,32px);">
+      <div data-reveal style="display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#005FB2;margin-bottom:22px;">03 · IMPACT &amp; CLIENTS<span style="width:34px;height:1px;background:#005FB2;opacity:0.4;"></span></div>
+      <h2 data-reveal style="font-size:clamp(28px,4.2vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.12;max-width:20ch;">Outcomes, sales and successful implementations.</h2>
+      <p data-reveal style="font-size:clamp(16px,2vw,19px);color:#4a4e57;max-width:64ch;margin-top:20px;"><strong>Appointment Connect</strong> powers LifeLabs' appointment-booking experience across Canada - the same scheduling, booking and daysheet flows shown below, at national scale.</p>
+      <h3 data-reveal style="font-size:22px;font-weight:800;letter-spacing:-0.01em;margin:54px 0 20px;">Successful client implementations</h3>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <sc-for list="{{ clients }}" as="c" hint-placeholder-count="3">
+          <div data-reveal style="background:#fff;border:1px solid #e7eaef;border-radius:16px;padding:26px 28px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;">
+            <div style="width:54px;height:54px;border-radius:12px;background:#e8f3fd;display:flex;align-items:center;justify-content:center;font-size:24px;">{{ c.icon }}</div>
+            <div>
+              <div style="font-size:18px;font-weight:700;">{{ c.name }}</div>
+              <div style="font-size:12.5px;font-weight:700;letter-spacing:0.04em;color:#4d7a00;text-transform:uppercase;margin:5px 0 10px;">{{ c.tag }}</div>
+              <div style="font-size:14.5px;color:#4a4e57;line-height:1.6;">{{ c.body }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <sc-for list="{{ moduleSections }}" as="s" hint-placeholder-count="3">
+    <section id="{{ s.id }}" data-screen-label="{{ s.label }}" style="padding:clamp(72px,10vw,120px) 0;">
+      <div style="max-width:1080px;margin:0 auto;padding:0 clamp(20px,5vw,32px);">
+        <div data-reveal style="display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#005FB2;margin-bottom:22px;">{{ s.num }} · {{ s.kicker }}<span style="width:34px;height:1px;background:#005FB2;opacity:0.4;"></span></div>
+        <h2 data-reveal style="font-size:clamp(28px,4.2vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.12;max-width:22ch;">{{ s.title }}</h2>
+        <p data-reveal style="font-size:clamp(16px,2vw,19px);color:#4a4e57;max-width:64ch;margin-top:22px;">{{ s.desc }}</p>
+        <sc-if value="{{ s.linkUrl }}" hint-placeholder-val="">
+          <a data-reveal href="{{ s.linkUrl }}" target="_blank" style="margin-top:24px;display:flex;align-items:center;gap:18px;background:linear-gradient(115deg,#1B3A6B,#3A5DA8);border-radius:16px;padding:22px 26px;box-shadow:0 18px 40px -22px rgba(27,58,107,0.7);">
+            <div style="width:46px;height:46px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;padding:7px;"><img src="assets/mcc-logo.png" alt="My Care Compass" style="width:100%;height:100%;object-fit:contain;"/></div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#F5A623;font-weight:700;">Related project</div>
+              <div style="font-size:16px;font-weight:700;color:#fff;margin-top:3px;">See the appointment booking module in action</div>
+              <div style="font-size:13.5px;color:#cdd8ee;margin-top:2px;">On the LifeLabs · My Care Compass project →</div>
+            </div>
+            <div style="color:#fff;font-size:22px;flex:none;">→</div>
+          </a>
+        </sc-if>
+        <sc-if value="{{ s.isAppointment }}" hint-placeholder-val="{{ false }}">
+          <div data-reveal style="margin-top:26px;">
+            <dc-import name="AppointmentProto" hint-size="100%,640px" style="width:100%;display:block;"></dc-import>
+          </div>
+          <div data-reveal style="margin-top:24px;background:linear-gradient(135deg,#eef5ff,#f3fbf4);border:1px solid #dbe7f5;border-radius:18px;padding:22px;">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;">
+              <span style="width:26px;height:26px;border-radius:8px;background:#005FB2;display:flex;align-items:center;justify-content:center;font-size:13px;">🧭</span>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:0.08em;color:#005FB2;">PRODUCT REACH · LIFELABS</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;">
+              <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="4">
+                <div style="background:#fff;border:1px solid #e7eaef;border-radius:16px;padding:18px 16px;box-shadow:0 12px 26px -20px rgba(0,95,178,0.5);">
+                  <div style="{{ m.iconStyle }}">{{ m.icon }}</div>
+                  <div style="font-size:30px;font-weight:800;letter-spacing:-0.03em;background:linear-gradient(120deg,#005FB2,#0a86d6 60%,#86bc25);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;">{{ m.value }}</div>
+                  <div style="font-size:12.5px;color:#4a4e57;margin-top:5px;line-height:1.4;">{{ m.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ s.isEligibility }}" hint-placeholder-val="{{ false }}">
+          <div data-reveal style="margin-top:26px;">
+            <dc-import name="EligibilityProto" hint-size="100%,640px" style="width:100%;display:block;"></dc-import>
+          </div>
+          <div data-reveal style="margin-top:24px;background:linear-gradient(135deg,#f3fbf4,#eef5ff);border:1px solid #d7e8d4;border-radius:18px;padding:22px;">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;">
+              <span style="width:26px;height:26px;border-radius:8px;background:#86bc25;display:flex;align-items:center;justify-content:center;font-size:13px;">🍁</span>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:0.08em;color:#3d6b00;">PROGRAM SCALE · NEWFOUNDLAND &amp; LABRADOR HEALTH SERVICES</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+              <sc-for list="{{ nlhsMetrics }}" as="m" hint-placeholder-count="5">
+                <div style="display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid #e7eaef;border-radius:14px;padding:15px 16px;box-shadow:0 10px 22px -20px rgba(61,107,0,0.4);">
+                  <div style="{{ m.iconStyle }}">{{ m.icon }}</div>
+                  <div style="min-width:0;">
+                    <div style="font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#9aa0ab;">{{ m.k }}</div>
+                    <div style="font-size:14px;color:#16181d;font-weight:500;margin-top:3px;line-height:1.35;">{{ m.v }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ s.isSupply }}" hint-placeholder-val="{{ false }}">
+          <div data-reveal style="margin-top:26px;">
+            <dc-import name="SupplyProto" hint-size="100%,640px" style="width:100%;display:block;"></dc-import>
+          </div>
+        </sc-if>
+        <sc-if value="{{ s.noProto }}" hint-placeholder-val="{{ true }}">
+          <div data-reveal style="margin-top:24px;border:1.5px dashed #c3ccd6;border-radius:16px;background:rgba(255,255,255,0.6);padding:56px 28px;text-align:center;color:#6b7280;">
+            <div style="font-size:15px;font-weight:600;">Interactive prototype mounts here</div>
+            <div style="font-size:13.5px;margin-top:6px;">{{ s.proto }}</div>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+  </sc-for>
+
   <section id="system" data-screen-label="Design System" style="padding:clamp(72px,10vw,120px) 0;">
     <div style="max-width:1080px;margin:0 auto;padding:0 clamp(20px,5vw,32px);">
-      <div data-reveal style="display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#005FB2;margin-bottom:22px;">03 · DESIGN SYSTEM<span style="width:34px;height:1px;background:#005FB2;opacity:0.4;"></span></div>
+      <div data-reveal style="display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#005FB2;margin-bottom:22px;">07 · DESIGN SYSTEM<span style="width:34px;height:1px;background:#005FB2;opacity:0.4;"></span></div>
       <h2 data-reveal style="font-size:clamp(28px,4.2vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.12;max-width:20ch;">The Connect Suite design system.</h2>
       <p data-reveal style="font-size:clamp(16px,2vw,19px);color:#4a4e57;max-width:64ch;margin-top:22px;">Derived off Salesforce Lightning and documented in Figma - foundations, custom components, modals, tables, the scheduler and a print framework. The full interactive documentation lives in this section.</p>
       <div data-reveal style="margin-top:40px;background:#fff;border:1px solid #e7eaef;border-radius:20px;box-shadow:0 30px 70px -45px rgba(0,95,178,0.4);overflow:hidden;">
@@ -444,95 +539,17 @@
     </div>
   </section>
 
-  <sc-for list="{{ moduleSections }}" as="s" hint-placeholder-count="3">
-    <section id="{{ s.id }}" data-screen-label="{{ s.label }}" style="padding:clamp(72px,10vw,120px) 0;">
-      <div style="max-width:1080px;margin:0 auto;padding:0 clamp(20px,5vw,32px);">
-        <div data-reveal style="display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#005FB2;margin-bottom:22px;">{{ s.num }} · {{ s.kicker }}<span style="width:34px;height:1px;background:#005FB2;opacity:0.4;"></span></div>
-        <h2 data-reveal style="font-size:clamp(28px,4.2vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.12;max-width:22ch;">{{ s.title }}</h2>
-        <p data-reveal style="font-size:clamp(16px,2vw,19px);color:#4a4e57;max-width:64ch;margin-top:22px;">{{ s.desc }}</p>
-        <sc-if value="{{ s.linkUrl }}" hint-placeholder-val="">
-          <a data-reveal href="{{ s.linkUrl }}" target="_blank" style="margin-top:24px;display:flex;align-items:center;gap:18px;background:linear-gradient(115deg,#1B3A6B,#3A5DA8);border-radius:16px;padding:22px 26px;box-shadow:0 18px 40px -22px rgba(27,58,107,0.7);">
-            <div style="width:46px;height:46px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;padding:7px;"><img src="assets/mcc-logo.png" alt="My Care Compass" style="width:100%;height:100%;object-fit:contain;"/></div>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#F5A623;font-weight:700;">Related project</div>
-              <div style="font-size:16px;font-weight:700;color:#fff;margin-top:3px;">See the appointment booking module in action</div>
-              <div style="font-size:13.5px;color:#cdd8ee;margin-top:2px;">On the LifeLabs · My Care Compass project →</div>
-            </div>
-            <div style="color:#fff;font-size:22px;flex:none;">→</div>
-          </a>
-        </sc-if>
-        <sc-if value="{{ s.isAppointment }}" hint-placeholder-val="{{ false }}">
-          <div data-reveal style="margin-top:26px;">
-            <dc-import name="AppointmentProto" hint-size="100%,640px" style="width:100%;display:block;"></dc-import>
-          </div>
-          <div data-reveal style="margin-top:24px;background:linear-gradient(135deg,#eef5ff,#f3fbf4);border:1px solid #dbe7f5;border-radius:18px;padding:22px;">
-            <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;">
-              <span style="width:26px;height:26px;border-radius:8px;background:#005FB2;display:flex;align-items:center;justify-content:center;font-size:13px;">🧭</span>
-              <div style="font-size:11.5px;font-weight:800;letter-spacing:0.08em;color:#005FB2;">PRODUCT REACH · LIFELABS</div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;">
-              <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="4">
-                <div style="background:#fff;border:1px solid #e7eaef;border-radius:16px;padding:18px 16px;box-shadow:0 12px 26px -20px rgba(0,95,178,0.5);">
-                  <div style="{{ m.iconStyle }}">{{ m.icon }}</div>
-                  <div style="font-size:30px;font-weight:800;letter-spacing:-0.03em;background:linear-gradient(120deg,#005FB2,#0a86d6 60%,#86bc25);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;">{{ m.value }}</div>
-                  <div style="font-size:12.5px;color:#4a4e57;margin-top:5px;line-height:1.4;">{{ m.label }}</div>
-                </div>
-              </sc-for>
-            </div>
-          </div>
-        </sc-if>
-        <sc-if value="{{ s.isEligibility }}" hint-placeholder-val="{{ false }}">
-          <div data-reveal style="margin-top:26px;">
-            <dc-import name="EligibilityProto" hint-size="100%,640px" style="width:100%;display:block;"></dc-import>
-          </div>
-          <div data-reveal style="margin-top:24px;background:linear-gradient(135deg,#f3fbf4,#eef5ff);border:1px solid #d7e8d4;border-radius:18px;padding:22px;">
-            <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;">
-              <span style="width:26px;height:26px;border-radius:8px;background:#86bc25;display:flex;align-items:center;justify-content:center;font-size:13px;">🍁</span>
-              <div style="font-size:11.5px;font-weight:800;letter-spacing:0.08em;color:#3d6b00;">PROGRAM SCALE · NEWFOUNDLAND &amp; LABRADOR HEALTH SERVICES</div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-              <sc-for list="{{ nlhsMetrics }}" as="m" hint-placeholder-count="5">
-                <div style="display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid #e7eaef;border-radius:14px;padding:15px 16px;box-shadow:0 10px 22px -20px rgba(61,107,0,0.4);">
-                  <div style="{{ m.iconStyle }}">{{ m.icon }}</div>
-                  <div style="min-width:0;">
-                    <div style="font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#9aa0ab;">{{ m.k }}</div>
-                    <div style="font-size:14px;color:#16181d;font-weight:500;margin-top:3px;line-height:1.35;">{{ m.v }}</div>
-                  </div>
-                </div>
-              </sc-for>
-            </div>
-          </div>
-        </sc-if>
-        <sc-if value="{{ s.isSupply }}" hint-placeholder-val="{{ false }}">
-          <div data-reveal style="margin-top:26px;">
-            <dc-import name="SupplyProto" hint-size="100%,640px" style="width:100%;display:block;"></dc-import>
-          </div>
-        </sc-if>
-        <sc-if value="{{ s.noProto }}" hint-placeholder-val="{{ true }}">
-          <div data-reveal style="margin-top:24px;border:1.5px dashed #c3ccd6;border-radius:16px;background:rgba(255,255,255,0.6);padding:56px 28px;text-align:center;color:#6b7280;">
-            <div style="font-size:15px;font-weight:600;">Interactive prototype mounts here</div>
-            <div style="font-size:13.5px;margin-top:6px;">{{ s.proto }}</div>
-          </div>
-        </sc-if>
-      </div>
-    </section>
-  </sc-for>
-
-  <section id="impact" data-screen-label="Impact" style="padding:clamp(72px,10vw,120px) 0;">
+  <section id="learnings" data-screen-label="What I learned" style="padding:clamp(72px,10vw,120px) 0;">
     <div style="max-width:1080px;margin:0 auto;padding:0 clamp(20px,5vw,32px);">
-      <div data-reveal style="display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#005FB2;margin-bottom:22px;">07 · IMPACT & CLIENTS<span style="width:34px;height:1px;background:#005FB2;opacity:0.4;"></span></div>
-      <h2 data-reveal style="font-size:clamp(28px,4.2vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.12;max-width:20ch;">Outcomes, sales and successful implementations.</h2>
-      <p data-reveal style="font-size:clamp(16px,2vw,19px);color:#4a4e57;max-width:64ch;margin-top:20px;"><strong>Appointment Connect</strong> powers LifeLabs' appointment-booking experience across Canada - the same scheduling, booking and daysheet flows shown above, at national scale.</p>
-      <h3 data-reveal style="font-size:22px;font-weight:800;letter-spacing:-0.01em;margin:54px 0 20px;">Successful client implementations</h3>
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <sc-for list="{{ clients }}" as="c" hint-placeholder-count="3">
-          <div data-reveal style="background:#fff;border:1px solid #e7eaef;border-radius:16px;padding:26px 28px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;">
-            <div style="width:54px;height:54px;border-radius:12px;background:#e8f3fd;display:flex;align-items:center;justify-content:center;font-size:24px;">{{ c.icon }}</div>
-            <div>
-              <div style="font-size:18px;font-weight:700;">{{ c.name }}</div>
-              <div style="font-size:12.5px;font-weight:700;letter-spacing:0.04em;color:#4d7a00;text-transform:uppercase;margin:5px 0 10px;">{{ c.tag }}</div>
-              <div style="font-size:14.5px;color:#4a4e57;line-height:1.6;">{{ c.body }}</div>
-            </div>
+      <div data-reveal style="display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#005FB2;margin-bottom:22px;">08 · WHAT I LEARNED<span style="width:34px;height:1px;background:#005FB2;opacity:0.4;"></span></div>
+      <h2 data-reveal style="font-size:clamp(28px,4.2vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.12;max-width:20ch;">What building a health platform taught me.</h2>
+      <p data-reveal style="font-size:clamp(16px,2vw,19px);color:#4a4e57;max-width:64ch;margin-top:22px;">Connect Suite is the longest-running product I have designed for. Working inside a platform that gets re-customized for every client, in a domain where a mistake has real clinical cost, changed how I think about design.</p>
+      <div data-reveal style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:44px;">
+        <sc-for list="{{ learnings }}" as="l" hint-placeholder-count="4">
+          <div style="background:#fff;border:1px solid #e7eaef;border-radius:16px;padding:24px 22px;">
+            <div style="{{ l.iconStyle }}">{{ l.icon }}</div>
+            <div style="font-size:16.5px;font-weight:700;margin:14px 0 8px;">{{ l.title }}</div>
+            <div style="font-size:14px;color:#61656e;line-height:1.6;">{{ l.body }}</div>
           </div>
         </sc-for>
       </div>
@@ -668,11 +685,12 @@ class Component extends DCLogic {
   renderVals() {
     const rail = [
       {id:'about',label:'About'},
-      {id:'system',label:'Design System'},
+      {id:'impact',label:'Impact'},
       {id:'eligibility',label:'Eligibility'},
       {id:'appointment',label:'Appointment'},
       {id:'supply',label:'Supply'},
-      {id:'impact',label:'Impact'},
+      {id:'system',label:'Design System'},
+      {id:'learnings',label:'Learnings'},
     ];
     const glance = [
       {icon:'👤',k:'Role',v:'Product Designer & Project Manager'},
@@ -691,6 +709,12 @@ class Component extends DCLogic {
       {id:'eligibility',label:'Eligibility Connect',num:'04',kicker:'MODULE · ELIGIBILITY CONNECT',title:'Eligibility Connect',desc:'Eligibility Connect evaluates an entire population against a screening program’s rules engine on an automated overnight schedule - applying age, screening-history and risk criteria to produce a ready-to-action eligible cohort each morning, then handing it to templated outreach. Modelled on the Newfoundland & Labrador cervical screening program.',proto:'Overnight eligibility run · Eligible cohort · Outreach letters',isEligibility:true},
       {id:'appointment',label:'Appointment Connect',num:'05',kicker:'MODULE · APPOINTMENT CONNECT',title:'Appointment Connect',desc:'Appointment Connect runs the full scheduling lifecycle for a clinic - defining bookable appointment blocks with capacity and duration, exposing individual booking through the citizen portal (or an assisted CRM flow), and surfacing a live daysheet of booked and walk-in patients with wait times. It keeps capacity, booking counters and the clinic calendar accurate in real time.',proto:'Clinic-manager scheduler · Citizen / assisted booking · Nurse daysheet',isAppointment:true,linkUrl:'https://claude.ai/design/p/bf7a1740-d11e-4176-afb6-413d1dfab473?file=LifeLabs%2FMyCareCompass.html'},
       {id:'supply',label:'Supply Connect',num:'06',kicker:'MODULE · SUPPLY CONNECT',title:'Supply Connect',desc:'Supply Connect manages healthcare inventory across the supply chain - raising and approving requisitions, transferring stock between facilities, and tracking fulfilment from central warehouse to local pharmacy, with lot and quantity accuracy for vaccines such as Gardasil.',proto:'Pharmacist requisition · Warehouse fulfilment · Gardasil transfer',isSupply:true},
+    ];
+    const learnings = [
+      {title:'Design for the client you have not met yet',body:'Every deployment re-skins and re-scopes the platform. Components had to hold up under a brand, a language and a screening program I could not see in advance, so I learned to design for variation instead of for one perfect screen.',icon:'🧬',iconStyle:tint('#e8f3fd')},
+      {title:'A design system is a negotiation, not a library',body:'Getting engineering, delivery and clients onto shared components took more conversation than craft. The system only held because I documented the reasoning behind each decision, not just the spec.',icon:'🤝',iconStyle:tint('#eef7df')},
+      {title:'Clinical workflows punish clever design',body:'Nurses and clinic managers work fast, under load, on shared machines. The interfaces that tested best were the plainest ones, and I stopped treating restraint as a lack of ambition.',icon:'🩺',iconStyle:tint('#fff1e6')},
+      {title:'Selling the work is part of the work',body:'RFPs, workshops and demos taught me to frame design in the language of outcomes and risk. It is the fastest way to get a room of stakeholders to say yes to the right thing.',icon:'📣',iconStyle:tint('#f3eefe')},
     ];
     const mIcon=(bg)=>`width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;background:${bg};`;
     const metrics = [
@@ -795,7 +819,7 @@ class Component extends DCLogic {
       {k:'Health authority structure',v:'Single provincial health authority',icon:'🏛️',iconStyle:nIcon('#fff1e6')},
       {k:'Service footprint',v:'Hospitals, clinics, community care, long-term care, mental health, digital health',icon:'🏥',iconStyle:nIcon('#e6f7f1')},
     ];
-    return { rail, glance, modules, roleChips, moduleSections, metrics, clients, nlhsMetrics, palette, typeScale, tableRows, calDays, calGrid, modalTypes, schedRows, schedView, apptFilters, addSched:()=>this.addSched(), customOpen, customDate, customBlocks, addCustomBlock:()=>{ if(this.state.customModal) this.addCustomBlock(this.state.customModal); }, closeCustom:()=>this.closeCustom(), schedErrors, hasSchedErr, tableTabs, ampmOptions:['AM','PM'], statusOptions:['Active','Inactive'], timeOptions:['9:00 AM','9:30 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM'], apptTypeOptions:['🔬 Colonoscopy','🧫 Pap Smear','🩻 X-Ray','🧪 Urine test','🩺 Regular Check-up'], inputTypeOptions:['Pap Smear','Colonoscopy','Regular Check-up'], showStyle1:this.state.tableStyle===1, showStyle2:this.state.tableStyle===2, accAIcon:a.a?'–':'+', accBIcon:a.b?'–':'+', accCIcon:a.c?'–':'+',
+    return { rail, glance, modules, roleChips, moduleSections, learnings, metrics, clients, nlhsMetrics, palette, typeScale, tableRows, calDays, calGrid, modalTypes, schedRows, schedView, apptFilters, addSched:()=>this.addSched(), customOpen, customDate, customBlocks, addCustomBlock:()=>{ if(this.state.customModal) this.addCustomBlock(this.state.customModal); }, closeCustom:()=>this.closeCustom(), schedErrors, hasSchedErr, tableTabs, ampmOptions:['AM','PM'], statusOptions:['Active','Inactive'], timeOptions:['9:00 AM','9:30 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM'], apptTypeOptions:['🔬 Colonoscopy','🧫 Pap Smear','🩻 X-Ray','🧪 Urine test','🩺 Regular Check-up'], inputTypeOptions:['Pap Smear','Colonoscopy','Regular Check-up'], showStyle1:this.state.tableStyle===1, showStyle2:this.state.tableStyle===2, accAIcon:a.a?'–':'+', accBIcon:a.b?'–':'+', accCIcon:a.c?'–':'+',
       dpLabel:this.monthName(this.state.dpMonth), dpYear:String(this.state.dpYear),
       dpValue:`${String(this.state.dpMonth+1).padStart(2,'0')}/${this.state.dpSelected.slice(8)}/${this.state.dpYear}`,
       dpCells:dp,
